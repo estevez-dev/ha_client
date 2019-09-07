@@ -4,6 +4,7 @@ class EntityWrapper {
 
   String displayName;
   String icon;
+  String unitOfMeasurement;
   String entityPicture;
   EntityUIAction uiAction;
   Entity entity;
@@ -24,6 +25,7 @@ class EntityWrapper {
       if (uiAction == null) {
         uiAction = EntityUIAction();
       }
+      unitOfMeasurement = entity.unitOfMeasurement;
     }
   }
 

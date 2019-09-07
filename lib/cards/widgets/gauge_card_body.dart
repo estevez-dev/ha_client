@@ -4,10 +4,9 @@ class GaugeCardBody extends StatefulWidget {
 
   final int min;
   final int max;
-  final String unit;
   final Map severity;
 
-  GaugeCardBody({Key key, this.min, this.max, this.unit, this.severity}) : super(key: key);
+  GaugeCardBody({Key key, this.min, this.max, this.severity}) : super(key: key);
 
   @override
   _GaugeCardBodyState createState() => _GaugeCardBodyState();
@@ -104,11 +103,15 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
                         double fontSize = constraints.maxHeight / 7;
                         return Padding(
                           padding: EdgeInsets.only(bottom: 2*fontSize),
-                          child: Text(
-                            '${entityWrapper.entity.doubleState}${widget.unit}',
+                          child: SimpleEntityState(
+                            //textAlign: TextAlign.center,
+                            expanded: false,
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
+                            bold: true,
+                            textAlign: TextAlign.center,
+                            padding: EdgeInsets.all(0.0),
+                            fontSize: fontSize,
+                            //padding: EdgeInsets.only(top: Sizes.rowPadding),
                           ),
                         );
                       }
@@ -121,11 +124,12 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
                         double fontSize = constraints.maxHeight / 7;
                         return Padding(
                           padding: EdgeInsets.only(bottom: fontSize),
-                          child: Text(
-                            '${entityWrapper.displayName}',
+                          child: EntityName(
+                            fontSize: fontSize,
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: fontSize),
+                            padding: EdgeInsets.all(0.0),
+                            textAlign: TextAlign.center,
+                            textOverflow: TextOverflow.ellipsis,
                           ),
                         );
                       }

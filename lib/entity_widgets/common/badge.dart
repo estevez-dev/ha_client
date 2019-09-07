@@ -57,7 +57,7 @@ class BadgeWidget extends StatelessWidget {
           } else if (entityModel.entityWrapper.entity.displayState.length <= 10) {
             stateFontSize = 8.0;
           }
-          onBadgeTextValue = entityModel.entityWrapper.entity.unitOfMeasurement;
+          onBadgeTextValue = entityModel.entityWrapper.unitOfMeasurement;
           badgeIcon = Center(
             child: Text(
               "${entityModel.entityWrapper.entity.displayState}",

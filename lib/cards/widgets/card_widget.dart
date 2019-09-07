@@ -291,13 +291,14 @@ class CardWidget extends StatelessWidget {
   Widget _buildGaugeCard(BuildContext context) {
     card.linkedEntityWrapper.displayName = card.name ??
         card.linkedEntityWrapper.displayName;
+    card.linkedEntityWrapper.unitOfMeasurement = card.unit ??
+        card.linkedEntityWrapper.unitOfMeasurement;
     return Card(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             child: GaugeCardBody(
               min: card.min,
               max: card.max,
-              unit: card.unit ?? card.linkedEntityWrapper.entity.unitOfMeasurement,
               severity: card.severity,
             ),
             handleTap: true

@@ -7,8 +7,10 @@ class SimpleEntityState extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final int maxLines;
   final String customValue;
+  final double fontSize;
+  final bool bold;
 
-  const SimpleEntityState({Key key, this.maxLines: 10, this.expanded: true, this.textAlign: TextAlign.right, this.padding: const EdgeInsets.fromLTRB(0.0, 0.0, Sizes.rightWidgetPadding, 0.0), this.customValue}) : super(key: key);
+  const SimpleEntityState({Key key,this.bold: false, this.maxLines: 10, this.fontSize: Sizes.stateFontSize, this.expanded: true, this.textAlign: TextAlign.right, this.padding: const EdgeInsets.fromLTRB(0.0, 0.0, Sizes.rightWidgetPadding, 0.0), this.customValue}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +23,14 @@ class SimpleEntityState extends StatelessWidget {
       state = customValue;
     }
     TextStyle textStyle =  TextStyle(
-      fontSize: Sizes.stateFontSize,
+      fontSize: this.fontSize,
+      fontWeight: FontWeight.normal
     );
     if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.CALL_SERVICE) {
       textStyle = textStyle.apply(color: Colors.blue);
+    }
+    if (this.bold) {
+      textStyle = textStyle.apply(fontWeightDelta: 100);
     }
     while (state.contains("  ")){
       state = state.replaceAll("  ", " ");
@@ -32,7 +38,7 @@ class SimpleEntityState extends StatelessWidget {
     Widget result = Padding(
       padding: padding,
       child: Text(
-        "$state ${entityModel.entityWrapper.entity.unitOfMeasurement}",
+        "$state ${entityModel.entityWrapper.unitOfMeasurement}",
         textAlign: textAlign,
         maxLines: maxLines,
         overflow: TextOverflow.ellipsis,
