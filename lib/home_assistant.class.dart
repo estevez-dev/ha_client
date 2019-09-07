@@ -191,7 +191,7 @@ class HomeAssistant {
         HACard card = HACard(
             id: "card",
             name: rawCardInfo["title"] ?? rawCardInfo["name"],
-            type: rawCardInfo['type'] ?? CardType.entities,
+            type: rawCardInfo['type'] ?? CardType.ENTITIES,
             columnsCount: rawCardInfo['columns'] ?? 4,
             showName: rawCardInfo['show_name'] ?? true,
             showState: rawCardInfo['show_state'] ?? true,
@@ -199,7 +199,11 @@ class HomeAssistant {
             stateFilter: rawCardInfo['state_filter'] ?? [],
             states: rawCardInfo['states'],
             conditions: rawCard['conditions'] ?? [],
-            content: rawCardInfo['content']
+            content: rawCardInfo['content'],
+            min: rawCardInfo['min'] ?? 0,
+            max: rawCardInfo['max'] ?? 100,
+            unit: rawCardInfo['unit'],
+            severity: rawCardInfo['severity']
         );
         if (rawCardInfo["cards"] != null) {
           card.childCards = _createLovelaceCards(rawCardInfo["cards"]);

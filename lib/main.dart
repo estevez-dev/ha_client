@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +22,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 part 'const.dart';
 part 'utils/launcher.dart';
@@ -49,8 +51,8 @@ part 'entity_widgets/common/badge.dart';
 part 'entity_widgets/model_widgets.dart';
 part 'entity_widgets/default_entity_container.dart';
 part 'entity_widgets/missed_entity.dart';
-part 'entity_widgets/glance_entity_container.dart';
-part 'entity_widgets/button_entity_container.dart';
+part 'cards/widgets/glance_entity_container.dart';
+part 'cards/widgets/button_entity_container.dart';
 part 'entity_widgets/common/entity_attributes_list.dart';
 part 'entity_widgets/entity_icon.dart';
 part 'entity_widgets/entity_name.dart';
@@ -106,17 +108,18 @@ part 'managers/device_info_manager.class.dart';
 part 'managers/startup_user_messages_manager.class.dart';
 part 'ui_class/ui.dart';
 part 'ui_class/view.class.dart';
-part 'ui_class/card.class.dart';
+part 'cards/card.class.dart';
 part 'ui_class/sizes_class.dart';
 part 'ui_class/panel_class.dart';
 part 'ui_widgets/view.dart';
-part 'ui_widgets/card_widget.dart';
+part 'cards/widgets/card_widget.dart';
 part 'ui_widgets/card_header_widget.dart';
 part 'panels/config_panel_widget.dart';
 part 'panels/widgets/link_to_web_config.dart';
 part 'utils/logger.dart';
 part 'types/ha_error.dart';
 part 'types/event_bus_events.dart';
+part 'cards/widgets/gauge_card_body.dart';
 
 
 EventBus eventBus = new EventBus();

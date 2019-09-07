@@ -15,6 +15,10 @@ class HACard {
   List states;
   List conditions;
   String content;
+  String unit;
+  int min;
+  int max;
+  Map severity;
 
   HACard({
     this.name,
@@ -28,6 +32,10 @@ class HACard {
     this.content,
     this.states,
     this.conditions: const [],
+    this.unit,
+    this.min,
+    this.max,
+    this.severity,
     @required this.type
   }) {
     if (this.columnsCount <= 0) {

@@ -77,23 +77,23 @@ class EntityUIAction {
 }
 
 class CardType {
-  static const horizontalStack = "horizontal-stack";
-  static const verticalStack = "vertical-stack";
-  static const entities = "entities";
-  static const glance = "glance";
-  static const mediaControl = "media-control";
-  static const weatherForecast = "weather-forecast";
-  static const thermostat = "thermostat";
-  static const sensor = "sensor";
-  static const plantStatus = "plant-status";
-  static const pictureEntity = "picture-entity";
-  static const pictureElements = "picture-elements";
-  static const picture = "picture";
-  static const map = "map";
-  static const iframe = "iframe";
-  static const gauge = "gauge";
-  static const entityButton = "entity-button";
-  static const conditional = "conditional";
-  static const alarmPanel = "alarm-panel";
-  static const markdown = "markdown";
+  static const HORIZONTAL_STACK = "horizontal-stack";
+  static const VERTICAL_STACK = "vertical-stack";
+  static const ENTITIES = "entities";
+  static const GLANCE = "glance";
+  static const MEDIA_CONTROL = "media-control";
+  static const WEATHER_FORECAST = "weather-forecast";
+  static const THERMOSTAT = "thermostat";
+  static const SENSOR = "sensor";
+  static const PLANT_STATUS = "plant-status";
+  static const PICTURE_ENTITY = "picture-entity";
+  static const PICTURE_ELEMENTS = "picture-elements";
+  static const PICTURE = "picture";
+  static const MAP = "map";
+  static const IFRAME = "iframe";
+  static const GAUGE = "gauge";
+  static const ENTITY_BUTTON = "entity-button";
+  static const CONDITIONAL = "conditional";
+  static const ALARM_PANEL = "alarm-panel";
+  static const MARKDOWN = "markdown";
 }

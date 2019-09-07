@@ -1,4 +1,4 @@
-part of '../main.dart';
+part of '../../main.dart';
 
 class CardWidget extends StatelessWidget {
 
@@ -42,31 +42,35 @@ class CardWidget extends StatelessWidget {
 
     switch (card.type) {
 
-      case CardType.entities: {
+      case CardType.ENTITIES: {
         return _buildEntitiesCard(context);
       }
 
-      case CardType.glance: {
+      case CardType.GLANCE: {
         return _buildGlanceCard(context);
       }
 
-      case CardType.mediaControl: {
+      case CardType.MEDIA_CONTROL: {
         return _buildMediaControlsCard(context);
       }
 
-      case CardType.entityButton: {
+      case CardType.ENTITY_BUTTON: {
         return _buildEntityButtonCard(context);
       }
 
-      case CardType.markdown: {
+      case CardType.GAUGE: {
+        return _buildGaugeCard(context);
+      }
+
+      case CardType.MARKDOWN: {
         return _buildMarkdownCard(context);
       }
 
-      case CardType.alarmPanel: {
+      case CardType.ALARM_PANEL: {
         return _buildAlarmPanelCard(context);
       }
 
-      case CardType.horizontalStack: {
+      case CardType.HORIZONTAL_STACK: {
         if (card.childCards.isNotEmpty) {
           List<Widget> children = [];
           card.childCards.forEach((card) {
@@ -89,7 +93,7 @@ class CardWidget extends StatelessWidget {
         return Container(height: 0.0, width: 0.0,);
       }
 
-      case CardType.verticalStack: {
+      case CardType.VERTICAL_STACK: {
         if (card.childCards.isNotEmpty) {
           List<Widget> children = [];
           card.childCards.forEach((card) {
@@ -267,6 +271,23 @@ class CardWidget extends StatelessWidget {
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             child: ButtonEntityContainer(),
+            handleTap: true
+        )
+    );
+  }
+
+  Widget _buildGaugeCard(BuildContext context) {
+    card.linkedEntityWrapper.displayName = card.name ??
+        card.linkedEntityWrapper.displayName;
+    return Card(
+        child: EntityModel(
+            entityWrapper: card.linkedEntityWrapper,
+            child: GaugeCardBody(
+              min: card.min,
+              max: card.max,
+              unit: card.unit ?? card.linkedEntityWrapper.entity.unitOfMeasurement,
+              severity: card.severity,
+            ),
             handleTap: true
         )
     );
