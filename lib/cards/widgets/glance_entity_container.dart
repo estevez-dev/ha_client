@@ -39,10 +39,10 @@ class GlanceEntityContainer extends StatelessWidget {
       }
     }
     result.add(
-      EntityIcon(
-        padding: EdgeInsets.all(0.0),
-        size: iconSize,
-      )
+        EntityIcon(
+          padding: EdgeInsets.all(0.0),
+          size: iconSize,
+        )
     );
     if (!nameInTheBottom) {
       if (showState) {
@@ -54,14 +54,9 @@ class GlanceEntityContainer extends StatelessWidget {
 
     return Center(
       child: InkResponse(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: Sizes.iconSize * 2),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            //mainAxisAlignment: MainAxisAlignment.start,
-            //crossAxisAlignment: CrossAxisAlignment.center,
-            children: result,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: result,
         ),
         onTap: () => entityWrapper.handleTap(),
         onLongPress: () => entityWrapper.handleHold(),

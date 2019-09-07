@@ -220,37 +220,49 @@ class CardWidget extends StatelessWidget {
     List<Widget> rows = [];
     rows.add(CardHeaderWidget(name: card.name));
 
-    List<Widget> result = [];
     int columnsCount = entitiesToShow.length >= card.columnsCount ? card.columnsCount : entitiesToShow.length;
 
-    entitiesToShow.forEach((EntityWrapper entity) {
-      result.add(
-          FractionallySizedBox(
-            widthFactor: 1/columnsCount,
-            child: EntityModel(
-                entityWrapper: entity,
-                child: GlanceEntityContainer(
-                  showName: card.showName,
-                  showState: card.showState,
-                ),
-                handleTap: true
-            ),
-          )
-      );
-    });
     rows.add(
         Padding(
-          padding: EdgeInsets.fromLTRB(0.0, Sizes.rowPadding, 0.0, 2*Sizes.rowPadding),
-          child: Wrap(
-            //alignment: WrapAlignment.spaceAround,
-            runSpacing: Sizes.rowPadding*2,
-            children: result,
+          padding: EdgeInsets.only(bottom: Sizes.rowPadding, top: Sizes.rowPadding),
+          child: FractionallySizedBox(
+            widthFactor: 1,
+            child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  List<Widget> buttons = [];
+                  double buttonWidth = constraints.maxWidth / columnsCount;
+                  entitiesToShow.forEach((EntityWrapper entity) {
+                    buttons.add(
+                        SizedBox(
+                          width: buttonWidth,
+                          child: EntityModel(
+                              entityWrapper: entity,
+                              child: GlanceEntityContainer(
+                                showName: card.showName,
+                                showState: card.showState,
+                              ),
+                              handleTap: true
+                          ),
+                        )
+                    );
+                  });
+                  return Wrap(
+                    //spacing: 5.0,
+                    //alignment: WrapAlignment.spaceEvenly,
+                    runSpacing: Sizes.rowPadding*2,
+                    children: buttons,
+                  );
+                }
+            ),
           ),
         )
     );
 
     return Card(
-        child: new Column(mainAxisSize: MainAxisSize.min, children: rows)
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: rows
+        )
     );
   }
 
