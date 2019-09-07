@@ -1,8 +1,8 @@
 part of '../../main.dart';
 
-class ButtonEntityContainer extends StatelessWidget {
+class EntityButtonCardBody extends StatelessWidget {
 
-  ButtonEntityContainer({
+  EntityButtonCardBody({
     Key key,
   }) : super(key: key);
 

@@ -1,4 +1,4 @@
-part of '../../main.dart';
+part of '../main.dart';
 
 class CardWidget extends StatelessWidget {
 
@@ -127,7 +127,7 @@ class CardWidget extends StatelessWidget {
       return Container(height: 0.0, width: 0.0,);
     }
     List<Widget> body = [];
-    body.add(CardHeaderWidget(name: card.name));
+    body.add(CardHeader(name: card.name));
     entitiesToShow.forEach((EntityWrapper entity) {
       if (!entity.entity.isHidden) {
         body.add(
@@ -154,7 +154,7 @@ class CardWidget extends StatelessWidget {
       return Container(height: 0.0, width: 0.0,);
     }
     List<Widget> body = [];
-    body.add(CardHeaderWidget(name: card.name));
+    body.add(CardHeader(name: card.name));
     body.add(MarkdownBody(data: card.content));
     return Card(
         child: Padding(
@@ -166,7 +166,7 @@ class CardWidget extends StatelessWidget {
 
   Widget _buildAlarmPanelCard(BuildContext context) {
     List<Widget> body = [];
-    body.add(CardHeaderWidget(
+    body.add(CardHeader(
       name: card.name ?? "",
       subtitle: Text("${card.linkedEntityWrapper.entity.displayState}",
         style: TextStyle(
@@ -218,7 +218,7 @@ class CardWidget extends StatelessWidget {
       return Container(height: 0.0, width: 0.0,);
     }
     List<Widget> rows = [];
-    rows.add(CardHeaderWidget(name: card.name));
+    rows.add(CardHeader(name: card.name));
 
     int columnsCount = entitiesToShow.length >= card.columnsCount ? card.columnsCount : entitiesToShow.length;
 
@@ -237,7 +237,7 @@ class CardWidget extends StatelessWidget {
                           width: buttonWidth,
                           child: EntityModel(
                               entityWrapper: entity,
-                              child: GlanceEntityContainer(
+                              child: GlanceCardEntityContainer(
                                 showName: card.showName,
                                 showState: card.showState,
                               ),
@@ -282,7 +282,7 @@ class CardWidget extends StatelessWidget {
     return Card(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
-            child: ButtonEntityContainer(),
+            child: EntityButtonCardBody(),
             handleTap: true
         )
     );
@@ -308,7 +308,7 @@ class CardWidget extends StatelessWidget {
 
   Widget _buildUnsupportedCard(BuildContext context) {
     List<Widget> body = [];
-    body.add(CardHeaderWidget(name: card.name ?? ""));
+    body.add(CardHeader(name: card.name ?? ""));
     List<Widget> result = [];
     if (card.linkedEntityWrapper != null) {
       result.addAll(<Widget>[

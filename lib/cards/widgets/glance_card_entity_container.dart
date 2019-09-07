@@ -1,6 +1,6 @@
 part of '../../main.dart';
 
-class GlanceEntityContainer extends StatelessWidget {
+class GlanceCardEntityContainer extends StatelessWidget {
 
   final bool showName;
   final bool showState;
@@ -9,7 +9,7 @@ class GlanceEntityContainer extends StatelessWidget {
   final double nameFontSize;
   final bool wordsWrapInName;
 
-  GlanceEntityContainer({
+  GlanceCardEntityContainer({
     Key key,
     @required this.showName,
     @required this.showState,

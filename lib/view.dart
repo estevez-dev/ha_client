@@ -1,4 +1,4 @@
-part of '../main.dart';
+part of 'main.dart';
 
 class ViewWidget extends StatefulWidget {
   final HAView view;
@@ -41,7 +41,6 @@ class ViewWidgetState extends State<ViewWidget> {
 
   Widget _buildPanelChild(BuildContext context) {
     if (widget.view.cards != null && widget.view.cards.isNotEmpty) {
-      Logger.d("Building panel view. Card ${widget.view.cards[0].type}");
       return widget.view.cards[0].build(context);
     } else {
       return Container(width: 0, height: 0);

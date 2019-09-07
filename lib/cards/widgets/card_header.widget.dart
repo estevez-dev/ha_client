@@ -1,12 +1,12 @@
 part of '../../main.dart';
 
-class CardHeaderWidget extends StatelessWidget {
+class CardHeader extends StatelessWidget {
 
   final String name;
   final Widget trailing;
   final Widget subtitle;
 
-  const CardHeaderWidget({Key key, this.name, this.trailing, this.subtitle}) : super(key: key);
+  const CardHeader({Key key, this.name, this.trailing, this.subtitle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
