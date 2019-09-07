@@ -20,21 +20,9 @@ class _CameraStreamViewState extends State<CameraStreamView> {
   String streamUrl = "";
 
   launchStream() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => WebviewScaffold(
-            url: "$streamUrl",
-            withZoom: true,
-            appBar: new AppBar(
-              leading: IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context)
-              ),
-              title: new Text("${_entity.displayName}"),
-            ),
-          ),
-        )
+    Launcher.launchURLInCustomTab(
+      context: context,
+      url: streamUrl
     );
   }
 
