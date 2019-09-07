@@ -113,7 +113,7 @@ part 'ui_class/sizes_class.dart';
 part 'ui_class/panel_class.dart';
 part 'ui_widgets/view.dart';
 part 'cards/widgets/card_widget.dart';
-part 'ui_widgets/card_header_widget.dart';
+part 'cards/widgets/card_header_widget.dart';
 part 'panels/config_panel_widget.dart';
 part 'panels/widgets/link_to_web_config.dart';
 part 'utils/logger.dart';
