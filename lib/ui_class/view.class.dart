@@ -4,16 +4,18 @@ class HAView {
   List<HACard> cards = [];
   List<Entity> badges = [];
   Entity linkedEntity;
-  String name;
-  String id;
-  String iconName;
-  int count;
+  final String name;
+  final String id;
+  final String iconName;
+  final int count;
+  final bool panel;
 
   HAView({
     this.name,
     this.id,
     this.count,
     this.iconName,
+    this.panel: false,
     List<Entity> childEntities
   }) {
     if (childEntities != null) {

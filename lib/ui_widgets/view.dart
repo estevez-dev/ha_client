@@ -24,11 +24,28 @@ class ViewWidgetState extends State<ViewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.all(0.0),
-      //physics: const AlwaysScrollableScrollPhysics(),
-      children: _buildChildren(context),
-    );
+    if (widget.view.panel) {
+      return FractionallySizedBox(
+        widthFactor: 1,
+        heightFactor: 1,
+        child: _buildPanelChild(context),
+      );
+    } else {
+      return ListView(
+        padding: EdgeInsets.all(0.0),
+        //physics: const AlwaysScrollableScrollPhysics(),
+        children: _buildChildren(context),
+      );
+    }
+  }
+
+  Widget _buildPanelChild(BuildContext context) {
+    if (widget.view.cards != null && widget.view.cards.isNotEmpty) {
+      Logger.d("Building panel view. Card ${widget.view.cards[0].type}");
+      return widget.view.cards[0].build(context);
+    } else {
+      return Container(width: 0, height: 0);
+    }
   }
 
   List<Widget> _buildChildren(BuildContext context) {

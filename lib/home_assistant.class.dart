@@ -162,7 +162,8 @@ class HomeAssistant {
             count: viewCounter,
             id: "${rawView['id']}",
             name: rawView['title'],
-            iconName: rawView['icon']
+            iconName: rawView['icon'],
+            panel: rawView['panel'] ?? false,
         );
 
         if (rawView['badges'] != null && rawView['badges'] is List) {
