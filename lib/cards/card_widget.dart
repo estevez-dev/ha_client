@@ -62,9 +62,9 @@ class CardWidget extends StatelessWidget {
         return _buildGaugeCard(context);
       }
 
-      case CardType.LIGHT: {
+/*      case CardType.LIGHT: {
         return _buildLightCard(context);
-      }
+      }*/
 
       case CardType.MARKDOWN: {
         return _buildMarkdownCard(context);
