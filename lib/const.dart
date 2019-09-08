@@ -96,6 +96,7 @@ class CardType {
   static const CONDITIONAL = "conditional";
   static const ALARM_PANEL = "alarm-panel";
   static const MARKDOWN = "markdown";
+  static const LIGHT = "light";
 }
 
 class Sizes {

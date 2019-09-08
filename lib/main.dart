@@ -22,7 +22,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+import 'plugins/circular_slider/single_circular_slider.dart';
+
+import 'utils/logger.dart';
 
 part 'const.dart';
 part 'utils/launcher.dart';
@@ -115,10 +117,10 @@ part 'cards/card_widget.dart';
 part 'cards/widgets/card_header.widget.dart';
 part 'panels/config_panel_widget.dart';
 part 'panels/widgets/link_to_web_config.dart';
-part 'utils/logger.dart';
 part 'types/ha_error.dart';
 part 'types/event_bus_events.dart';
 part 'cards/widgets/gauge_card_body.dart';
+part 'cards/widgets/light_card_body.dart';
 
 
 EventBus eventBus = new EventBus();
