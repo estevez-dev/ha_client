@@ -62,6 +62,10 @@ class CardWidget extends StatelessWidget {
         return _buildGaugeCard(context);
       }
 
+      case CardType.LIGHT: {
+        return _buildLightCard(context);
+      }
+
       case CardType.MARKDOWN: {
         return _buildMarkdownCard(context);
       }
@@ -297,6 +301,22 @@ class CardWidget extends StatelessWidget {
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             child: GaugeCardBody(
+              min: card.min,
+              max: card.max,
+              severity: card.severity,
+            ),
+            handleTap: true
+        )
+    );
+  }
+
+  Widget _buildLightCard(BuildContext context) {
+    card.linkedEntityWrapper.displayName = card.name ??
+        card.linkedEntityWrapper.displayName;
+    return Card(
+        child: EntityModel(
+            entityWrapper: card.linkedEntityWrapper,
+            child: LightCardBody(
               min: card.min,
               max: card.max,
               severity: card.severity,
