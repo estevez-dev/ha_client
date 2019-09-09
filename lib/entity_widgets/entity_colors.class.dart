@@ -14,6 +14,7 @@ class EntityColor {
     "auto": Colors.amber,
     EntityState.active: Colors.amber,
     EntityState.playing: Colors.amber,
+    EntityState.paused: Colors.amber,
     "above_horizon": Colors.amber,
     EntityState.home:  Colors.amber,
     EntityState.open:  Colors.amber,
