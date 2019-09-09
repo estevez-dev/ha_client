@@ -12,13 +12,18 @@ class StartupUserMessagesManager {
   StartupUserMessagesManager._internal() {}
 
   bool _supportAppDevelopmentMessageShown;
+  bool _whatsNewMessageShown;
   static final _supportAppDevelopmentMessageKey = "user-message-shown-support-development_3";
+  static final _whatsNewMessageKey = "user-message-shown-whats-new-660";
 
   void checkMessagesToShow() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.reload();
     _supportAppDevelopmentMessageShown = prefs.getBool(_supportAppDevelopmentMessageKey) ?? false;
-    if (!_supportAppDevelopmentMessageShown) {
+    _whatsNewMessageShown = prefs.getBool(_whatsNewMessageKey) ?? false;
+    if (!_whatsNewMessageShown) {
+      _showWhatsNewMessage();
+    } else if (!_supportAppDevelopmentMessageShown) {
       _showSupportAppDevelopmentMessage();
     }
   }
@@ -38,6 +43,26 @@ class StartupUserMessagesManager {
         onNegative: () {
           SharedPreferences.getInstance().then((prefs) {
             prefs.setBool(_supportAppDevelopmentMessageKey, true);
+          });
+        }
+    ));
+  }
+
+  void _showWhatsNewMessage() {
+    eventBus.fire(ShowPopupDialogEvent(
+        title: "What's new",
+        body: "You can now share any media url to HA Client via Android share menu. It will try to play that media on one of your media player. There is also 'tv' button available in app header if you want to send some url manually",
+        positiveText: "Full release notes",
+        negativeText: "Ok",
+        onPositive: () {
+          SharedPreferences.getInstance().then((prefs) {
+            prefs.setBool(_whatsNewMessageKey, true);
+            Launcher.launchURL("https://github.com/estevez-dev/ha_client/releases");
+          });
+        },
+        onNegative: () {
+          SharedPreferences.getInstance().then((prefs) {
+            prefs.setBool(_whatsNewMessageKey, true);
           });
         }
     ));

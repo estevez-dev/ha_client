@@ -170,7 +170,7 @@ class HAClientApp extends StatelessWidget {
         "/": (context) => MainPage(title: 'HA Client'),
         "/connection-settings": (context) => ConnectionSettingsPage(title: "Settings"),
         "/putchase": (context) => PurchasePage(title: "Support app development"),
-        "/play-media": (context) => PlayMediaPage(mediaUrl: "${(ModalRoute.of(context).settings.arguments as Map)['url']}",),
+        "/play-media": (context) => PlayMediaPage(mediaUrl: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['url'] : ''}",),
         "/log-view": (context) => LogViewPage(title: "Log"),
         "/login": (context) => WebviewScaffold(
           url: "${ConnectionManager().oauthUrl}",
