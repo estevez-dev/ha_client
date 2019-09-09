@@ -25,14 +25,15 @@ class CardWidget extends StatelessWidget {
     }
 
     if (card.conditions.isNotEmpty) {
-      bool showCardByConditions = false;
+      bool showCardByConditions = true;
       for (var condition in card.conditions) {
         Entity conditionEntity = HomeAssistant().entities.get(condition['entity']);
         if (conditionEntity != null &&
-            (condition['state'] != null && conditionEntity.state == condition['state']) ||
-            (condition['state_not'] != null && conditionEntity.state != condition['state_not'])
+            ((condition['state'] != null && conditionEntity.state != condition['state']) ||
+            (condition['state_not'] != null && conditionEntity.state == condition['state_not']))
           ) {
-          showCardByConditions = true;
+          showCardByConditions = false;
+          break;
         }
       }
       if (!showCardByConditions) {
