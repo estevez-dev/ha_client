@@ -9,7 +9,7 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => new _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> with WidgetsBindingObserver, TickerProviderStateMixin {
+class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObserver, TickerProviderStateMixin {
 
   StreamSubscription<List<PurchaseDetails>> _subscription;
   StreamSubscription _stateSubscription;
@@ -25,6 +25,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   int _previousViewCount;
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
+  String _savedSharedText;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       _handlePurchaseUpdates(purchases);
     });
     super.initState();
+    enableShareReceiving();
     WidgetsBinding.instance.addObserver(this);
 
     _firebaseMessaging.configure(
@@ -74,6 +76,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _fullLoad();
 
 
+  }
+
+  @override void receiveShare(Share shared) {
+    if (shared.mimeType == ShareType.TYPE_PLAIN_TEXT) {
+      _savedSharedText = shared.text;
+    }
   }
 
   Future onSelectNotification(String payload) async {
@@ -121,6 +129,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   _fetchData() async {
+    if (_savedSharedText != null && !HomeAssistant().isNoEntities) {
+      Logger.d("Got shared text: $_savedSharedText");
+      Navigator.pushNamed(context, "/play-media", arguments: {"url": _savedSharedText});
+      _savedSharedText = null;
+    }
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
       int currentViewCount = HomeAssistant().ui?.views?.length ?? 0;
@@ -659,6 +672,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             primary: true,
             title: Text(HomeAssistant().locationName ?? ""),
             actions: <Widget>[
+              IconButton(
+                  icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
+                      "mdi:television"), color: Colors.white,),
+                  onPressed: () => Navigator.pushNamed(context, "/play-media", arguments: {"url": ""})
+              ),
               IconButton(
                   icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
                       "mdi:dots-vertical"), color: Colors.white,),

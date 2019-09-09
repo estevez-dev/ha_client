@@ -112,4 +112,5 @@ class Sizes {
   static const largeFontSize = 24.0;
   static const inputWidth = 160.0;
   static const rowPadding = 10.0;
+  static const doubleRowPadding = rowPadding*2;
 }

@@ -23,7 +23,6 @@ class Panel {
     if (icon == null || !icon.startsWith("mdi:")) {
       icon = Panel.iconsByComponent[type];
     }
-    Logger.d("New panel '$title'. type=$type, icon=$icon, urlPath=$urlPath");
     isHidden = (type == 'lovelace' || type == 'kiosk' || type == 'states' || type == 'profile' || type == 'developer-tools');
     isWebView = (type != 'config');
   }

@@ -11,6 +11,7 @@ class HomeAssistant {
   EntityCollection entities;
   HomeAssistantUI ui;
   Map _instanceConfig = {};
+  Map services;
   String _userName;
   HSVColor savedColor;
 
@@ -115,7 +116,11 @@ class HomeAssistant {
   }
 
   Future _getServices() async {
-    await ConnectionManager().sendSocketMessage(type: "get_services").then((data) => Logger.d("Services received")).catchError((e) {
+    await ConnectionManager().sendSocketMessage(type: "get_services").then((data) {
+      Logger.d("Got ${data.length} services");
+      Logger.d("Media extractor: ${data["media_extractor"]}");
+      services = data;
+    }).catchError((e) {
       Logger.w("Can't get services: ${e}");
     });
   }

@@ -23,6 +23,8 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/circular_slider/single_circular_slider.dart';
+import 'package:share/receive_share_state.dart';
+import 'package:share/share.dart';
 
 import 'utils/logger.dart';
 
@@ -121,6 +123,7 @@ part 'types/ha_error.dart';
 part 'types/event_bus_events.dart';
 part 'cards/widgets/gauge_card_body.dart';
 part 'cards/widgets/light_card_body.dart';
+part 'pages/play_media.page.dart';
 
 
 EventBus eventBus = new EventBus();
@@ -167,6 +170,7 @@ class HAClientApp extends StatelessWidget {
         "/": (context) => MainPage(title: 'HA Client'),
         "/connection-settings": (context) => ConnectionSettingsPage(title: "Settings"),
         "/putchase": (context) => PurchasePage(title: "Support app development"),
+        "/play-media": (context) => PlayMediaPage(mediaUrl: "${(ModalRoute.of(context).settings.arguments as Map)['url']}",),
         "/log-view": (context) => LogViewPage(title: "Log"),
         "/login": (context) => WebviewScaffold(
           url: "${ConnectionManager().oauthUrl}",

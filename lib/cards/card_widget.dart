@@ -253,7 +253,7 @@ class CardWidget extends StatelessWidget {
                   return Wrap(
                     //spacing: 5.0,
                     //alignment: WrapAlignment.spaceEvenly,
-                    runSpacing: Sizes.rowPadding*2,
+                    runSpacing: Sizes.doubleRowPadding,
                     children: buttons,
                   );
                 }
