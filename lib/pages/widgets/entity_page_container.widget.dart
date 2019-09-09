@@ -1,4 +1,4 @@
-part of '../main.dart';
+part of '../../main.dart';
 
 class EntityPageContainer extends StatelessWidget {
   EntityPageContainer({Key key, @required this.children}) : super(key: key);
