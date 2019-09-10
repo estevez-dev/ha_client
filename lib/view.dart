@@ -32,9 +32,19 @@ class ViewWidgetState extends State<ViewWidget> {
       );
     } else {
       return ListView(
-        padding: EdgeInsets.all(0.0),
-        //physics: const AlwaysScrollableScrollPhysics(),
-        children: _buildChildren(context),
+        shrinkWrap: true,
+        padding: EdgeInsets.all(0),
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 3000),
+            child: CustomMultiChildLayout(
+              delegate: ViewLayoutBuilder(
+                  cardsCount: widget.view.cards.length
+              ),
+              children: _buildChildren(context),
+            ),
+          )
+        ],
       );
     }
   }
@@ -49,33 +59,30 @@ class ViewWidgetState extends State<ViewWidget> {
 
   List<Widget> _buildChildren(BuildContext context) {
     List<Widget> result = [];
+    int layoutChildId = 0;
 
     if (widget.view.badges.isNotEmpty) {
-      result.insert(0,
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10.0,
-            runSpacing: 1.0,
-            children: _buildBadges(context),
+      result.add(
+          LayoutId(
+            id: "badges",
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10.0,
+              runSpacing: 1.0,
+              children: _buildBadges(context),
+            ),
           )
       );
     }
-
-    List<Widget> cards = [];
     widget.view.cards.forEach((HACard card){
-      cards.add(
-          ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 500),
+      result.add(
+          LayoutId(
+            id: 'card_$layoutChildId',
             child: card.build(context),
           )
       );
+      layoutChildId += 1;
     });
-
-    result.add(
-      Column (
-        children: cards,
-      )
-    );
 
     return result;
   }
@@ -84,7 +91,9 @@ class ViewWidgetState extends State<ViewWidget> {
     List<Widget> result = [];
     widget.view.badges.forEach((Entity entity) {
       if (!entity.isHidden) {
-        result.add(entity.buildBadgeWidget(context));
+        result.add(
+            entity.buildBadgeWidget(context)
+        );
       }
     });
     return result;
@@ -95,5 +104,50 @@ class ViewWidgetState extends State<ViewWidget> {
     super.dispose();
   }
 
+}
 
+class ViewLayoutBuilder extends MultiChildLayoutDelegate {
+  final int cardsCount;
+
+  ViewLayoutBuilder({@required this.cardsCount});
+
+  @override
+  void performLayout(Size size) {
+    int columnsCount = (size.width ~/ Sizes.minViewColumnWidth);
+    double columnWidth = size.width / columnsCount;
+    List<double> columnXPositions = [];
+    List<double> columnYPositions = [];
+    double startY = 0;
+    if (hasChild("badges")) {
+      Size badgesSizes = layoutChild(
+          'badges', BoxConstraints.tightFor(width: size.width));
+      startY += badgesSizes.height;
+      positionChild('badges', Offset(0, 0));
+    }
+    for (int i =0; i < columnsCount; i++) {
+      columnXPositions.add(i*columnWidth);
+      columnYPositions.add(startY);
+    }
+    for (int i = 0; i < cardsCount; i++) {
+      final String cardId = 'card_$i';
+
+      if (hasChild(cardId)) {
+        int columnToAdd = 0;
+        double minYPosition = columnYPositions[0];
+        for (int i=1; i<columnsCount; i++) {
+          if (columnYPositions[i] < minYPosition) {
+            minYPosition = columnYPositions[i];
+            columnToAdd = i;
+          }
+        }
+        Size newSize = layoutChild(
+            '$cardId', BoxConstraints.tightFor(width: columnWidth));
+        positionChild('$cardId', Offset(columnXPositions[columnToAdd], columnYPositions[columnToAdd]));
+        columnYPositions[columnToAdd] = minYPosition + newSize.height;
+      }
+    }
+  }
+
+  @override
+  bool shouldRelayout(MultiChildLayoutDelegate oldDelegate) => false;
 }
