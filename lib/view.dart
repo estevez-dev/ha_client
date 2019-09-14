@@ -32,6 +32,16 @@ class ViewWidgetState extends State<ViewWidget> {
       );
     } else {
       return ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.all(0),
+          children: <Widget>[
+            DynamicMultiColumnLayout(
+              minColumnWidth: Sizes.minViewColumnWidth,
+              children: _buildChildren(context),
+            )
+          ]
+      );
+      return ListView(
         shrinkWrap: true,
         padding: EdgeInsets.all(0),
         children: <Widget>[
@@ -61,7 +71,7 @@ class ViewWidgetState extends State<ViewWidget> {
     List<Widget> result = [];
     int layoutChildId = 0;
 
-    if (widget.view.badges.isNotEmpty) {
+    /*if (widget.view.badges.isNotEmpty) {
       result.add(
           LayoutId(
             id: "badges",
@@ -73,15 +83,11 @@ class ViewWidgetState extends State<ViewWidget> {
             ),
           )
       );
-    }
+    }*/
     widget.view.cards.forEach((HACard card){
       result.add(
-          LayoutId(
-            id: 'card_$layoutChildId',
-            child: card.build(context),
-          )
+          card.build(context)
       );
-      layoutChildId += 1;
     });
 
     return result;
