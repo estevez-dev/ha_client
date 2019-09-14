@@ -127,7 +127,6 @@ part 'cards/widgets/light_card_body.dart';
 part 'pages/play_media.page.dart';
 part 'entities/entity_page_layout.widget.dart';
 
-
 EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();

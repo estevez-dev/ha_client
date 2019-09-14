@@ -1,6 +1,6 @@
 part of '../main.dart';
 
-class EntityPageLayout extends StatefulWidget {
+class EntityPageLayout extends StatelessWidget {
 
   final bool showClose;
   final Entity entity;
@@ -8,22 +8,13 @@ class EntityPageLayout extends StatefulWidget {
   EntityPageLayout({Key key, this.showClose: false, this.entity}) : super(key: key);
 
   @override
-  _EntityPageLayoutState createState() => _EntityPageLayoutState();
-}
-
-class _EntityPageLayoutState extends State<EntityPageLayout> {
-
-  bool _historyExpanded = false;
-  bool _attributesExpanded = false;
-
-  @override
   Widget build(BuildContext context) {
     return EntityModel(
-      entityWrapper: EntityWrapper(entity: widget.entity),
+      entityWrapper: EntityWrapper(entity: entity),
       child: ListView(
           padding: EdgeInsets.all(0),
           children: <Widget>[
-          widget.showClose ?
+            showClose ?
             Container(
               color: Colors.blue[300],
               height: 36,
@@ -33,7 +24,7 @@ class _EntityPageLayoutState extends State<EntityPageLayout> {
                     child: Padding(
                       padding: EdgeInsets.only(left: 8),
                       child: Text(
-                        widget.entity.displayName,
+                        entity.displayName,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -57,11 +48,11 @@ class _EntityPageLayoutState extends State<EntityPageLayout> {
             Container(height: 0, width: 0,),
             Padding(
               padding: EdgeInsets.only(top: Sizes.rowPadding, left: Sizes.leftWidgetPadding),
-              child: DefaultEntityContainer(state: widget.entity._buildStatePartForPage(context)),
+              child: DefaultEntityContainer(state: entity._buildStatePartForPage(context)),
             ),
             LastUpdatedWidget(),
             Divider(),
-            widget.entity._buildAdditionalControlsForPage(context),
+            entity._buildAdditionalControlsForPage(context),
             Divider(),
             SpoilerCard(
               title: "State history",
