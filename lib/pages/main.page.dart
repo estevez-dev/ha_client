@@ -697,7 +697,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
             ),
             ConstrainedBox(
               constraints: BoxConstraints.tightFor(width: Sizes.entityPageMaxWidth),
-              child: entity.buildEntityPageWidget(context, showClose: true),
+              child: EntityPageLayout(entity: entity, showClose: true,),
             )
           ],
         );

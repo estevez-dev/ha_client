@@ -211,60 +211,6 @@ class Entity {
     );
   }
 
-  Widget buildEntityPageWidget(BuildContext context, {bool showClose: false}) {
-    return EntityModel(
-      entityWrapper: EntityWrapper(entity: this),
-      child: ListView(
-        padding: EdgeInsets.all(0),
-          children: <Widget>[
-            showClose ?
-              Container(
-                color: Colors.blue[300],
-                height: 36,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 8),
-                        child: Text(
-                          this.displayName,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 22
-                          ),
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      padding: EdgeInsets.all(0),
-                      icon: Icon(Icons.close),
-                      color: Colors.white,
-                      iconSize: 30.0,
-                      onPressed: () {
-                        eventBus.fire(ShowEntityPageEvent());
-                      },
-                    )
-                  ],
-                ),
-              ) :
-              Container(height: 0, width: 0,),
-            Padding(
-              padding: EdgeInsets.only(top: Sizes.rowPadding, left: Sizes.leftWidgetPadding),
-              child: DefaultEntityContainer(state: _buildStatePartForPage(context)),
-            ),
-            LastUpdatedWidget(),
-            Divider(),
-            _buildAdditionalControlsForPage(context),
-            Divider(),
-            buildHistoryWidget(),
-            EntityAttributesList()
-        ]
-      ),
-      handleTap: false,
-    );
-  }
-
   Widget buildHistoryWidget() {
     return EntityHistoryWidget(
       config: historyConfig,

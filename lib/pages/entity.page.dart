@@ -41,7 +41,7 @@ class _EntityViewPageState extends State<EntityViewPage> {
       }
       body = PageLoadingIndicator();
     } else {
-      body = entity.buildEntityPageWidget(context);
+      body = EntityPageLayout(entity: entity);
     }
     return new Scaffold(
       appBar: new AppBar(
