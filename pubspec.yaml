@@ -22,7 +22,7 @@ dependencies:
 #  flutter_svg: ^0.10.3
   flutter_custom_tabs: ^0.6.0
   firebase_messaging: ^5.1.5
-  flutter_webview_plugin: ^0.3.7
+  flutter_webview_plugin: ^0.3.8
   flutter_secure_storage: ^3.3.1
   device_info: ^0.4.0+2
   flutter_local_notifications: ^0.8.2+1

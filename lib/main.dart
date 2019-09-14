@@ -115,7 +115,7 @@ part 'ui.dart';
 part 'view.class.dart';
 part 'cards/card.class.dart';
 part 'panels/panel_class.dart';
-part 'view.dart';
+part 'viewWidget.widget.dart';
 part 'cards/card_widget.dart';
 part 'cards/widgets/card_header.widget.dart';
 part 'panels/config_panel_widget.dart';
