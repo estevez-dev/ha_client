@@ -17,9 +17,7 @@ class EntityHistoryConfig {
 
 class EntityHistoryWidget extends StatefulWidget {
 
-  final EntityHistoryConfig config;
-
-  const EntityHistoryWidget({Key key, @required this.config}) : super(key: key);
+  const EntityHistoryWidget({Key key}) : super(key: key);
 
   @override
   _EntityHistoryWidgetState createState() {
@@ -33,6 +31,7 @@ class _EntityHistoryWidgetState extends State<EntityHistoryWidget> {
   bool _needToUpdateHistory;
   DateTime _historyLastUpdated;
   bool _disposed = false;
+  Entity entity;
 
   @override
   void initState() {
@@ -75,10 +74,10 @@ class _EntityHistoryWidgetState extends State<EntityHistoryWidget> {
     } else {
       _loadHistory(entity.entityId);
     }
-    return _buildChart();
+    return _buildChart(entity.historyConfig);
   }
 
-  Widget _buildChart() {
+  Widget _buildChart(EntityHistoryConfig config) {
     List<Widget> children = [];
     if (_history == null) {
       children.add(
@@ -90,7 +89,7 @@ class _EntityHistoryWidgetState extends State<EntityHistoryWidget> {
       );
     } else {
       children.add(
-          _selectChartWidget()
+          _selectChartWidget(config)
       );
     }
     children.add(Divider());
@@ -102,8 +101,8 @@ class _EntityHistoryWidgetState extends State<EntityHistoryWidget> {
     );
   }
 
-  Widget _selectChartWidget() {
-    switch (widget.config.chartType) {
+  Widget _selectChartWidget(EntityHistoryConfig config) {
+    switch (config.chartType) {
 
       case EntityHistoryWidgetType.simple: {
           return SimpleStateHistoryChartWidget(
@@ -114,14 +113,14 @@ class _EntityHistoryWidgetState extends State<EntityHistoryWidget> {
       case EntityHistoryWidgetType.numericState: {
         return NumericStateHistoryChartWidget(
           rawHistory: _history,
-          config: widget.config,
+          config: config,
         );
       }
 
       case EntityHistoryWidgetType.numericAttributes: {
         return CombinedHistoryChartWidget(
           rawHistory: _history,
-          config: widget.config,
+          config: config,
         );
       }
 

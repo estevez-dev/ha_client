@@ -211,12 +211,6 @@ class Entity {
     );
   }
 
-  Widget buildHistoryWidget() {
-    return EntityHistoryWidget(
-      config: historyConfig,
-    );
-  }
-
   Widget buildBadgeWidget(BuildContext context) {
     return EntityModel(
       entityWrapper: EntityWrapper(entity: this),

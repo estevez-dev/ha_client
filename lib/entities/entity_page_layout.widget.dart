@@ -54,7 +54,7 @@ class EntityPageLayout extends StatelessWidget {
             Divider(),
             this.entity._buildAdditionalControlsForPage(context),
             Divider(),
-            this.entity.buildHistoryWidget(),
+            EntityHistoryWidget(),
             EntityAttributesList()
           ]
       ),
