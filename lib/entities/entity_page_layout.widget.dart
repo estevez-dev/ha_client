@@ -1,20 +1,29 @@
 part of '../main.dart';
 
-class EntityPageLayout extends StatelessWidget {
+class EntityPageLayout extends StatefulWidget {
 
   final bool showClose;
   final Entity entity;
 
-  const EntityPageLayout({Key key, @required this.entity, this.showClose: false}) : super(key: key);
+  EntityPageLayout({Key key, this.showClose: false, this.entity}) : super(key: key);
+
+  @override
+  _EntityPageLayoutState createState() => _EntityPageLayoutState();
+}
+
+class _EntityPageLayoutState extends State<EntityPageLayout> {
+
+  bool _historyExpanded = false;
+  bool _attributesExpanded = false;
 
   @override
   Widget build(BuildContext context) {
     return EntityModel(
-      entityWrapper: EntityWrapper(entity: this.entity),
+      entityWrapper: EntityWrapper(entity: widget.entity),
       child: ListView(
           padding: EdgeInsets.all(0),
           children: <Widget>[
-            showClose ?
+          widget.showClose ?
             Container(
               color: Colors.blue[300],
               height: 36,
@@ -24,7 +33,7 @@ class EntityPageLayout extends StatelessWidget {
                     child: Padding(
                       padding: EdgeInsets.only(left: 8),
                       child: Text(
-                        this.entity.displayName,
+                        widget.entity.displayName,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -48,14 +57,20 @@ class EntityPageLayout extends StatelessWidget {
             Container(height: 0, width: 0,),
             Padding(
               padding: EdgeInsets.only(top: Sizes.rowPadding, left: Sizes.leftWidgetPadding),
-              child: DefaultEntityContainer(state: this.entity._buildStatePartForPage(context)),
+              child: DefaultEntityContainer(state: widget.entity._buildStatePartForPage(context)),
             ),
             LastUpdatedWidget(),
             Divider(),
-            this.entity._buildAdditionalControlsForPage(context),
+            widget.entity._buildAdditionalControlsForPage(context),
             Divider(),
-            EntityHistoryWidget(),
-            EntityAttributesList()
+            SpoilerCard(
+              title: "State history",
+              body: EntityHistoryWidget(),
+            ),
+            SpoilerCard(
+              title: "Attributes",
+              body: EntityAttributesList(),
+            ),
           ]
       ),
       handleTap: false,
