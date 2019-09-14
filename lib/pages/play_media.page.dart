@@ -49,7 +49,7 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
     } else {
       _isMediaExtractorExist = HomeAssistant().services.containsKey("media_extractor");
       //_useMediaExtractor = _isMediaExtractorExist;
-      _players = HomeAssistant().entities.getByDomains(["media_player"]);
+      _players = HomeAssistant().entities.getByDomains(domains: ["media_player"]);
       setState(() {
         if (_players.isNotEmpty) {
           _loaded = true;

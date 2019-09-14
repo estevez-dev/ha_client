@@ -318,7 +318,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     );
   }
 
-  //TODO remove this shit
+  //TODO remove this shit.... maybe
   void _callService(String domain, String service, String entityId, Map additionalParams) {
     _showInfoBottomBar(
         message: "Calling $domain.$service",
@@ -643,19 +643,67 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Widget _buildScaffoldBody(bool empty) {
-    List<PopupMenuItem<String>> popupMenuItems = [];
+    List<PopupMenuItem<String>> serviceMenuItems = [];
+    List<PopupMenuItem<String>> mediaMenuItems = [];
 
-    popupMenuItems.add(PopupMenuItem<String>(
+    serviceMenuItems.add(PopupMenuItem<String>(
       child: new Text("Reload"),
       value: "reload",
     ));
     if (ConnectionManager().isAuthenticated) {
       _showLoginButton = false;
-      popupMenuItems.add(
+      serviceMenuItems.add(
           PopupMenuItem<String>(
             child: new Text("Logout"),
             value: "logout",
           ));
+    }
+    Widget mediaMenuIcon;
+    mediaMenuItems.add(PopupMenuItem<String>(
+      child: new Text("Play media..."),
+      value: "play_media",
+    ));
+    int playersCount = 0;
+    if (!empty && !HomeAssistant().entities.isEmpty) {
+      List<Entity> activePlayers = HomeAssistant().entities.getByDomains(domains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing]);
+      playersCount = activePlayers.length;
+      mediaMenuItems.addAll(
+          activePlayers.map((entity) => PopupMenuItem<String>(
+            child: Text(
+                "${entity.displayName}",
+              style: TextStyle(
+                color: EntityColor.stateColor(entity.state)
+              ),
+            ),
+            value: "${entity.entityId}",
+          )).toList()
+      );
+    }
+    if (playersCount > 0) {
+      mediaMenuIcon = Stack(
+        children: <Widget>[
+          Icon(MaterialDesignIcons.getIconDataFromIconName(
+              "mdi:television"), color: Colors.white,),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              height: 14,
+              width: 14,
+              decoration: new BoxDecoration(
+                color: Colors.amber,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text("$playersCount", style: TextStyle(fontSize: 10)),
+              ),
+            ),
+          )
+        ],
+      );
+    } else {
+      mediaMenuIcon = Icon(MaterialDesignIcons.getIconDataFromIconName(
+          "mdi:television"), color: Colors.white,);
     }
     Widget mainScrollBody;
     if (empty) {
@@ -717,9 +765,20 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
               title: Text(HomeAssistant().locationName ?? ""),
               actions: <Widget>[
                 IconButton(
-                    icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
-                        "mdi:television"), color: Colors.white,),
-                    onPressed: () => Navigator.pushNamed(context, "/play-media", arguments: {"url": ""})
+                    icon: mediaMenuIcon,
+                    onPressed: () {
+                      showMenu(
+                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 70.0, 0.0, 0.0),
+                          context: context,
+                          items: mediaMenuItems
+                      ).then((String val) {
+                        if (val == "play_media") {
+                          Navigator.pushNamed(context, "/play-media", arguments: {"url": ""});
+                        } else  {
+                          _showEntityPage(val);
+                        }
+                      });
+                    }
                 ),
                 IconButton(
                     icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
@@ -728,7 +787,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
                       showMenu(
                           position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 70.0, 0.0, 0.0),
                           context: context,
-                          items: popupMenuItems
+                          items: serviceMenuItems
                       ).then((String val) {
                         if (val == "reload") {
                           _quickLoad();

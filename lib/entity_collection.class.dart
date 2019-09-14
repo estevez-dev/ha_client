@@ -149,15 +149,11 @@ class EntityCollection {
     return _allEntities[entityId] != null;
   }
 
-  List<Entity> getByDomains(List<String> domains) {
-    List<Entity> result = [];
-    _allEntities.forEach((id, entity) {
-      if (domains.contains(entity.domain)) {
-        Logger.d("getByDomain: ${entity.isHidden}");
-        result.add(entity);
-      }
-    });
-    return result;
+  List<Entity> getByDomains({List<String> domains, List<String> stateFiler}) {
+    return _allEntities.values.where((entity) {
+      return domains.contains(entity.domain) &&
+          ((stateFiler != null && stateFiler.contains(entity.state)) || stateFiler == null);
+    }).toList();
   }
 
   List<Entity> filterEntitiesForDefaultView() {
