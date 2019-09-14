@@ -14,6 +14,7 @@ class _EntityViewPageState extends State<EntityViewPage> {
   StreamSubscription _stateSubscription;
   Entity entity;
   Entity forwardToMainPage;
+  bool _popScheduled = false;
 
   @override
   void initState() {
@@ -34,7 +35,10 @@ class _EntityViewPageState extends State<EntityViewPage> {
   Widget build(BuildContext context) {
     Widget body;
     if (MediaQuery.of(context).size.width >= Sizes.tabletMinWidth) {
-      _popAfterBuild();
+      if (!_popScheduled) {
+        _popScheduled = true;
+        _popAfterBuild();
+      }
       body = PageLoadingIndicator();
     } else {
       body = entity.buildEntityPageWidget(context);
