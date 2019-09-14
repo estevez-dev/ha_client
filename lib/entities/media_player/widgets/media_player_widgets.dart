@@ -305,6 +305,11 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
       )
     ];
     if (entity.state != EntityState.off && entity.state != EntityState.unknown && entity.state != EntityState.unavailable) {
+      if (entity.supportSeek) {
+        children.add(MediaPlayerSeekWidget());
+      } else {
+        children.add(MediaPlayerProgressWidget());
+      }
       Widget muteWidget;
       Widget volumeStepWidget;
       if (entity.supportVolumeMute  || entity.attributes["is_volume_muted"] != null) {
@@ -455,6 +460,117 @@ class _MediaPlayerProgressWidgetState extends State<MediaPlayerProgressWidget> {
       value: progress,
       backgroundColor: Colors.black45,
     );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+}
+
+class MediaPlayerSeekWidget extends StatefulWidget {
+  @override
+  _MediaPlayerSeekWidgetState createState() => _MediaPlayerSeekWidgetState();
+}
+
+class _MediaPlayerSeekWidgetState extends State<MediaPlayerSeekWidget> {
+
+  Timer _timer;
+  bool _seekStarted = false;
+  double _currentPosition = 0;
+  final TextStyle _seekTextStyle = TextStyle(
+    fontSize: 20,
+    color: Colors.blue,
+    fontWeight: FontWeight.bold
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final EntityModel entityModel = EntityModel.of(context);
+    final MediaPlayerEntity entity = entityModel.entityWrapper.entity;
+    //double progress;
+    try {
+      DateTime lastUpdated = DateTime.parse(
+          entity.attributes["media_position_updated_at"]).toLocal();
+      Duration duration = Duration(seconds: entity._getIntAttributeValue("media_duration") ?? 1);
+      Duration position = Duration(seconds: entity._getIntAttributeValue("media_position") ?? 0);
+      if (entity.state == EntityState.playing && !_seekStarted) {
+        _currentPosition = position.inSeconds.toDouble();
+        _timer?.cancel();
+        _timer = Timer(Duration(seconds: 1), () {
+          if (!_seekStarted) {
+            setState(() {
+            });
+          }
+        });
+        int differenceInSeconds = DateTime
+            .now()
+            .difference(lastUpdated)
+            .inSeconds;
+        _currentPosition += differenceInSeconds;
+      } else {
+        _timer?.cancel();
+      }
+      //progress = currentPosition / duration.inSeconds;
+      return Padding(
+        padding: EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, 20, Sizes.rightWidgetPadding, 0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Text("00:00"),
+                Expanded(
+                  child: Text("${Duration(seconds: _currentPosition.toInt()).toString().split(".")[0]}",textAlign: TextAlign.center, style: _seekTextStyle),
+                ),
+                Text("${duration.toString().split(".")[0]}")
+              ],
+            ),
+            Slider(
+              min: 0,
+              activeColor: Colors.amber,
+              inactiveColor: Colors.black26,
+              max: duration.inSeconds.toDouble(),
+              value: _currentPosition,
+              onChangeStart: (val) {
+                _seekStarted = true;
+                setState(() {
+                  _currentPosition = val;
+                });
+              },
+              onChanged: (val) {
+                setState(() {
+                  _currentPosition = val;
+                });
+              },
+              onChangeEnd: (val) {
+                _seekStarted = false;
+                eventBus.fire(ServiceCallEvent(
+                    "media_player",
+                    "media_seek",
+                    "${entity.entityId}",
+                    {"seek_position": val}
+                ));
+                setState(() {
+                  _currentPosition = val;
+                });
+              },
+            )
+          ],
+        ),
+      );
+    } catch (e) {
+      _timer?.cancel();
+      //progress = 0.0;
+    }
+    return Container(width: 0, height: 0,);
+    /*return LinearProgressIndicator(
+      value: progress,
+      backgroundColor: Colors.black45,
+    );*/
   }
 
   @override
