@@ -357,9 +357,16 @@ class ConnectionManager {
       serviceData.addAll(additionalServiceData);
     }
     if (serviceData.isNotEmpty)
-      return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service, "service_data": serviceData});
+      return sendHTTPPost(
+        endPoint: "/api/services/$domain/$service",
+        data: json.encode(serviceData)
+      );
+      //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service, "service_data": serviceData});
     else
-      return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service});
+      return sendHTTPPost(
+          endPoint: "/api/services/$domain/$service"
+      );
+      //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service});
   }
 
   Future<List> getHistory(String entityId) async {
