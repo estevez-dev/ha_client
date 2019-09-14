@@ -27,7 +27,6 @@ class LightColorPickerState extends State<LightColorPicker> {
     List<Widget> colorRows = [];
     Border border;
     bool isSomethingSelected = false;
-    Logger.d("Current colotfor picker: [${widget.color.hue}, ${widget.color.saturation}]");
     for (double saturation = 1.0; saturation >= (0.0 + widget.saturationStep); saturation = double.parse((saturation - widget.saturationStep).toStringAsFixed(2))) {
       List<Widget> rowChildren = [];
       //Logger.d("$saturation");

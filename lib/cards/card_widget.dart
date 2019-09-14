@@ -192,7 +192,7 @@ class CardWidget extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
                         "mdi:dots-vertical")),
-                    onPressed: () => eventBus.fire(new ShowEntityPageEvent(card.linkedEntityWrapper.entity))
+                    onPressed: () => eventBus.fire(new ShowEntityPageEvent(entity: card.linkedEntityWrapper.entity))
                 )
             )
           ]

@@ -26,6 +26,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
   String _savedSharedText;
+  String _entityToShow;
 
   @override
   void initState() {
@@ -227,7 +228,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     if (_showEntityPageSubscription == null) {
       _showEntityPageSubscription =
           eventBus.on<ShowEntityPageEvent>().listen((event) {
-            _showEntityPage(event.entity.entityId);
+            _showEntityPage(event.entity?.entityId);
           });
     }
 
@@ -327,12 +328,17 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   }
 
   void _showEntityPage(String entityId) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EntityViewPage(entityId: entityId),
-        )
-    );
+    setState(() {
+      _entityToShow = entityId;
+    });
+    if (_entityToShow!= null && MediaQuery.of(context).size.width < Sizes.tabletMinWidth) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EntityViewPage(entityId: entityId),
+          )
+      );
+    }
   }
 
   void _showPage(String path, bool goBackFirst) {
@@ -643,9 +649,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
       child: new Text("Reload"),
       value: "reload",
     ));
-    List<Widget> emptyBody = [
-      Text("."),
-    ];
     if (ConnectionManager().isAuthenticated) {
       _showLoginButton = false;
       popupMenuItems.add(
@@ -654,73 +657,106 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
             value: "logout",
           ));
     }
-    if (_showLoginButton) {
-      emptyBody = [
-        FlatButton(
-          child: Text("Login with Home Assistant", style: TextStyle(fontSize: 16.0, color: Colors.white)),
-          color: Colors.blue,
-          onPressed: () => _fullLoad(),
-        )
-      ];
-    }
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
-          SliverAppBar(
-            floating: true,
-            pinned: true,
-            primary: true,
-            title: Text(HomeAssistant().locationName ?? ""),
-            actions: <Widget>[
-              IconButton(
-                  icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
-                      "mdi:television"), color: Colors.white,),
-                  onPressed: () => Navigator.pushNamed(context, "/play-media", arguments: {"url": ""})
-              ),
-              IconButton(
-                  icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
-                      "mdi:dots-vertical"), color: Colors.white,),
-                  onPressed: () {
-                    showMenu(
-                        position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 70.0, 0.0, 0.0),
-                        context: context,
-                        items: popupMenuItems
-                    ).then((String val) {
-                      if (val == "reload") {
-                        _quickLoad();
-                      } else if (val == "logout") {
-                        HomeAssistant().logout().then((_) {
-                          _quickLoad();
-                        });
-                      }
-                    });
-                  }
-              )
-            ],
-            leading: IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {
-                _scaffoldKey.currentState.openDrawer();
-              },
-            ),
-            bottom: empty ? null : TabBar(
-              controller: _viewsTabController,
-              tabs: buildUIViewTabs(),
-              isScrollable: true,
-            ),
+    Widget mainScrollBody;
+    if (empty) {
+      if (_showLoginButton) {
+        mainScrollBody = Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  FlatButton(
+                    child: Text("Login with Home Assistant", style: TextStyle(fontSize: 16.0, color: Colors.white)),
+                    color: Colors.blue,
+                    onPressed: () => _fullLoad(),
+                  )
+                ]
+            )
+        );
+      } else {
+        mainScrollBody = Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text("...")
+              ]
           ),
+        );
+      }
+    } else {
+      if (_entityToShow != null && MediaQuery.of(context).size.width >= Sizes.tabletMinWidth) {
+        Entity entity = HomeAssistant().entities.get(_entityToShow);
+        mainScrollBody = Flex(
+          direction: Axis.horizontal,
+          children: <Widget>[
+            Expanded(
+              child: HomeAssistant().buildViews(context, _viewsTabController),
+            ),
+            Container(
+              width: Sizes.mainPageScreenSeparatorWidth,
+              color: Colors.blue,
+            ),
+            ConstrainedBox(
+              constraints: BoxConstraints.tightFor(width: Sizes.entityPageMaxWidth),
+              child: entity.buildEntityPageWidget(context, showClose: true),
+            )
+          ],
+        );
+      } else {
+        _entityToShow = null;
+        mainScrollBody = HomeAssistant().buildViews(context, _viewsTabController);
+      }
+    }
 
-        ];
-      },
-      body: empty ?
-      Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: emptyBody
-        ),
-      )
-          :
-      HomeAssistant().buildViews(context, _viewsTabController),
+    return NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              floating: true,
+              pinned: true,
+              primary: true,
+              title: Text(HomeAssistant().locationName ?? ""),
+              actions: <Widget>[
+                IconButton(
+                    icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
+                        "mdi:television"), color: Colors.white,),
+                    onPressed: () => Navigator.pushNamed(context, "/play-media", arguments: {"url": ""})
+                ),
+                IconButton(
+                    icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
+                        "mdi:dots-vertical"), color: Colors.white,),
+                    onPressed: () {
+                      showMenu(
+                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 70.0, 0.0, 0.0),
+                          context: context,
+                          items: popupMenuItems
+                      ).then((String val) {
+                        if (val == "reload") {
+                          _quickLoad();
+                        } else if (val == "logout") {
+                          HomeAssistant().logout().then((_) {
+                            _quickLoad();
+                          });
+                        }
+                      });
+                    }
+                )
+              ],
+              leading: IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () {
+                  _scaffoldKey.currentState.openDrawer();
+                },
+              ),
+              bottom: empty ? null : TabBar(
+                controller: _viewsTabController,
+                tabs: buildUIViewTabs(),
+                isScrollable: true,
+              ),
+            ),
+
+          ];
+        },
+        body: mainScrollBody
     );
   }
 

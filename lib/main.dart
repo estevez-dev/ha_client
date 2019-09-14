@@ -69,7 +69,6 @@ part 'entities/flat_service_button.widget.dart';
 part 'entities/light/widgets/light_color_picker.dart';
 part 'entities/camera/widgets/camera_stream_view.dart';
 part 'entities/entity_colors.class.dart';
-part 'pages/widgets/entity_page_container.widget.dart';
 part 'plugins/history_chart/entity_history.dart';
 part 'plugins/history_chart/simple_state_history_chart.dart';
 part 'plugins/history_chart/numeric_state_history_chart.dart';

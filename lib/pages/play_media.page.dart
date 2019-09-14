@@ -83,7 +83,7 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
             "media_content_type": _contentType
           }
       );
-      eventBus.fire(ShowEntityPageEvent(entity));
+      eventBus.fire(ShowEntityPageEvent(entity: entity));
     }
   }
 
