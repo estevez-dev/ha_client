@@ -232,6 +232,7 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
 
   @override
   void dispose(){
+    HomeAssistant().sendFromPlayerId = null;
     _stateSubscription?.cancel();
     _refreshDataSubscription?.cancel();
     super.dispose();

@@ -441,7 +441,7 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
   }
 
   void _switchTo(entity) {
-    HomeAssistant().sendFromPlayerId = entity.enityId;
+    HomeAssistant().sendFromPlayerId = entity.entityId;
     _duplicateTo(entity);
   }
 
