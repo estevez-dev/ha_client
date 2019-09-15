@@ -441,7 +441,7 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
   }
 
   void _switchTo(entity) {
-    eventBus.fire(ServiceCallEvent(entity.domain, "turn_off", entity.entityId, null));
+    HomeAssistant().sendFromPlayerId = entity.enityId;
     _duplicateTo(entity);
   }
 

@@ -94,6 +94,10 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
           }
       );
       HomeAssistant().sendToPlayerId = entity.entityId;
+      if (HomeAssistant().sendFromPlayerId != null) {
+        eventBus.fire(ServiceCallEvent(HomeAssistant().sendFromPlayerId.split(".")[0], "turn_off", HomeAssistant().sendFromPlayerId, null));
+        HomeAssistant().sendFromPlayerId = null;
+      }
       eventBus.fire(ShowEntityPageEvent(entity: entity));
     }
   }
