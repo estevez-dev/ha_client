@@ -128,6 +128,7 @@ part 'pages/play_media.page.dart';
 part 'entities/entity_page_layout.widget.dart';
 part 'entities/media_player/widgets/media_player_seek_bar.widget.dart';
 part 'entities/media_player/widgets/media_player_progress_bar.widget.dart';
+part 'pages/whats_new.page.dart';
 
 EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -178,6 +179,7 @@ class HAClientApp extends StatelessWidget {
           mediaType: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['type'] ?? '' : ''}",
         ),
         "/log-view": (context) => LogViewPage(title: "Log"),
+        "/whats-new": (context) => WhatsNewPage(),
         "/login": (context) => WebviewScaffold(
           url: "${ConnectionManager().oauthUrl}",
           appBar: new AppBar(
