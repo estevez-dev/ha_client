@@ -33,7 +33,8 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
     });
   }
 
-  void _sendTo(entity) {
+  void _switchTo(entity) {
+    eventBus.fire(ServiceCallEvent("media_player", "turn_off", entity.entityId, null));
     HomeAssistant().savedPlayerPosition = entity.getActualPosition().toInt();
     HomeAssistant().savedPlayerId = entity.entityId;
     Navigator.of(context).pushNamed("/play-media", arguments: {"url": entity.attributes["media_content_id"], "type": entity.attributes["media_content_type"]});
@@ -78,10 +79,10 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
       }
       buttons.add(
           RaisedButton(
-            child: Text("Send to another player..."),
+            child: Text("Switch to..."),
             color: Colors.blue,
             textColor: Colors.white,
-            onPressed: () => _sendTo(entity),
+            onPressed: () => _switchTo(entity),
           )
       );
       return Padding(
