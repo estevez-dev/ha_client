@@ -23,26 +23,10 @@ class _MediaPlayerProgressBarState extends State<MediaPlayerProgressBar> {
     final EntityModel entityModel = EntityModel.of(context);
     final MediaPlayerEntity entity = entityModel.entityWrapper.entity;
     double progress;
-    DateTime lastUpdated = DateTime.tryParse("${entity.attributes["media_position_updated_at"]}")?.toLocal();
-    Duration duration;
-    Duration position;
-    int durationInSeconds = entity._getIntAttributeValue("media_duration");
-    if (durationInSeconds != null) {
-      duration = Duration(seconds: durationInSeconds);
-    }
-    int positionInSeconds = entity._getIntAttributeValue("media_position");
-    if (positionInSeconds != null) {
-      position = Duration(
-          seconds: positionInSeconds);
-    }
-    if (lastUpdated != null && duration != null && position != null) {
-      int currentPosition = position.inSeconds;
-      int differenceInSeconds = DateTime
-          .now()
-          .difference(lastUpdated)
-          .inSeconds;
-      currentPosition = currentPosition + differenceInSeconds;
-      progress = (currentPosition <= duration.inSeconds) ? currentPosition / duration.inSeconds : 100;
+    int currentPosition;
+    if (entity.canCalculateActualPosition()) {
+      currentPosition = entity.getActualPosition().toInt();
+      progress = (currentPosition <= entity.durationSeconds) ? currentPosition / entity.durationSeconds : 100;
     } else {
       progress = 0;
     }

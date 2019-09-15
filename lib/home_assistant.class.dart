@@ -14,6 +14,8 @@ class HomeAssistant {
   Map services;
   String _userName;
   HSVColor savedColor;
+  int savedPlayerPosition;
+  String savedPlayerId;
 
   String fcmToken;
 

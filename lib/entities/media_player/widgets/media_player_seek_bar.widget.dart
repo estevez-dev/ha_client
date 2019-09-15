@@ -11,6 +11,8 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
   bool _seekStarted = false;
   bool _changedHere = false;
   double _currentPosition = 0;
+  int _savedPosition = 0;
+
   final TextStyle _seekTextStyle = TextStyle(
       fontSize: 20,
       color: Colors.blue,
@@ -20,6 +22,10 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
   @override
   initState() {
     super.initState();
+    if (HomeAssistant().savedPlayerPosition != null) {
+      _savedPosition = HomeAssistant().savedPlayerPosition;
+      HomeAssistant().savedPlayerPosition = null;
+    }
     _timer = Timer.periodic(Duration(seconds: 1), (_) {
       if (!_seekStarted && !_changedHere) {
         setState(() {});
@@ -27,35 +33,57 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
     });
   }
 
+  void _sendTo(entity) {
+    HomeAssistant().savedPlayerPosition = entity.getActualPosition().toInt();
+    HomeAssistant().savedPlayerId = entity.entityId;
+    Navigator.of(context).pushNamed("/play-media", arguments: {"url": entity.attributes["media_content_id"], "type": entity.attributes["media_content_type"]});
+  }
+
   @override
   Widget build(BuildContext context) {
     final EntityModel entityModel = EntityModel.of(context);
     final MediaPlayerEntity entity = entityModel.entityWrapper.entity;
-    DateTime lastUpdated = DateTime.tryParse("${
-        entity.attributes["media_position_updated_at"]}")?.toLocal();
-    Duration duration;
-    Duration position;
-    int durationInSeconds = entity._getIntAttributeValue("media_duration");
-    if (durationInSeconds != null) {
-      duration = Duration(seconds: durationInSeconds);
-    }
-    int positionInSeconds = entity._getIntAttributeValue("media_position");
-    if (positionInSeconds != null) {
-      position = Duration(
-          seconds: positionInSeconds);
-    }
-    if (lastUpdated != null && duration != null && position != null) {
+
+    if (entity.canCalculateActualPosition()) {
+      if (HomeAssistant().savedPlayerId != entity.entityId  && HomeAssistant().savedPlayerPosition != null) {
+        _savedPosition = HomeAssistant().savedPlayerPosition;
+        HomeAssistant().savedPlayerPosition = null;
+      }
       if (entity.state == EntityState.playing && !_seekStarted &&
           !_changedHere) {
-        _currentPosition = position.inSeconds.toDouble();
-        int differenceInSeconds = DateTime
-            .now()
-            .difference(lastUpdated)
-            .inSeconds;
-        _currentPosition = ((_currentPosition + differenceInSeconds) <= duration.inSeconds) ? (_currentPosition + differenceInSeconds) : duration.inSeconds.toDouble();
+        _currentPosition = entity.getActualPosition();
       } else if (_changedHere) {
         _changedHere = false;
       }
+      List<Widget> buttons = [];
+      if (_savedPosition > 0) {
+        buttons.add(
+            RaisedButton(
+              child: Text("Jump to ${Duration(seconds: _savedPosition).toString().split('.')[0]}"),
+              color: Colors.orange,
+              focusColor: Colors.white,
+              onPressed: () {
+                eventBus.fire(ServiceCallEvent(
+                    "media_player",
+                    "media_seek",
+                    "${entity.entityId}",
+                    {"seek_position": _savedPosition}
+                ));
+                setState(() {
+                  _savedPosition = 0;
+                });
+              },
+            )
+        );
+      }
+      buttons.add(
+          RaisedButton(
+            child: Text("Send to another player..."),
+            color: Colors.blue,
+            textColor: Colors.white,
+            onPressed: () => _sendTo(entity),
+          )
+      );
       return Padding(
         padding: EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, 20, Sizes.rightWidgetPadding, 0),
         child: Column(
@@ -68,7 +96,7 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
                 Expanded(
                   child: Text("${Duration(seconds: _currentPosition.toInt()).toString().split(".")[0]}",textAlign: TextAlign.center, style: _seekTextStyle),
                 ),
-                Text("${duration.toString().split(".")[0]}")
+                Text("${Duration(seconds: entity.durationSeconds).toString().split(".")[0]}")
               ],
             ),
             Container(height: 10,),
@@ -76,7 +104,7 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
               min: 0,
               activeColor: Colors.amber,
               inactiveColor: Colors.black26,
-              max: duration.inSeconds.toDouble(),
+              max: entity.durationSeconds.toDouble(),
               value: _currentPosition,
               onChangeStart: (val) {
                 _seekStarted = true;
@@ -103,6 +131,9 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
                   }
                 });
               },
+            ),
+            ButtonBar(
+              children: buttons,
             )
           ],
         ),

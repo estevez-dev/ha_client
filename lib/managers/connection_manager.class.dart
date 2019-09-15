@@ -349,6 +349,7 @@ class ConnectionManager {
   }
 
   Future callService({String domain, String service, String entityId, Map additionalServiceData}) {
+    Completer completer = Completer();
     Map serviceData = {};
     if (entityId != null) {
       serviceData["entity_id"] = entityId;
@@ -357,16 +358,17 @@ class ConnectionManager {
       serviceData.addAll(additionalServiceData);
     }
     if (serviceData.isNotEmpty)
-      return sendHTTPPost(
+      sendHTTPPost(
         endPoint: "/api/services/$domain/$service",
         data: json.encode(serviceData)
-      );
+      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError("${e["message"]}")));
       //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service, "service_data": serviceData});
     else
-      return sendHTTPPost(
+      sendHTTPPost(
           endPoint: "/api/services/$domain/$service"
-      );
+      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError("${e["message"]}")));;
       //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service});
+    return completer.future;
   }
 
   Future<List> getHistory(String entityId) async {
