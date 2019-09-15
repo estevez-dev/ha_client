@@ -659,10 +659,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
           ));
     }
     Widget mediaMenuIcon;
-    mediaMenuItems.add(PopupMenuItem<String>(
-      child: new Text("Play media..."),
-      value: "play_media",
-    ));
     int playersCount = 0;
     if (!empty && !HomeAssistant().entities.isEmpty) {
       List<Entity> activePlayers = HomeAssistant().entities.getByDomains(domains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing]);
@@ -679,6 +675,12 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
           )).toList()
       );
     }
+    mediaMenuItems.addAll([
+      PopupMenuItem<String>(
+        child: new Text("Play media..."),
+        value: "play_media",
+      )
+    ]);
     if (playersCount > 0) {
       mediaMenuIcon = Stack(
         overflow: Overflow.visible,
