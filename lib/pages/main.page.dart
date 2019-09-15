@@ -661,7 +661,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     Widget mediaMenuIcon;
     int playersCount = 0;
     if (!empty && !HomeAssistant().entities.isEmpty) {
-      List<Entity> activePlayers = HomeAssistant().entities.getByDomains(domains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing]);
+      List<Entity> activePlayers = HomeAssistant().entities.getByDomains(domains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing, EntityState.idle]);
       playersCount = activePlayers.length;
       mediaMenuItems.addAll(
           activePlayers.map((entity) => PopupMenuItem<String>(

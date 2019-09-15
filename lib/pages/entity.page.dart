@@ -21,7 +21,8 @@ class _EntityViewPageState extends State<EntityViewPage> {
     super.initState();
     _stateSubscription = eventBus.on<StateChangedEvent>().listen((event) {
       if (event.entityId == widget.entityId) {
-        Logger.d("State change event handled by entity page: ${event.entityId}");
+        entity = HomeAssistant().entities.get(widget.entityId);
+        Logger.d("[Entity page] State change event handled: ${event.entityId}");
         setState(() {});
       }
     });
