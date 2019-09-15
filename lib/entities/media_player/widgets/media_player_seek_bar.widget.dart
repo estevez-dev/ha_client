@@ -33,11 +33,18 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
     final MediaPlayerEntity entity = entityModel.entityWrapper.entity;
     DateTime lastUpdated = DateTime.tryParse("${
         entity.attributes["media_position_updated_at"]}")?.toLocal();
-    if (lastUpdated != null) {
-      Duration duration = Duration(
-          seconds: entity._getIntAttributeValue("media_duration") ?? 1);
-      Duration position = Duration(
-          seconds: entity._getIntAttributeValue("media_position") ?? 0);
+    Duration duration;
+    Duration position;
+    int durationInSeconds = entity._getIntAttributeValue("media_duration");
+    if (durationInSeconds != null) {
+      duration = Duration(seconds: durationInSeconds);
+    }
+    int positionInSeconds = entity._getIntAttributeValue("media_position");
+    if (positionInSeconds != null) {
+      position = Duration(
+          seconds: positionInSeconds);
+    }
+    if (lastUpdated != null && duration != null && position != null) {
       if (entity.state == EntityState.playing && !_seekStarted &&
           !_changedHere) {
         _currentPosition = position.inSeconds.toDouble();
@@ -45,7 +52,7 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
             .now()
             .difference(lastUpdated)
             .inSeconds;
-        _currentPosition = (_currentPosition <= duration.inSeconds) ? _currentPosition + differenceInSeconds : duration.inSeconds;
+        _currentPosition = ((_currentPosition + differenceInSeconds) <= duration.inSeconds) ? (_currentPosition + differenceInSeconds) : duration.inSeconds.toDouble();
       } else if (_changedHere) {
         _changedHere = false;
       }
