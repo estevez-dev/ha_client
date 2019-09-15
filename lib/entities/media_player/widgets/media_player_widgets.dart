@@ -403,11 +403,46 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
             )
         );
       }
+      children.add(
+        ButtonBar(
+          children: <Widget>[
+            RaisedButton(
+              child: Text("Duplicate to"),
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () => _duplicateTo(entity),
+            ),
+            RaisedButton(
+              child: Text("Switch to"),
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () => _switchTo(entity),
+            )
+          ],
+        )
+      );
 
     }
     return Column(
       children: children,
     );
+  }
+
+  void _duplicateTo(entity) {
+    HomeAssistant().savedPlayerPosition = entity.getActualPosition().toInt();
+    if (MediaQuery.of(context).size.width < Sizes.tabletMinWidth) {
+      Navigator.of(context).popAndPushNamed("/play-media", arguments: {"url": entity.attributes["media_content_id"], "type": entity.attributes["media_content_type"]});
+    } else {
+      Navigator.of(context).pushNamed("/play-media", arguments: {
+        "url": entity.attributes["media_content_id"],
+        "type": entity.attributes["media_content_type"]
+      });
+    }
+  }
+
+  void _switchTo(entity) {
+    eventBus.fire(ServiceCallEvent(entity.domain, "turn_off", entity.entityId, null));
+    _duplicateTo(entity);
   }
 
 }

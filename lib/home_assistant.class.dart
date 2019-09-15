@@ -15,7 +15,7 @@ class HomeAssistant {
   String _userName;
   HSVColor savedColor;
   int savedPlayerPosition;
-  String savedPlayerId;
+  String sendToPlayerId;
 
   String fcmToken;
 

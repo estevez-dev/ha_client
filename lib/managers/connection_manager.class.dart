@@ -186,16 +186,16 @@ class ConnectionManager {
   _handleMessage(data) {
     if (data["type"] == "result") {
       if (data["id"] != null && data["success"]) {
-        Logger.d("[Received] <== Request id ${data['id']} was successful");
+        //Logger.d("[Received] <== Request id ${data['id']} was successful");
         _messageResolver["${data["id"]}"]?.complete(data["result"]);
       } else if (data["id"] != null) {
-        Logger.e("[Received] <== Error received on request id ${data['id']}: ${data['error']}");
+        //Logger.e("[Received] <== Error received on request id ${data['id']}: ${data['error']}");
         _messageResolver["${data["id"]}"]?.completeError("${data['error']["message"]}");
       }
       _messageResolver.remove("${data["id"]}");
     } else if (data["type"] == "event") {
       if ((data["event"] != null) && (data["event"]["event_type"] == "state_changed")) {
-        Logger.d("[Received] <== ${data['type']}.${data["event"]["event_type"]}: ${data["event"]["data"]["entity_id"]}");
+        //Logger.d("[Received] <== ${data['type']}.${data["event"]["event_type"]}: ${data["event"]["data"]["entity_id"]}");
         onStateChangeCallback(data["event"]["data"]);
       } else if (data["event"] != null) {
         Logger.w("Unhandled event type: ${data["event"]["event_type"]}");

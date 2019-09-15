@@ -93,6 +93,7 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
             "media_content_type": _contentType
           }
       );
+      HomeAssistant().sendToPlayerId = entity.entityId;
       eventBus.fire(ShowEntityPageEvent(entity: entity));
     }
   }

@@ -22,22 +22,11 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
   @override
   initState() {
     super.initState();
-    if (HomeAssistant().savedPlayerPosition != null) {
-      _savedPosition = HomeAssistant().savedPlayerPosition;
-      HomeAssistant().savedPlayerPosition = null;
-    }
     _timer = Timer.periodic(Duration(seconds: 1), (_) {
       if (!_seekStarted && !_changedHere) {
         setState(() {});
       }
     });
-  }
-
-  void _switchTo(entity) {
-    eventBus.fire(ServiceCallEvent("media_player", "turn_off", entity.entityId, null));
-    HomeAssistant().savedPlayerPosition = entity.getActualPosition().toInt();
-    HomeAssistant().savedPlayerId = entity.entityId;
-    Navigator.of(context).pushNamed("/play-media", arguments: {"url": entity.attributes["media_content_id"], "type": entity.attributes["media_content_type"]});
   }
 
   @override
@@ -46,9 +35,10 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
     final MediaPlayerEntity entity = entityModel.entityWrapper.entity;
 
     if (entity.canCalculateActualPosition()) {
-      if (HomeAssistant().savedPlayerId != entity.entityId  && HomeAssistant().savedPlayerPosition != null) {
+      if (HomeAssistant().sendToPlayerId == entity.entityId  && HomeAssistant().savedPlayerPosition != null) {
         _savedPosition = HomeAssistant().savedPlayerPosition;
         HomeAssistant().savedPlayerPosition = null;
+        HomeAssistant().sendToPlayerId = null;
       }
       if (entity.state == EntityState.playing && !_seekStarted &&
           !_changedHere) {
@@ -77,14 +67,6 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
             )
         );
       }
-      buttons.add(
-          RaisedButton(
-            child: Text("Switch to..."),
-            color: Colors.blue,
-            textColor: Colors.white,
-            onPressed: () => _switchTo(entity),
-          )
-      );
       return Padding(
         padding: EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, 20, Sizes.rightWidgetPadding, 0),
         child: Column(
