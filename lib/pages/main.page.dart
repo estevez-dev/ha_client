@@ -681,21 +681,22 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     }
     if (playersCount > 0) {
       mediaMenuIcon = Stack(
+        overflow: Overflow.visible,
         children: <Widget>[
           Icon(MaterialDesignIcons.getIconDataFromIconName(
               "mdi:television"), color: Colors.white,),
           Positioned(
-            bottom: 0,
-            right: 0,
+            bottom: -4,
+            right: -4,
             child: Container(
-              height: 14,
-              width: 14,
+              height: 16,
+              width: 16,
               decoration: new BoxDecoration(
-                color: Colors.amber,
+                color: Colors.orange,
                 shape: BoxShape.circle,
               ),
               child: Center(
-                child: Text("$playersCount", style: TextStyle(fontSize: 10)),
+                child: Text("$playersCount", style: TextStyle(fontSize: 12)),
               ),
             ),
           )
@@ -768,7 +769,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
                     icon: mediaMenuIcon,
                     onPressed: () {
                       showMenu(
-                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 70.0, 0.0, 0.0),
+                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 100.0, 50, 0.0),
                           context: context,
                           items: mediaMenuItems
                       ).then((String val) {
@@ -785,7 +786,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
                         "mdi:dots-vertical"), color: Colors.white,),
                     onPressed: () {
                       showMenu(
-                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 70.0, 0.0, 0.0),
+                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 100, 0.0, 0.0),
                           context: context,
                           items: serviceMenuItems
                       ).then((String val) {
