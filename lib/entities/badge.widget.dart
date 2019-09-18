@@ -1,4 +1,4 @@
-part of '../../main.dart';
+part of '../main.dart';
 
 class BadgeWidget extends StatelessWidget {
   @override
@@ -140,6 +140,6 @@ class BadgeWidget extends StatelessWidget {
           ],
         ),
         onTap: () =>
-            eventBus.fire(new ShowEntityPageEvent(entityModel.entityWrapper.entity)));
+            eventBus.fire(new ShowEntityPageEvent(entity: entityModel.entityWrapper.entity)));
   }
 }

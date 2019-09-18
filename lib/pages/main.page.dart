@@ -26,6 +26,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
   String _savedSharedText;
+  String _entityToShow;
 
   @override
   void initState() {
@@ -227,7 +228,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     if (_showEntityPageSubscription == null) {
       _showEntityPageSubscription =
           eventBus.on<ShowEntityPageEvent>().listen((event) {
-            _showEntityPage(event.entity.entityId);
+            _showEntityPage(event.entity?.entityId);
           });
     }
 
@@ -317,7 +318,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     );
   }
 
-  //TODO remove this shit
+  //TODO remove this shit.... maybe
   void _callService(String domain, String service, String entityId, Map additionalParams) {
     _showInfoBottomBar(
         message: "Calling $domain.$service",
@@ -327,12 +328,17 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   }
 
   void _showEntityPage(String entityId) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EntityViewPage(entityId: entityId),
-        )
-    );
+    setState(() {
+      _entityToShow = entityId;
+    });
+    if (_entityToShow!= null && MediaQuery.of(context).size.width < Sizes.tabletMinWidth) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EntityViewPage(entityId: entityId),
+          )
+      );
+    }
   }
 
   void _showPage(String path, bool goBackFirst) {
@@ -637,90 +643,182 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Widget _buildScaffoldBody(bool empty) {
-    List<PopupMenuItem<String>> popupMenuItems = [];
+    List<PopupMenuItem<String>> serviceMenuItems = [];
+    List<PopupMenuItem<String>> mediaMenuItems = [];
 
-    popupMenuItems.add(PopupMenuItem<String>(
+    serviceMenuItems.add(PopupMenuItem<String>(
       child: new Text("Reload"),
       value: "reload",
     ));
-    List<Widget> emptyBody = [
-      Text("."),
-    ];
     if (ConnectionManager().isAuthenticated) {
       _showLoginButton = false;
-      popupMenuItems.add(
+      serviceMenuItems.add(
           PopupMenuItem<String>(
             child: new Text("Logout"),
             value: "logout",
           ));
     }
-    if (_showLoginButton) {
-      emptyBody = [
-        FlatButton(
-          child: Text("Login with Home Assistant", style: TextStyle(fontSize: 16.0, color: Colors.white)),
-          color: Colors.blue,
-          onPressed: () => _fullLoad(),
-        )
-      ];
-    }
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
-          SliverAppBar(
-            floating: true,
-            pinned: true,
-            primary: true,
-            title: Text(HomeAssistant().locationName ?? ""),
-            actions: <Widget>[
-              IconButton(
-                  icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
-                      "mdi:television"), color: Colors.white,),
-                  onPressed: () => Navigator.pushNamed(context, "/play-media", arguments: {"url": ""})
+    Widget mediaMenuIcon;
+    int playersCount = 0;
+    if (!empty && !HomeAssistant().entities.isEmpty) {
+      List<Entity> activePlayers = HomeAssistant().entities.getByDomains(domains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing, EntityState.idle]);
+      playersCount = activePlayers.length;
+      mediaMenuItems.addAll(
+          activePlayers.map((entity) => PopupMenuItem<String>(
+            child: Text(
+                "${entity.displayName}",
+              style: TextStyle(
+                color: EntityColor.stateColor(entity.state)
               ),
-              IconButton(
-                  icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
-                      "mdi:dots-vertical"), color: Colors.white,),
-                  onPressed: () {
-                    showMenu(
-                        position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 70.0, 0.0, 0.0),
-                        context: context,
-                        items: popupMenuItems
-                    ).then((String val) {
-                      if (val == "reload") {
-                        _quickLoad();
-                      } else if (val == "logout") {
-                        HomeAssistant().logout().then((_) {
-                          _quickLoad();
-                        });
-                      }
-                    });
-                  }
-              )
-            ],
-            leading: IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {
-                _scaffoldKey.currentState.openDrawer();
-              },
             ),
-            bottom: empty ? null : TabBar(
-              controller: _viewsTabController,
-              tabs: buildUIViewTabs(),
-              isScrollable: true,
-            ),
-          ),
-
-        ];
-      },
-      body: empty ?
-      Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: emptyBody
-        ),
+            value: "${entity.entityId}",
+          )).toList()
+      );
+    }
+    mediaMenuItems.addAll([
+      PopupMenuItem<String>(
+        child: new Text("Play media..."),
+        value: "play_media",
       )
-          :
-      HomeAssistant().buildViews(context, _viewsTabController),
+    ]);
+    if (playersCount > 0) {
+      mediaMenuIcon = Stack(
+        overflow: Overflow.visible,
+        children: <Widget>[
+          Icon(MaterialDesignIcons.getIconDataFromIconName(
+              "mdi:television"), color: Colors.white,),
+          Positioned(
+            bottom: -4,
+            right: -4,
+            child: Container(
+              height: 16,
+              width: 16,
+              decoration: new BoxDecoration(
+                color: Colors.orange,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text("$playersCount", style: TextStyle(fontSize: 12)),
+              ),
+            ),
+          )
+        ],
+      );
+    } else {
+      mediaMenuIcon = Icon(MaterialDesignIcons.getIconDataFromIconName(
+          "mdi:television"), color: Colors.white,);
+    }
+    Widget mainScrollBody;
+    if (empty) {
+      if (_showLoginButton) {
+        mainScrollBody = Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  FlatButton(
+                    child: Text("Login with Home Assistant", style: TextStyle(fontSize: 16.0, color: Colors.white)),
+                    color: Colors.blue,
+                    onPressed: () => _fullLoad(),
+                  )
+                ]
+            )
+        );
+      } else {
+        mainScrollBody = Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text("...")
+              ]
+          ),
+        );
+      }
+    } else {
+      if (_entityToShow != null && MediaQuery.of(context).size.width >= Sizes.tabletMinWidth) {
+        Entity entity = HomeAssistant().entities.get(_entityToShow);
+        mainScrollBody = Flex(
+          direction: Axis.horizontal,
+          children: <Widget>[
+            Expanded(
+              child: HomeAssistant().buildViews(context, _viewsTabController),
+            ),
+            Container(
+              width: Sizes.mainPageScreenSeparatorWidth,
+              color: Colors.blue,
+            ),
+            ConstrainedBox(
+              constraints: BoxConstraints.tightFor(width: Sizes.entityPageMaxWidth),
+              child: EntityPageLayout(entity: entity, showClose: true,),
+            )
+          ],
+        );
+      } else {
+        _entityToShow = null;
+        mainScrollBody = HomeAssistant().buildViews(context, _viewsTabController);
+      }
+    }
+
+    return NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              floating: true,
+              pinned: true,
+              primary: true,
+              title: Text(HomeAssistant().locationName ?? ""),
+              actions: <Widget>[
+                IconButton(
+                    icon: mediaMenuIcon,
+                    onPressed: () {
+                      showMenu(
+                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 100.0, 50, 0.0),
+                          context: context,
+                          items: mediaMenuItems
+                      ).then((String val) {
+                        if (val == "play_media") {
+                          Navigator.pushNamed(context, "/play-media", arguments: {"url": ""});
+                        } else  {
+                          _showEntityPage(val);
+                        }
+                      });
+                    }
+                ),
+                IconButton(
+                    icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
+                        "mdi:dots-vertical"), color: Colors.white,),
+                    onPressed: () {
+                      showMenu(
+                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 100, 0.0, 0.0),
+                          context: context,
+                          items: serviceMenuItems
+                      ).then((String val) {
+                        if (val == "reload") {
+                          _quickLoad();
+                        } else if (val == "logout") {
+                          HomeAssistant().logout().then((_) {
+                            _quickLoad();
+                          });
+                        }
+                      });
+                    }
+                )
+              ],
+              leading: IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () {
+                  _scaffoldKey.currentState.openDrawer();
+                },
+              ),
+              bottom: empty ? null : TabBar(
+                controller: _viewsTabController,
+                tabs: buildUIViewTabs(),
+                isScrollable: true,
+              ),
+            ),
+
+          ];
+        },
+        body: mainScrollBody
     );
   }
 

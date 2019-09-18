@@ -74,10 +74,37 @@ class MediaPlayerEntity extends Entity {
 
   List<String> get soundModeList => getStringListAttributeValue("sound_mode_list");
   List<String> get sourceList => getStringListAttributeValue("source_list");
+  DateTime get positionLastUpdated => DateTime.tryParse("${attributes["media_position_updated_at"]}")?.toLocal();
+  int get durationSeconds => _getIntAttributeValue("media_duration");
+  int get positionSeconds => _getIntAttributeValue("media_position");
 
   @override
   Widget _buildAdditionalControlsForPage(BuildContext context) {
     return MediaPlayerControls();
+  }
+
+  bool canCalculateActualPosition() {
+    return positionLastUpdated != null && durationSeconds != null && positionSeconds != null;
+  }
+
+  double getActualPosition() {
+    double result = 0;
+    if (canCalculateActualPosition()) {
+      Duration durationD;
+      Duration positionD;
+      durationD = Duration(seconds: durationSeconds);
+      positionD = Duration(
+          seconds: positionSeconds);
+      result = positionD.inSeconds.toDouble();
+      int differenceInSeconds = DateTime
+          .now()
+          .difference(positionLastUpdated)
+          .inSeconds;
+      result = ((result + differenceInSeconds) <= durationD.inSeconds) ? (result + differenceInSeconds) : durationD.inSeconds.toDouble();
+    }
+
+    return result;
+
   }
 
 }

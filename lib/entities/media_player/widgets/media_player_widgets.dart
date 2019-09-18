@@ -26,7 +26,7 @@ class MediaPlayerWidget extends StatelessWidget {
                 bottom: 0.0,
                 left: 0.0,
                 right: 0.0,
-                child: MediaPlayerProgressWidget()
+                child: MediaPlayerProgressBar()
             )
           ],
         ),
@@ -229,7 +229,7 @@ class MediaPlayerPlaybackControls extends StatelessWidget {
           IconButton(
               icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
                   "mdi:dots-vertical")),
-              onPressed: () => eventBus.fire(new ShowEntityPageEvent(entity))
+              onPressed: () => eventBus.fire(new ShowEntityPageEvent(entity: entity))
           )
       );
     } else if (entity.supportStop && entity.state != EntityState.off && entity.state != EntityState.unavailable) {
@@ -305,6 +305,11 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
       )
     ];
     if (entity.state != EntityState.off && entity.state != EntityState.unknown && entity.state != EntityState.unavailable) {
+      if (entity.supportSeek) {
+        children.add(MediaPlayerSeekBar());
+      } else {
+        children.add(MediaPlayerProgressBar());
+      }
       Widget muteWidget;
       Widget volumeStepWidget;
       if (entity.supportVolumeMute  || entity.attributes["is_volume_muted"] != null) {
@@ -398,6 +403,24 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
             )
         );
       }
+      children.add(
+        ButtonBar(
+          children: <Widget>[
+            RaisedButton(
+              child: Text("Duplicate to"),
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () => _duplicateTo(entity),
+            ),
+            RaisedButton(
+              child: Text("Switch to"),
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () => _switchTo(entity),
+            )
+          ],
+        )
+      );
 
     }
     return Column(
@@ -405,62 +428,21 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
     );
   }
 
-}
-
-class MediaPlayerProgressWidget extends StatefulWidget {
-  @override
-  _MediaPlayerProgressWidgetState createState() => _MediaPlayerProgressWidgetState();
-}
-
-class _MediaPlayerProgressWidgetState extends State<MediaPlayerProgressWidget> {
-
-  Timer _timer;
-
-  @override
-  Widget build(BuildContext context) {
-    final EntityModel entityModel = EntityModel.of(context);
-    final MediaPlayerEntity entity = entityModel.entityWrapper.entity;
-    double progress;
-    try {
-      DateTime lastUpdated = DateTime.parse(
-          entity.attributes["media_position_updated_at"]).toLocal();
-      Duration duration = Duration(seconds: entity._getIntAttributeValue("media_duration") ?? 1);
-      Duration position = Duration(seconds: entity._getIntAttributeValue("media_position") ?? 0);
-      int currentPosition = position.inSeconds;
-      if (entity.state == EntityState.playing) {
-        _timer?.cancel();
-        _timer = Timer(Duration(seconds: 1), () {
-          setState(() {
-          });
-        });
-        int differenceInSeconds = DateTime
-            .now()
-            .difference(lastUpdated)
-            .inSeconds;
-        currentPosition = currentPosition + differenceInSeconds;
-      } else {
-        _timer?.cancel();
-      }
-      progress = currentPosition / duration.inSeconds;
-      return LinearProgressIndicator(
-        value: progress,
-        backgroundColor: Colors.black45,
-        valueColor: AlwaysStoppedAnimation<Color>(EntityColor.stateColor(EntityState.on)),
-      );
-    } catch (e) {
-      _timer?.cancel();
-      progress = 0.0;
+  void _duplicateTo(entity) {
+    HomeAssistant().savedPlayerPosition = entity.getActualPosition().toInt();
+    if (MediaQuery.of(context).size.width < Sizes.tabletMinWidth) {
+      Navigator.of(context).popAndPushNamed("/play-media", arguments: {"url": entity.attributes["media_content_id"], "type": entity.attributes["media_content_type"]});
+    } else {
+      Navigator.of(context).pushNamed("/play-media", arguments: {
+        "url": entity.attributes["media_content_id"],
+        "type": entity.attributes["media_content_type"]
+      });
     }
-    return LinearProgressIndicator(
-      value: progress,
-      backgroundColor: Colors.black45,
-    );
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  void _switchTo(entity) {
+    HomeAssistant().sendFromPlayerId = entity.enityId;
+    _duplicateTo(entity);
   }
 
 }

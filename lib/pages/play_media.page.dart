@@ -3,8 +3,9 @@ part of '../main.dart';
 class PlayMediaPage extends StatefulWidget {
 
   final String mediaUrl;
+  final String mediaType;
 
-  PlayMediaPage({Key key, this.mediaUrl}) : super(key: key);
+  PlayMediaPage({Key key, this.mediaUrl, this.mediaType}) : super(key: key);
 
   @override
   _PlayMediaPageState createState() => new _PlayMediaPageState();
@@ -22,13 +23,22 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
   bool _isMediaExtractorExist = false;
   StreamSubscription _stateSubscription;
   StreamSubscription _refreshDataSubscription;
-  final List<String> _contentTypes = ["movie", "video", "music", "image", "image/jpg", "playlist"];
+  List<String> _contentTypes = ["movie", "video", "music", "image", "image/jpg", "playlist"];
 
   @override
   void initState() {
     super.initState();
     _mediaUrl = widget.mediaUrl;
-    _contentType = _contentTypes[0];
+    if (widget.mediaType.isNotEmpty) {
+      if (!_contentTypes.contains(widget.mediaType)) {
+        _contentTypes.insert(0, widget.mediaType);
+        _contentType = _contentTypes[0];
+      } else {
+        _contentType = widget.mediaType;
+      }
+    } else {
+      _contentType = _contentTypes[0];
+    }
     _stateSubscription = eventBus.on<StateChangedEvent>().listen((event) {
       if (event.entityId.contains("media_player")) {
         Logger.d("State change event handled by play media page: ${event.entityId}");
@@ -49,7 +59,7 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
     } else {
       _isMediaExtractorExist = HomeAssistant().services.containsKey("media_extractor");
       //_useMediaExtractor = _isMediaExtractorExist;
-      _players = HomeAssistant().entities.getByDomains(["media_player"]);
+      _players = HomeAssistant().entities.getByDomains(domains: ["media_player"]);
       setState(() {
         if (_players.isNotEmpty) {
           _loaded = true;
@@ -83,7 +93,12 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
             "media_content_type": _contentType
           }
       );
-      eventBus.fire(ShowEntityPageEvent(entity));
+      HomeAssistant().sendToPlayerId = entity.entityId;
+      if (HomeAssistant().sendFromPlayerId != null) {
+        eventBus.fire(ServiceCallEvent(HomeAssistant().sendFromPlayerId.split(".")[0], "turn_off", HomeAssistant().sendFromPlayerId, null));
+        HomeAssistant().sendFromPlayerId = null;
+      }
+      eventBus.fire(ShowEntityPageEvent(entity: entity));
     }
   }
 

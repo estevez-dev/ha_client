@@ -211,31 +211,6 @@ class Entity {
     );
   }
 
-  Widget buildEntityPageWidget(BuildContext context) {
-    return EntityModel(
-      entityWrapper: EntityWrapper(entity: this),
-      child: EntityPageContainer(children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: Sizes.rowPadding, left: Sizes.leftWidgetPadding),
-          child: DefaultEntityContainer(state: _buildStatePartForPage(context)),
-        ),
-        LastUpdatedWidget(),
-        Divider(),
-        _buildAdditionalControlsForPage(context),
-        Divider(),
-        buildHistoryWidget(),
-        EntityAttributesList()
-      ]),
-      handleTap: false,
-    );
-  }
-
-  Widget buildHistoryWidget() {
-    return EntityHistoryWidget(
-      config: historyConfig,
-    );
-  }
-
   Widget buildBadgeWidget(BuildContext context) {
     return EntityModel(
       entityWrapper: EntityWrapper(entity: this),

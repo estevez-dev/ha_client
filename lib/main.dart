@@ -25,6 +25,8 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/circular_slider/single_circular_slider.dart';
 import 'package:share/receive_share_state.dart';
 import 'package:share/share.dart';
+import 'plugins/dynamic_multi_column_layout.dart';
+import 'plugins/spoiler_card.dart';
 
 import 'utils/logger.dart';
 
@@ -51,35 +53,34 @@ part 'entities/fan/fan_entity.class.dart';
 part 'entities/automation/automation_entity.class.dart';
 part 'entities/camera/camera_entity.class.dart';
 part 'entities/alarm_control_panel/alarm_control_panel_entity.class.dart';
-part 'entity_widgets/common/badge.dart';
-part 'entity_widgets/model_widgets.dart';
-part 'entity_widgets/default_entity_container.dart';
-part 'entity_widgets/missed_entity.dart';
+part 'entities/badge.widget.dart';
+part 'entities/entity_model.widget.dart';
+part 'entities/default_entity_container.widget.dart';
+part 'entities/missed_entity.widget.dart';
 part 'cards/widgets/glance_card_entity_container.dart';
 part 'cards/widgets/entity_button_card_body.widget.dart';
-part 'entity_widgets/common/entity_attributes_list.dart';
-part 'entity_widgets/entity_icon.dart';
-part 'entity_widgets/entity_name.dart';
-part 'entity_widgets/common/last_updated.dart';
-part 'entity_widgets/common/mode_swicth.dart';
-part 'entity_widgets/common/mode_selector.dart';
-part 'entity_widgets/common/universal_slider.dart';
-part 'entity_widgets/common/flat_service_button.dart';
-part 'entity_widgets/common/light_color_picker.dart';
-part 'entity_widgets/common/camera_stream_view.dart';
-part 'entity_widgets/entity_colors.class.dart';
-part 'entity_widgets/entity_page_container.dart';
-part 'entity_widgets/history_chart/entity_history.dart';
-part 'entity_widgets/history_chart/simple_state_history_chart.dart';
-part 'entity_widgets/history_chart/numeric_state_history_chart.dart';
-part 'entity_widgets/history_chart/combined_history_chart.dart';
-part 'entity_widgets/history_chart/history_control_widget.dart';
-part 'entity_widgets/history_chart/entity_history_moment.dart';
+part 'pages/widgets/entity_attributes_list.dart';
+part 'entities/entity_icon.widget.dart';
+part 'entities/entity_name.widget.dart';
+part 'pages/widgets/last_updated.dart';
+part 'entities/climate/widgets/mode_swicth.dart';
+part 'entities/climate/widgets/mode_selector.dart';
+part 'entities/universal_slider.widget.dart';
+part 'entities/flat_service_button.widget.dart';
+part 'entities/light/widgets/light_color_picker.dart';
+part 'entities/camera/widgets/camera_stream_view.dart';
+part 'entities/entity_colors.class.dart';
+part 'plugins/history_chart/entity_history.dart';
+part 'plugins/history_chart/simple_state_history_chart.dart';
+part 'plugins/history_chart/numeric_state_history_chart.dart';
+part 'plugins/history_chart/combined_history_chart.dart';
+part 'plugins/history_chart/history_control_widget.dart';
+part 'plugins/history_chart/entity_history_moment.dart';
 part 'entities/switch/widget/switch_state.dart';
 part 'entities/slider/widgets/slider_controls.dart';
 part 'entities/text/widgets/text_input_state.dart';
 part 'entities/select/widgets/select_state.dart';
-part 'entity_widgets/common/simple_state.dart';
+part 'entities/simple_state.widget.dart';
 part 'entities/timer/widgets/timer_state.dart';
 part 'entities/climate/widgets/climate_state.widget.dart';
 part 'entities/cover/widgets/cover_state.dart';
@@ -102,7 +103,7 @@ part 'pages/main.page.dart';
 part 'home_assistant.class.dart';
 part 'pages/log.page.dart';
 part 'pages/entity.page.dart';
-part 'mdi.class.dart';
+part 'utils/mdi.class.dart';
 part 'entity_collection.class.dart';
 part 'managers/auth_manager.class.dart';
 part 'managers/location_manager.class.dart';
@@ -114,7 +115,7 @@ part 'ui.dart';
 part 'view.class.dart';
 part 'cards/card.class.dart';
 part 'panels/panel_class.dart';
-part 'view.dart';
+part 'viewWidget.widget.dart';
 part 'cards/card_widget.dart';
 part 'cards/widgets/card_header.widget.dart';
 part 'panels/config_panel_widget.dart';
@@ -124,13 +125,18 @@ part 'types/event_bus_events.dart';
 part 'cards/widgets/gauge_card_body.dart';
 part 'cards/widgets/light_card_body.dart';
 part 'pages/play_media.page.dart';
-
+part 'entities/entity_page_layout.widget.dart';
+part 'entities/media_player/widgets/media_player_seek_bar.widget.dart';
+part 'entities/media_player/widgets/media_player_progress_bar.widget.dart';
+part 'pages/whats_new.page.dart';
 
 EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
-const appVersion = "0.6.7";
+const appVersionNumber = "0.6.8";
+const appVersionAdd = "alpha1";
+const appVersion = "$appVersionNumber-$appVersionAdd";
 
 void main() async {
   FlutterError.onError = (errorDetails) {
@@ -170,8 +176,12 @@ class HAClientApp extends StatelessWidget {
         "/": (context) => MainPage(title: 'HA Client'),
         "/connection-settings": (context) => ConnectionSettingsPage(title: "Settings"),
         "/putchase": (context) => PurchasePage(title: "Support app development"),
-        "/play-media": (context) => PlayMediaPage(mediaUrl: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['url'] : ''}",),
+        "/play-media": (context) => PlayMediaPage(
+          mediaUrl: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['url'] : ''}",
+          mediaType: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['type'] ?? '' : ''}",
+        ),
         "/log-view": (context) => LogViewPage(title: "Log"),
+        "/whats-new": (context) => WhatsNewPage(),
         "/login": (context) => WebviewScaffold(
           url: "${ConnectionManager().oauthUrl}",
           appBar: new AppBar(

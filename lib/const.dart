@@ -113,4 +113,8 @@ class Sizes {
   static const inputWidth = 160.0;
   static const rowPadding = 10.0;
   static const doubleRowPadding = rowPadding*2;
+  static const minViewColumnWidth = 350;
+  static const entityPageMaxWidth = 400.0;
+  static const mainPageScreenSeparatorWidth = 5.0;
+  static const tabletMinWidth = minViewColumnWidth + entityPageMaxWidth + 5;
 }
