@@ -76,6 +76,10 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
       setState(() {
         _validationMessage = "Media url must be specified";
       });
+    } else if (entity.state == EntityState.unavailable || entity.state == EntityState.unknown) {
+      setState(() {
+        _validationMessage = "${entity.displayName} is not available";
+      });
     } else {
       String serviceDomain;
       if (_useMediaExtractor) {
