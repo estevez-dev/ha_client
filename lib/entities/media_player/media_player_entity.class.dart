@@ -84,7 +84,7 @@ class MediaPlayerEntity extends Entity {
   }
 
   bool canCalculateActualPosition() {
-    return positionLastUpdated != null && durationSeconds != null && positionSeconds != null;
+    return positionLastUpdated != null && durationSeconds != null && positionSeconds != null && durationSeconds >= 0;
   }
 
   double getActualPosition() {
