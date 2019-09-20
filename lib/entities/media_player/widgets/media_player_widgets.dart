@@ -403,25 +403,26 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
             )
         );
       }
-      children.add(
-        ButtonBar(
-          children: <Widget>[
-            RaisedButton(
-              child: Text("Duplicate to"),
-              color: Colors.blue,
-              textColor: Colors.white,
-              onPressed: () => _duplicateTo(entity),
-            ),
-            RaisedButton(
-              child: Text("Switch to"),
-              color: Colors.blue,
-              textColor: Colors.white,
-              onPressed: () => _switchTo(entity),
+      if (entity.state == EntityState.playing || entity.state == EntityState.paused) {
+        children.add(
+            ButtonBar(
+              children: <Widget>[
+                RaisedButton(
+                  child: Text("Duplicate to"),
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  onPressed: () => _duplicateTo(entity),
+                ),
+                RaisedButton(
+                  child: Text("Switch to"),
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  onPressed: () => _switchTo(entity),
+                )
+              ],
             )
-          ],
-        )
-      );
-
+        );
+      }
     }
     return Column(
       children: children,
