@@ -34,7 +34,7 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
     final EntityModel entityModel = EntityModel.of(context);
     final MediaPlayerEntity entity = entityModel.entityWrapper.entity;
 
-    if (entity.canCalculateActualPosition()) {
+    if (entity.canCalculateActualPosition() && entity.state != EntityState.idle) {
       if (HomeAssistant().sendToPlayerId == entity.entityId  && HomeAssistant().savedPlayerPosition != null) {
         _savedPosition = HomeAssistant().savedPlayerPosition;
         HomeAssistant().savedPlayerPosition = null;
