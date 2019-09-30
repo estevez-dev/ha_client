@@ -43,6 +43,8 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
       if (entity.state == EntityState.playing && !_seekStarted &&
           !_changedHere) {
         _currentPosition = entity.getActualPosition();
+      } else if (entity.state == EntityState.paused) {
+        _currentPosition = entity.positionSeconds.toDouble();
       } else if (_changedHere) {
         _changedHere = false;
       }
