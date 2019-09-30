@@ -100,7 +100,9 @@ class ConnectionManager {
     if (forceReconnect || !isConnected) {
       _connect().timeout(connectTimeout, onTimeout: () {
         _disconnect().then((_) {
-          completer?.completeError(HAError("Connection timeout"));
+          if (completer != null && !completer.isCompleted) {
+            completer.completeError(HAError("Connection timeout"));
+          }
         });
       }).then((_) {
         completer?.complete();
