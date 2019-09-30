@@ -27,6 +27,7 @@ class _EntityViewPageState extends State<EntityViewPage> {
       }
     });
     _refreshDataSubscription = eventBus.on<RefreshDataFinishedEvent>().listen((event) {
+      entity = HomeAssistant().entities.get(widget.entityId);
       setState(() {});
     });
     entity = HomeAssistant().entities.get(widget.entityId);
