@@ -217,7 +217,8 @@ class HomeAssistant {
         if (rawCardInfo["cards"] != null) {
           card.childCards = _createLovelaceCards(rawCardInfo["cards"]);
         }
-        rawCardInfo["entities"]?.forEach((rawEntity) {
+        var rawEntities = rawCard["entities"] ?? rawCardInfo["entities"];
+        rawEntities?.forEach((rawEntity) {
           if (rawEntity is String) {
             if (entities.isExist(rawEntity)) {
               card.entities.add(EntityWrapper(entity: entities.get(rawEntity)));
@@ -280,8 +281,9 @@ class HomeAssistant {
             }
           }
         });
-        if (rawCardInfo["entity"] != null) {
-          var en = rawCardInfo["entity"];
+        var rawSingleEntity = rawCard["entity"] ?? rawCardInfo["entity"];
+        if (rawSingleEntity != null) {
+          var en = rawSingleEntity;
           if (en is String) {
             if (entities.isExist(en)) {
               Entity e = entities.get(en);
