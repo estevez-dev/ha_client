@@ -143,10 +143,16 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
 
   Widget _buildColorTempControl(LightEntity entity) {
     if (entity.supportColorTemp) {
+      double val = entity.minMireds;
+      if (_tmpColorTemp != null) {
+        if (_tmpColorTemp >= entity.minMireds && _tmpColorTemp <= entity.maxMireds) {
+          val = _tmpColorTemp.toDouble();
+        }
+      }
       return UniversalSlider(
         title: "Color temperature",
         leading: Text("Cold", style: TextStyle(color: Colors.lightBlue),),
-        value:  _tmpColorTemp == null ? entity.maxMireds : _tmpColorTemp.toDouble(),
+        value:  val,
         onChangeEnd: (value) => _setColorTemp(entity, value),
         max: entity.maxMireds,
         min: entity.minMireds,
@@ -203,10 +209,14 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
 
   Widget _buildEffectControl(LightEntity entity) {
     if ((entity.supportEffect) && (entity.effectList != null)) {
+      List<String> list = List.from(entity.effectList);
+      if (!list.contains(_tmpEffect)) {
+        list.insert(0, _tmpEffect);
+      }
       return ModeSelectorWidget(
           onChange: (effect) => _setEffect(entity, effect),
           caption: "Effect",
-          options: entity.effectList,
+          options: list,
           value: _tmpEffect
       );
     } else {

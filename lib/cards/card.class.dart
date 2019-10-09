@@ -45,7 +45,7 @@ class HACard {
 
   List<EntityWrapper> getEntitiesToShow() {
     return entities.where((entityWrapper) {
-      if (entityWrapper.entity.isHidden) {
+      if (!ConnectionManager().useLovelace && entityWrapper.entity.isHidden) {
         return false;
       }
       if (stateFilter.isNotEmpty) {
