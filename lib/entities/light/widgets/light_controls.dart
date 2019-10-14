@@ -100,7 +100,19 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
   }
 
   Widget _buildBrightnessControl(LightEntity entity) {
-    if ((entity.supportBrightness) && (_tmpBrightness != null)) {
+    if (entity.supportBrightness) {
+      double val;
+      if (_tmpBrightness != null) {
+        if (_tmpBrightness > 255) {
+          val = 255;
+        } else if (_tmpBrightness < 1) {
+          val = 1;
+        } else {
+          val = _tmpBrightness.toDouble();
+        }
+      } else {
+        val = 1;
+      }
       return UniversalSlider(
         onChanged: (value) {
           setState(() {
@@ -111,7 +123,7 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
         min: 1.0,
         max: 255.0,
         onChangeEnd: (value) => _setBrightness(entity, value),
-        value: _tmpBrightness == null ? 1.0 : _tmpBrightness.toDouble(),
+        value: val,
         leading: Icon(Icons.brightness_5),
         title: "Brightness",
       );
@@ -143,11 +155,17 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
 
   Widget _buildColorTempControl(LightEntity entity) {
     if (entity.supportColorTemp) {
-      double val = entity.minMireds;
+      double val;
       if (_tmpColorTemp != null) {
-        if (_tmpColorTemp >= entity.minMireds && _tmpColorTemp <= entity.maxMireds) {
+        if (_tmpColorTemp > entity.maxMireds) {
+          val = entity.maxMireds;
+        } else if (_tmpColorTemp < entity.minMireds) {
+          val = entity.minMireds;
+        } else {
           val = _tmpColorTemp.toDouble();
         }
+      } else {
+        val = entity.minMireds;
       }
       return UniversalSlider(
         title: "Color temperature",
@@ -209,8 +227,10 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
 
   Widget _buildEffectControl(LightEntity entity) {
     if ((entity.supportEffect) && (entity.effectList != null)) {
+      Logger.d("[LIGHT] entity effects: ${entity.effectList}");
+      Logger.d("[LIGHT] current effect: $_tmpEffect");
       List<String> list = List.from(entity.effectList);
-      if (!list.contains(_tmpEffect)) {
+      if (_tmpEffect!= null && !list.contains(_tmpEffect)) {
         list.insert(0, _tmpEffect);
       }
       return ModeSelectorWidget(
