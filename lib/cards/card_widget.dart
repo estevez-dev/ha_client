@@ -134,17 +134,15 @@ class CardWidget extends StatelessWidget {
     List<Widget> body = [];
     body.add(CardHeader(name: card.name));
     entitiesToShow.forEach((EntityWrapper entity) {
-      if (!entity.entity.isHidden) {
-        body.add(
-            Padding(
-              padding: EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
-              child: EntityModel(
-                  entityWrapper: entity,
-                  handleTap: true,
-                  child: entity.entity.buildDefaultWidget(context)
-              ),
-            ));
-      }
+      body.add(
+          Padding(
+            padding: EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
+            child: EntityModel(
+                entityWrapper: entity,
+                handleTap: true,
+                child: entity.entity.buildDefaultWidget(context)
+            ),
+          ));
     });
     return Card(
         child: Padding(
