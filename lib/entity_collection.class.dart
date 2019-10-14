@@ -101,6 +101,9 @@ class EntityCollection {
       case "timer": {
         return TimerEntity(rawEntityData, homeAssistantWebHost);
       }
+      case "vacuum": {
+        return VacuumEntity(rawEntityData, homeAssistantWebHost);
+      }
       default: {
         return Entity(rawEntityData, homeAssistantWebHost);
       }

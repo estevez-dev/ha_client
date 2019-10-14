@@ -93,6 +93,8 @@ part 'entities/light/widgets/light_controls.dart';
 part 'entities/media_player/widgets/media_player_widgets.dart';
 part 'entities/fan/widgets/fan_controls.dart';
 part 'entities/alarm_control_panel/widgets/alarm_control_panel_controls.widget.dart';
+part 'entities/vacuum/vacuum_entity.class.dart';
+part 'entities/vacuum/widgets/vacuum_controls.dart';
 part 'pages/settings.page.dart';
 part 'pages/purchase.page.dart';
 part 'pages/widgets/product_purchase.widget.dart';

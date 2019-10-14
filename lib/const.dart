@@ -29,6 +29,10 @@ class EntityState {
   static const ok = 'ok';
   static const problem = 'problem';
   static const active = 'active';
+  static const cleaning = 'cleaning';
+  static const docked = 'docked';
+  static const returning = 'returning';
+  static const error = 'error';
 }
 
 class EntityUIAction {

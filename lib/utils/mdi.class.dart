@@ -37,7 +37,8 @@ class MaterialDesignIcons {
     "alarm_control_panel.armed_custom_bypass" : "mdi:bell",
     "alarm_control_panel.triggered" : "mdi:bell-ring",
     "alarm_control_panel" : "mdi:bell",
-    "updater": "mdi:cloud-upload"
+    "updater": "mdi:cloud-upload",
+    "vacuum": "mdi:robot-vacuum"
   };
 
   static final Map defaultIconsByDeviceClass = {
