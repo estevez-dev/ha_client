@@ -67,11 +67,29 @@ class VacuumEntity extends Entity {
   String get status => getAttribute("status");
   int get batteryLevel => _getIntAttributeValue("battery_level");
   String get batteryIcon => getAttribute("battery_icon");
+  double get cleanedArea => _getDoubleAttributeValue("cleaned_area");
 
-  /*@override
+  @override
   Widget _buildStatePart(BuildContext context) {
-    return SwitchStateWidget();
-  }*/
+    if (supportTurnOn || supportTurnOff) {
+      return SwitchStateWidget(
+        domainForService: "vacuum",
+      );
+    } else {
+      return SimpleEntityState();
+    }
+  }
+
+  @override
+  Widget _buildStatePartForPage(BuildContext context) {
+    return EntityModel(
+      entityWrapper: EntityWrapper(
+        entity: this
+      ),
+      child: VacuumStateButton(),
+      handleTap: false,
+    );
+  }
 
   @override
   Widget _buildAdditionalControlsForPage(BuildContext context) {

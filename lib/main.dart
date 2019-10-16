@@ -95,6 +95,7 @@ part 'entities/fan/widgets/fan_controls.dart';
 part 'entities/alarm_control_panel/widgets/alarm_control_panel_controls.widget.dart';
 part 'entities/vacuum/vacuum_entity.class.dart';
 part 'entities/vacuum/widgets/vacuum_controls.dart';
+part 'entities/vacuum/widgets/vacuum_state_button.dart';
 part 'pages/settings.page.dart';
 part 'pages/purchase.page.dart';
 part 'pages/widgets/product_purchase.widget.dart';
