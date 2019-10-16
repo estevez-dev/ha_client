@@ -18,6 +18,8 @@ class EntityColor {
     "above_horizon": Colors.amber,
     EntityState.home:  Colors.amber,
     EntityState.open:  Colors.amber,
+    EntityState.cleaning:  Colors.amber,
+    EntityState.returning:  Colors.amber,
     EntityState.off: defaultStateColor,
     EntityState.closed: defaultStateColor,
     "below_horizon": defaultStateColor,

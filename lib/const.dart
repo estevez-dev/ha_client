@@ -33,6 +33,7 @@ class EntityState {
   static const docked = 'docked';
   static const returning = 'returning';
   static const error = 'error';
+
 }
 
 class EntityUIAction {
