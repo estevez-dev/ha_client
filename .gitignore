@@ -10,6 +10,8 @@ build/
 
 .idea/
 
+flutter_export_environment.sh
+
 key.properties
 premium_features_manager.class.dart
 pubspec.lock
