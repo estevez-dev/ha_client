@@ -2,15 +2,25 @@ image:
   file: .gitpod.dockerfile
 
 tasks:
-- command: |
+- before: |
+    export PATH=$FLUTTER_HOME/bin:$ANDROID_HOME/bin:$ANDROID_HOME/platform-tools:$PATH
     mkdir -p /home/gitpod/.android
     touch /home/gitpod/.android/repositories.cfg
-    export PATH=$FLUTTER_HOME/bin:$ANDROID_HOME/bin:$ANDROID_HOME/platform-tools:$PATH
-    /home/gitpod/android-sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-28" "build-tools;28.0.3"
+  init: |
+    echo "Installing Flutter SDK..."
+    cd /workspace && wget -qO flutter_sdk.tar.xz https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.9.1+hotfix.4-stable.tar.xz && tar -xf flutter_sdk.tar.xz && rm -f flutter_sdk.tar.xz
+    echo "Installing Android SDK..."
+    mkdir -p /workspace/android-sdk && cd /workspace/android-sdk && wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip && unzip sdk-tools-linux-4333796.zip && rm -f sdk-tools-linux-4333796.zip
+    /workspace/android-sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-28" "build-tools;28.0.3"
+    echo "Init Flutter..."
+    cd /workspace/ha_client
+    flutter upgrade
     flutter doctor --android-licenses
     flutter pub get
+  command: |
     flutter pub upgrade
     echo "Ready to go!"
+    flutter doctor
 vscode:
   extensions:
     - Dart-Code.dart-code@3.5.0-beta.1:Wg2nTABftVR/Dry4tqeY1w==
