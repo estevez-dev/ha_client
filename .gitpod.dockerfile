@@ -1,6 +1,7 @@
 FROM gitpod/workspace-full:latest
 
 ENV ANDROID_HOME=/workspace/android-sdk \
+    FLUTTER_ROOT=/workspace/flutter \
     FLUTTER_HOME=/workspace/flutter
 
 USER root
