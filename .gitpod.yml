@@ -20,6 +20,7 @@ tasks:
   command: |
     flutter pub upgrade
     echo "Ready to go!"
+    flutter doctor
 vscode:
   extensions:
     - Dart-Code.dart-code@3.5.0-beta.1:Wg2nTABftVR/Dry4tqeY1w==
