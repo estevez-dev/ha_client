@@ -75,8 +75,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     });
 
     _fullLoad();
-
-
   }
 
   @override void receiveShare(Share shared) {
@@ -254,7 +252,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
           _showOAuth();
         } else {
           _preventAppRefresh = false;
-          Navigator.of(context).pop();
         }
       });
     }
@@ -268,7 +265,9 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
 
   void _showOAuth() {
     _preventAppRefresh = true;
-    Navigator.of(context).pushNamed('/login');
+    Launcher.launchURLInCustomTab(
+      url: ConnectionManager().oauthUrl
+    );
   }
 
   _setErrorState(HAError e) {

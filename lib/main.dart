@@ -27,6 +27,7 @@ import 'package:share/receive_share_state.dart';
 import 'package:share/share.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
 import 'plugins/spoiler_card.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'utils/logger.dart';
 
@@ -185,24 +186,6 @@ class HAClientApp extends StatelessWidget {
         ),
         "/log-view": (context) => LogViewPage(title: "Log"),
         "/whats-new": (context) => WhatsNewPage(),
-        "/login": (context) => WebviewScaffold(
-          url: "${ConnectionManager().oauthUrl}",
-          appBar: new AppBar(
-            leading: IconButton(
-                icon: Icon(Icons.help),
-                onPressed: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.homemade.systems/docs#authentication")
-            ),
-            title: new Text("Login with HA"),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("Manual", style: TextStyle(color: Colors.white)),
-                onPressed: () {
-                  eventBus.fire(ShowPageEvent(path: "/connection-settings", goBackFirst: true));
-                },
-              )
-            ],
-          ),
-        ),
         "/webview": (context) => WebviewScaffold(
           url: "${(ModalRoute.of(context).settings.arguments as Map)['url']}",
           appBar: new AppBar(

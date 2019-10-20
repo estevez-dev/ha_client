@@ -9,24 +9,38 @@ class AuthManager {
   }
 
   AuthManager._internal();
+  StreamSubscription deepLinksSubscription;
 
-  Future getTempToken({String oauthUrl}) {
+  Future start({String oauthUrl}) {
     Completer completer = Completer();
-    final flutterWebviewPlugin = new FlutterWebviewPlugin();
-    flutterWebviewPlugin.onUrlChanged.listen((String url) {
-      if (url.startsWith("http://ha-client.homemade.systems/service/auth_callback.html")) {
-        String authCode = url.split("=")[1];
-        Logger.d("We have auth code. Getting temporary access token...");
-        ConnectionManager().sendHTTPPost(
+    deepLinksSubscription?.cancel();
+    deepLinksSubscription = getUriLinksStream().listen((Uri uri) {
+            Logger.d("[LINKED AUTH] We got something private: $uri");
+            Logger.d("[LINKED AUTH] code=${uri.queryParameters["code"]}");
+            _getTempToken(oauthUrl, uri.queryParameters["code"])
+              .then((tempToken) => completer.complete(tempToken))
+              .catchError((_){
+                completer.completeError(HAError("Auth error"));
+              });
+          }, onError: (err) {
+            Logger.e("[LINKED AUTH] Error handling linked auth: $e");
+            completer.completeError(HAError("Auth error"));
+          });
+    Logger.d("Launching OAuth");
+    eventBus.fire(StartAuthEvent(oauthUrl, true));
+    return completer.future;
+  }
+
+  Future _getTempToken(String oauthUrl,String authCode) {
+    Completer completer = Completer();
+    ConnectionManager().sendHTTPPost(
             endPoint: "/auth/token",
             contentType: "application/x-www-form-urlencoded",
             includeAuthHeader: false,
-            data: "grant_type=authorization_code&code=$authCode&client_id=${Uri.encodeComponent('http://ha-client.homemade.systems/')}"
+            data: "grant_type=authorization_code&code=$authCode&client_id=${Uri.encodeComponent('http://ha-client.homemade.systems')}"
         ).then((response) {
           Logger.d("Got temp token");
           String tempToken = json.decode(response)['access_token'];
-          Logger.d("Closing webview...");
-          //flutterWebviewPlugin.close();
           eventBus.fire(StartAuthEvent(oauthUrl, false));
           completer.complete(tempToken);
         }).catchError((e) {
@@ -35,10 +49,6 @@ class AuthManager {
           eventBus.fire(StartAuthEvent(oauthUrl, false));
           completer.completeError(HAError("Error getting temp token"));
         });
-      }
-    });
-    Logger.d("Launching OAuth");
-    eventBus.fire(StartAuthEvent(oauthUrl, true));
     return completer.future;
   }
 
