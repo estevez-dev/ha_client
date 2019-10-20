@@ -27,6 +27,8 @@ import 'package:share/share.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
 import 'plugins/spoiler_card.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:workmanager/workmanager.dart' as workManager;
+import 'package:geolocator/geolocator.dart';
 
 import 'utils/logger.dart';
 

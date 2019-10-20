@@ -9,9 +9,40 @@ class ConfigPanelWidget extends StatefulWidget {
 
 class _ConfigPanelWidgetState extends State<ConfigPanelWidget> {
 
+  int _locationInterval = LocationManager().defaultUpdateIntervalMinutes;
+  bool _locationTrackingEnabled = false;
+
   @override
   void initState() {
     super.initState();
+    _loadSettings();
+  }
+
+  _loadSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() {
+        _locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
+        _locationInterval = prefs.getInt("location-interval") ?? LocationManager().defaultUpdateIntervalMinutes;
+      });
+    });
+  }
+
+  void incLocationInterval() {
+    if (_locationInterval < 720) {
+      setState(() {
+        _locationInterval = _locationInterval + 1;
+      });
+    }
+  }
+
+  void decLocationInterval() {
+    if (_locationInterval > 1) {
+      setState(() {
+        _locationInterval = _locationInterval - 1;
+      });
+    }
   }
 
   restart() {
@@ -92,17 +123,55 @@ class _ConfigPanelWidgetState extends State<ConfigPanelWidget> {
                     )
                   ],
                 ),
+                Divider(),
+                Text("Location tracking", style: TextStyle(fontSize: Sizes.largeFontSize-2)),
+                Container(height: Sizes.rowPadding,),
+                Row(
+                  children: <Widget>[
+                    Text("Enable device location tracking"),
+                    Switch(
+                      value: _locationTrackingEnabled,
+                      onChanged: (value) {
+                        SharedPreferences.getInstance().then((prefs) => prefs.setBool("location-enabled", value));
+                        setState(() {
+                          _locationTrackingEnabled = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Container(height: Sizes.rowPadding,),
+                Text("Location update interval in minutes:"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    //Expanded(child: Container(),),
+                    FlatButton(
+                      padding: EdgeInsets.all(0.0),
+                      child: Text("+", style: TextStyle(fontSize: Sizes.largeFontSize)),
+                      onPressed: () => incLocationInterval(),
+                    ),
+                    Text("$_locationInterval", style: TextStyle(fontSize: Sizes.largeFontSize)),
+                    FlatButton(
+                      padding: EdgeInsets.all(0.0),
+                      child: Text("-", style: TextStyle(fontSize: Sizes.largeFontSize)),
+                      onPressed: () => decLocationInterval(),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
         ),
-        LinkToWebConfig(name: "Home AssistantConfiguration", url: ConnectionManager().httpWebHost+"/config"),
+        LinkToWebConfig(name: "Home Assistant configuration", url: ConnectionManager().httpWebHost+"/config"),
       ],
     );
   }
 
   @override
   void dispose() {
+    LocationManager().setSettings(_locationTrackingEnabled, _locationInterval);
     super.dispose();
   }
 }

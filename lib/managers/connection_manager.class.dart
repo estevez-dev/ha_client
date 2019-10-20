@@ -163,8 +163,6 @@ class ConnectionManager {
     }
   }
 
-
-
   Future _disconnect() {
     Completer completer = Completer();
     if (!isConnected) {

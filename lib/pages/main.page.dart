@@ -109,6 +109,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     _subscribe().then((_) {
       ConnectionManager().init(loadSettings: true, forceReconnect: true).then((__){
         _fetchData();
+        LocationManager();
         StartupUserMessagesManager().checkMessagesToShow();
       }, onError: (e) {
         _setErrorState(e);
