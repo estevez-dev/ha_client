@@ -1,4 +1,5 @@
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/estevez-dev/ha_client)
+[![Codemagic build status](https://api.codemagic.io/apps/5da8bdab9f20ef798f7c2c65/5da8bdab9f20ef798f7c2c64/status_badge.svg)](https://codemagic.io/apps/5da8bdab9f20ef798f7c2c65/5da8bdab9f20ef798f7c2c64/latest_build)
 # HA Client
 ## Native Android client for Home Assistant
 ### With Lovelace UI support
