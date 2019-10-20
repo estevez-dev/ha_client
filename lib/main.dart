@@ -152,10 +152,11 @@ void main() async {
   };
 
   runZoned(() {
-    //AndroidAlarmManager.initialize().then((_) {
+      workManager.Workmanager.initialize(
+        updateDeviceLocationIsolate,
+        isInDebugMode: false
+      );
       runApp(new HAClientApp());
-    //  print("Running MAIN isolate ${Isolate.current.hashCode}");
-    //});
 
   }, onError: (error, stack) {
     Logger.e("$error");
