@@ -15,8 +15,7 @@ class AuthManager {
     Completer completer = Completer();
     deepLinksSubscription?.cancel();
     deepLinksSubscription = getUriLinksStream().listen((Uri uri) {
-            Logger.d("[LINKED AUTH] We got something private: $uri");
-            Logger.d("[LINKED AUTH] code=${uri.queryParameters["code"]}");
+            Logger.d("[LINKED AUTH] We got something private");
             _getTempToken(oauthUrl, uri.queryParameters["code"])
               .then((tempToken) => completer.complete(tempToken))
               .catchError((_){
