@@ -9,6 +9,8 @@ build/
 .flutter-plugins
 
 .idea/
+.vscode/
+.theia/
 .project/
 .settings/
 
