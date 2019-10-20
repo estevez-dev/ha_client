@@ -369,21 +369,8 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
           accountName: Text(HomeAssistant().userName),
           accountEmail: Text(ConnectionManager().displayHostname ?? "Not configured"),
           onDetailsPressed: () {
-            final flutterWebViewPlugin = new FlutterWebviewPlugin();
-            flutterWebViewPlugin.onStateChanged.listen((viewState) async {
-              if (viewState.type == WebViewState.startLoad) {
-                Logger.d("[WebView] Injecting external auth JS");
-                rootBundle.loadString('assets/js/externalAuth.js').then((js){
-                  flutterWebViewPlugin.evalJavascript(js.replaceFirst("[token]", ConnectionManager()._token));
-                });
-              }
-            });
-            Navigator.of(context).pushNamed(
-                "/webview",
-                arguments: {
-                  "url": "${ConnectionManager().httpWebHost}/profile?external_auth=1",
-                  "title": "Profile"
-                }
+            Launcher.launchURLInCustomTab(
+              url: "${ConnectionManager().httpWebHost}/profile?external_auth=1"
             );
           },
           currentAccountPicture: CircleAvatar(
@@ -407,7 +394,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
                     children: <Widget>[
                       Text("${panel.title}"),
                       Container(width: 4.0,),
-                      panel.isWebView ? Text("webview", style: TextStyle(fontSize: 8.0, color: Colors.black45),) : Container(width: 1.0,)
+                      panel.isWebView ? Text("WEB", style: TextStyle(fontSize: 8.0, color: Colors.black45),) : Container(width: 1.0,)
                     ],
                   ),
                   onTap: () {
@@ -888,15 +875,13 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
         drawer: _buildAppDrawer(),
         primary: false,
         bottomNavigationBar: bottomBar,
-        body: _buildScaffoldBody(false),
+        body: _buildScaffoldBody(false)
       );
     }
   }
 
   @override
   void dispose() {
-    final flutterWebviewPlugin = new FlutterWebviewPlugin();
-    flutterWebviewPlugin.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _viewsTabController?.dispose();
     _stateSubscription?.cancel();

@@ -28,7 +28,7 @@ class _ConfigPanelWidgetState extends State<ConfigPanelWidget> {
 
   stop() {
     eventBus.fire(ShowPopupDialogEvent(
-      title: "Are you sure you wanr to STOP Home Assistant?",
+      title: "Are you sure you want to STOP Home Assistant?",
       body: "This will STOP your Home Assistant server. It means that your web interface as well as HA Client will not work untill you'll find a way to start your server using ssh or something.",
       positiveText: "Sure. Make it so",
       negativeText: "What?? No!",
@@ -96,19 +96,7 @@ class _ConfigPanelWidgetState extends State<ConfigPanelWidget> {
             ),
           ),
         ),
-        LinkToWebConfig(name: "Home Assistant Cloud", url: ConnectionManager().httpWebHost+"/config/cloud/account"),
-        Container(height: 8.0,),
-        LinkToWebConfig(name: "Integrations", url: ConnectionManager().httpWebHost+"/config/integrations/dashboard"),
-        LinkToWebConfig(name: "Users", url: ConnectionManager().httpWebHost+"/config/users/picker"),
-        Container(height: 8.0,),
-        LinkToWebConfig(name: "General", url: ConnectionManager().httpWebHost+"/config/core"),
-        LinkToWebConfig(name: "Server Control", url: ConnectionManager().httpWebHost+"/config/server_control"),
-        LinkToWebConfig(name: "Persons", url: ConnectionManager().httpWebHost+"/config/person"),
-        LinkToWebConfig(name: "Entity Registry", url: ConnectionManager().httpWebHost+"/config/entity_registry"),
-        LinkToWebConfig(name: "Area Registry", url: ConnectionManager().httpWebHost+"/config/area_registry"),
-        LinkToWebConfig(name: "Automation", url: ConnectionManager().httpWebHost+"/config/automation"),
-        LinkToWebConfig(name: "Script", url: ConnectionManager().httpWebHost+"/config/script"),
-        LinkToWebConfig(name: "Customization", url: ConnectionManager().httpWebHost+"/config/customize"),
+        LinkToWebConfig(name: "Home AssistantConfiguration", url: ConnectionManager().httpWebHost+"/config"),
       ],
     );
   }

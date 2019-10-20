@@ -17,7 +17,6 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -185,17 +184,7 @@ class HAClientApp extends StatelessWidget {
           mediaType: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['type'] ?? '' : ''}",
         ),
         "/log-view": (context) => LogViewPage(title: "Log"),
-        "/whats-new": (context) => WhatsNewPage(),
-        "/webview": (context) => WebviewScaffold(
-          url: "${(ModalRoute.of(context).settings.arguments as Map)['url']}",
-          appBar: new AppBar(
-            leading: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () => Navigator.of(context).pop()
-            ),
-            title: new Text("${(ModalRoute.of(context).settings.arguments as Map)['title']}"),
-          ),
-        )
+        "/whats-new": (context) => WhatsNewPage()
       },
     );
   }
