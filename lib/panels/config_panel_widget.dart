@@ -133,6 +133,9 @@ class _ConfigPanelWidgetState extends State<ConfigPanelWidget> {
                       value: _locationTrackingEnabled,
                       onChanged: (value) {
                         SharedPreferences.getInstance().then((prefs) => prefs.setBool("location-enabled", value));
+                        if (value) {
+                          LocationManager().updateDeviceLocation();
+                        }
                         setState(() {
                           _locationTrackingEnabled = value;
                         });

@@ -13,8 +13,9 @@ class LocationManager {
     init();
   }
 
-  final int defaultUpdateIntervalMinutes = 15;
-  final String alarmId = "ha_location_background";
+  final int defaultUpdateIntervalMinutes = 20;
+  final String backgroundTaskId = "haclocationtask4352";
+  final String backgroundTaskTag = "haclocation";
   Duration _updateInterval;
   bool _isEnabled;
 
@@ -41,7 +42,6 @@ class LocationManager {
       prefs.setBool("location-enabled", enabled);
       _isEnabled = true;
       _startLocationService();
-      updateDeviceLocation();
     } else if (!enabled && _isEnabled) {
       Logger.d("Disabling location service");
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -54,25 +54,38 @@ class LocationManager {
   void _startLocationService() async {
     Logger.d("Scheduling location update for every ${_updateInterval
         .inMinutes} minutes...");
-    await workManager.Workmanager.registerPeriodicTask(
-      alarmId,
-      "simplePeriodicTask",
-      frequency: _updateInterval,
-      existingWorkPolicy: workManager.ExistingWorkPolicy.replace,
-      constraints: workManager.Constraints(
-        networkType: workManager.NetworkType.connected
-      )
-    );
+    String webhookId = ConnectionManager().webhookId;
+    String httpWebHost = ConnectionManager().httpWebHost;
+    if (webhookId != null && webhookId.isNotEmpty) {
+      await workManager.Workmanager.registerPeriodicTask(
+        backgroundTaskId,
+        "haClientLocationTracking",
+        tag: backgroundTaskTag,
+        inputData: {
+          "webhookId": webhookId,
+          "httpWebHost": httpWebHost
+        },
+        frequency: _updateInterval,
+        existingWorkPolicy: workManager.ExistingWorkPolicy.replace,
+        backoffPolicy: workManager.BackoffPolicy.linear,
+        constraints: workManager.Constraints(
+          requiresBatteryNotLow: false,
+          requiresCharging: false,
+          requiresDeviceIdle: false,
+          requiresStorageNotLow: false,
+          networkType: workManager.NetworkType.connected
+        )
+      );
+    }
   }
 
   void _stopLocationService() async {
     Logger.d("Canceling previous schedule if any...");
-    await workManager.Workmanager.cancelByUniqueName(alarmId);
+    await workManager.Workmanager.cancelByTag(backgroundTaskTag);
   }
 
   void updateDeviceLocation() async {
-    if (_isEnabled) {
-      if (ConnectionManager().webhookId != null &&
+    if (ConnectionManager().webhookId != null &&
           ConnectionManager().webhookId.isNotEmpty) {
         String url = "${ConnectionManager()
             .httpWebHost}/api/webhook/${ConnectionManager().webhookId}";
@@ -100,29 +113,19 @@ class LocationManager {
             body: json.encode(data)
         );
         Logger.d("[Location] ...done.");
-      } else {
-        Logger.d("[Location] No webhook id. Aborting");
-      }
-    } else {
-      Logger.d("[Location] Location tracking is disabled");
     }
   }
 
 }
 
 void updateDeviceLocationIsolate() {
-  workManager.Workmanager.executeTask((backgroundTask, _) {
+  workManager.Workmanager.executeTask((backgroundTask, data) {
     print("[Location isolate] Started: $backgroundTask");
-    //Completer completer = Completer();
 
-    SharedPreferences.getInstance().then((prefs){
-      print("[Location isolate] loading settings");
-      String webhookId = prefs.getString('app-webhook-id');
-      String domain = prefs.getString('hassio-domain');
-      String port = prefs.getString('hassio-port');
-      String httpWebHost =
-          "${prefs.getString('hassio-res-protocol')}://$domain:$port";
-      if (webhookId != null && webhookId.isNotEmpty) {
+    print("[Location isolate] loading settings");
+    String webhookId = data["webhookId"];
+    String httpWebHost = data["httpWebHost"];
+    if (webhookId != null && webhookId.isNotEmpty) {
         Logger.d("[Location isolate] Getting device location...");
         Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.medium).then((location) {
           Logger.d("[Location isolate] Got location: ${location.latitude} ${location.longitude}. Sending home...");
@@ -147,12 +150,12 @@ void updateDeviceLocationIsolate() {
           }).then((_) {
             print("[Location isolate] done!");
           });
+        }).catchError((e) {
+          print("[Location isolate] Error getting location: ${e.toString()}");
         });
-      } else {
+    } else {
         print("[Location isolate] No webhook id. Aborting");
-      }
-    });
-
+    }
     return Future.value(true);
   });
 }
