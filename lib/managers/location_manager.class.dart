@@ -66,13 +66,10 @@ class LocationManager {
           "httpWebHost": httpWebHost
         },
         frequency: _updateInterval,
-        existingWorkPolicy: workManager.ExistingWorkPolicy.replace,
+        existingWorkPolicy: workManager.ExistingWorkPolicy.keep,
         backoffPolicy: workManager.BackoffPolicy.linear,
+        backoffPolicyDelay: _updateInterval,
         constraints: workManager.Constraints(
-          requiresBatteryNotLow: false,
-          requiresCharging: false,
-          requiresDeviceIdle: false,
-          requiresStorageNotLow: false,
           networkType: workManager.NetworkType.connected
         )
       );
@@ -120,19 +117,20 @@ class LocationManager {
 
 void updateDeviceLocationIsolate() {
   workManager.Workmanager.executeTask((backgroundTask, data) {
-    print("[Location isolate] Started: $backgroundTask");
+    print("[Background $backgroundTask] Started");
 
-    print("[Location isolate] loading settings");
     String webhookId = data["webhookId"];
     String httpWebHost = data["httpWebHost"];
     if (webhookId != null && webhookId.isNotEmpty) {
-        Logger.d("[Location isolate] Getting device location...");
+        int battery = DateTime.now().hour;
+        print("[Background $backgroundTask] hour=$battery");
+        String url = "$httpWebHost/api/webhook/$webhookId";
+        Map<String, String> headers = {};
+        headers["Content-Type"] = "application/json";
+        print("[Background $backgroundTask] Getting device location...");
         Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.medium).then((location) {
-          Logger.d("[Location isolate] Got location: ${location.latitude} ${location.longitude}. Sending home...");
-          int battery = DateTime.now().hour;
-          String url = "$httpWebHost/api/webhook/$webhookId";
-          Map<String, String> headers = {};
-          headers["Content-Type"] = "application/json";
+          print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
+          print("[Background $backgroundTask] sending data home...");
           var data = {
             "type": "update_location",
             "data": {
@@ -146,15 +144,56 @@ void updateDeviceLocationIsolate() {
               headers: headers,
               body: json.encode(data)
           ).catchError((e) {
-            print("[Location isolate] Error sending data: ${e.toString()}");
+            print("[Background $backgroundTask] Error sending data: ${e.toString()}");
           }).then((_) {
-            print("[Location isolate] done!");
+            print("[Background $backgroundTask] Success!");
           });
         }).catchError((e) {
-          print("[Location isolate] Error getting location: ${e.toString()}");
+          print("[Background $backgroundTask] Error getting current location: ${e.toString()}. Trying last known...");
+          Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
+            print("[Background $backgroundTask] Got last known location: ${location.latitude} ${location.longitude}");
+            print("[Background $backgroundTask] sending data home...");
+            var data = {
+              "type": "update_location",
+              "data": {
+                "gps": [location.latitude, location.longitude],
+                "gps_accuracy": location.accuracy,
+                "battery": battery
+              }
+            };
+            http.post(
+                url,
+                headers: headers,
+                body: json.encode(data)
+            ).catchError((e) {
+              print("[Background $backgroundTask] Error sending data: ${e.toString()}");
+            }).then((_) {
+              print("[Background $backgroundTask] Success!");
+            });
+          }).catchError((e){
+            print("[Background $backgroundTask] Error getting last known location: ${e.toString()}. Sending fake...");
+            print("[Background $backgroundTask] sending data home...");
+            var data = {
+              "type": "update_location",
+              "data": {
+                "gps": [40.34, 30.34],
+                "gps_accuracy": 300,
+                "battery": battery
+              }
+            };
+            http.post(
+                url,
+                headers: headers,
+                body: json.encode(data)
+            ).catchError((e) {
+              print("[Background $backgroundTask] Error sending data: ${e.toString()}");
+            }).then((_) {
+              print("[Background $backgroundTask] Success!");
+            });
+          });
         });
     } else {
-        print("[Location isolate] No webhook id. Aborting");
+        print("[Background $backgroundTask] No webhook id. Aborting");
     }
     return Future.value(true);
   });
