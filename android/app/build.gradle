@@ -50,11 +50,13 @@ android {
     }
 
     signingConfigs {
-        debug {
-            keyAlias keystoreProperties['debugKeyAlias']
-            keyPassword keystoreProperties['debugKeyPassword']
-            storeFile file(keystoreProperties['debugStoreFile'])
-            storePassword keystoreProperties['debugStorePassword']
+        if (!System.getenv()["CI"]) {
+            debug {
+                keyAlias keystoreProperties['debugKeyAlias']
+                keyPassword keystoreProperties['debugKeyPassword']
+                storeFile file(keystoreProperties['debugStoreFile'])
+                storePassword keystoreProperties['debugStorePassword']
+            }
         }
         release {
             keyAlias keystoreProperties['keyAlias']
