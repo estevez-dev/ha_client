@@ -1,7 +1,7 @@
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/estevez-dev/ha_client)
 # HA Client
 ## Native Android client for Home Assistant
-### With Lovelace UI support
+### With notifications and Lovelace UI support
 
 Visit [homemade.systems](http://ha-client.homemade.systems/) for more info.
 
