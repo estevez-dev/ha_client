@@ -105,6 +105,7 @@ part 'pages/widgets/page_loading_indicator.dart';
 part 'pages/widgets/page_loading_error.dart';
 part 'pages/panel.page.dart';
 part 'pages/main.page.dart';
+part 'pages/integration_settings.page.dart';
 part 'home_assistant.class.dart';
 part 'pages/log.page.dart';
 part 'pages/entity.page.dart';
@@ -140,7 +141,7 @@ final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
 const appVersionNumber = "0.7.0";
-const appVersionAdd = "alpha3";
+const appVersionAdd = "alpha1";
 const appVersion = "$appVersionNumber-$appVersionAdd";
 
 void main() async {
@@ -181,6 +182,7 @@ class HAClientApp extends StatelessWidget {
       routes: {
         "/": (context) => MainPage(title: 'HA Client'),
         "/connection-settings": (context) => ConnectionSettingsPage(title: "Settings"),
+        "/integration-settings": (context) => IntegrationSettingsPage(title: "Integration settings"),
         "/putchase": (context) => PurchasePage(title: "Support app development"),
         "/play-media": (context) => PlayMediaPage(
           mediaUrl: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['url'] : ''}",

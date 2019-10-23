@@ -4,18 +4,20 @@ class MobileAppIntegrationManager {
 
   static final _appRegistrationData = {
     "app_version": "$appVersion",
-    "device_name": "${HomeAssistant().userName}'s ${DeviceInfoManager().model}",
+    "device_name": "",
     "manufacturer": DeviceInfoManager().manufacturer,
     "model": DeviceInfoManager().model,
     "os_version": DeviceInfoManager().osVersion,
     "app_data": {
-      "push_token": "${HomeAssistant().fcmToken}",
+      "push_token": "",
       "push_url": "https://us-central1-ha-client-c73c4.cloudfunctions.net/sendPushNotification"
     }
   };
 
   static Future checkAppRegistration({bool forceRegister: false, bool showOkDialog: false}) {
     Completer completer = Completer();
+    _appRegistrationData["device_name"] = "${HomeAssistant().userName}'s ${DeviceInfoManager().model}";
+    (_appRegistrationData["app_data"] as Map)["push_token"] = "${HomeAssistant().fcmToken}";
     if (ConnectionManager().webhookId == null || forceRegister) {
       Logger.d("Mobile app was not registered yet or need to be reseted. Registering...");
       var registrationData = Map.from(_appRegistrationData);
@@ -35,6 +37,7 @@ class MobileAppIntegrationManager {
         SharedPreferences.getInstance().then((prefs) {
           prefs.setString("app-webhook-id", responseObject["webhook_id"]);
           ConnectionManager().webhookId = responseObject["webhook_id"];
+
           completer.complete();
           eventBus.fire(ShowPopupDialogEvent(
             title: "Mobile app Integration was created",

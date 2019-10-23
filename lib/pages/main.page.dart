@@ -410,11 +410,19 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     menuItems.addAll([
       Divider(),
       ListTile(
-        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:login-variant")),
+        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:server-network")),
         title: Text("Connection settings"),
         onTap: () {
           Navigator.of(context).pop();
           Navigator.of(context).pushNamed('/connection-settings');
+        },
+      ),
+      ListTile(
+        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:cellphone-settings-variant")),
+        title: Text("Integration settings"),
+        onTap: () {
+          Navigator.of(context).pop();
+          Navigator.of(context).pushNamed('/integration-settings');
         },
       )
     ]);
