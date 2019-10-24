@@ -143,26 +143,30 @@ void updateDeviceLocationIsolate() {
           //print("[Background $backgroundTask] Getting device location...");
           Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.medium).then((location) {
             //print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
-            data["data"]["gps"] = [location.latitude, location.longitude];
-            data["data"]["gps_accuracy"] = location.accuracy;
-            //print("[Background $backgroundTask] Sending data home...");
-            http.post(
-                url,
-                headers: headers,
-                body: json.encode(data)
-            );
-          }).catchError((e) {
-            //print("[Background $backgroundTask] Error getting current location: ${e.toString()}. Trying last known...");
-            Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
-              //print("[Background $backgroundTask] Got last known location: ${location.latitude} ${location.longitude}");
+            if (location != null) {
               data["data"]["gps"] = [location.latitude, location.longitude];
               data["data"]["gps_accuracy"] = location.accuracy;
               //print("[Background $backgroundTask] Sending data home...");
               http.post(
-                url,
-                headers: headers,
-                body: json.encode(data)
+                  url,
+                  headers: headers,
+                  body: json.encode(data)
               );
+            }
+          }).catchError((e) {
+            //print("[Background $backgroundTask] Error getting current location: ${e.toString()}. Trying last known...");
+            Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
+              //print("[Background $backgroundTask] Got last known location: ${location.latitude} ${location.longitude}");
+              if (location != null) {
+                data["data"]["gps"] = [location.latitude, location.longitude];
+                data["data"]["gps_accuracy"] = location.accuracy;
+                //print("[Background $backgroundTask] Sending data home...");
+                http.post(
+                  url,
+                  headers: headers,
+                  body: json.encode(data)
+                );
+              }
             });
           });
         });

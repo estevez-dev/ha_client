@@ -89,6 +89,16 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     ));
   }
 
+  _switchLocationTrackingState(bool state) async {
+    if (state) {
+      await LocationManager().updateDeviceLocation();
+    }
+    await LocationManager().setSettings(_locationTrackingEnabled, _locationInterval);
+    setState(() {
+      _wait = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -114,11 +124,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                           _locationTrackingEnabled = value;
                           _wait = true;
                         });
-                        LocationManager().setSettings(_locationTrackingEnabled, _locationInterval).then((_){
-                          setState(() {
-                            _wait = false;
-                          });
-                        });
+                        _switchLocationTrackingState(value);
                       },
                     ),
                   ],
@@ -132,19 +138,19 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                     //Expanded(child: Container(),),
                     FlatButton(
                       padding: EdgeInsets.all(0.0),
-                      child: Text("+", style: TextStyle(fontSize: Sizes.largeFontSize)),
-                      onPressed: () => incLocationInterval(),
+                      child: Text("-", style: TextStyle(fontSize: Sizes.largeFontSize)),
+                      onPressed: () => decLocationInterval(),
                     ),
                     Text("$_locationInterval", style: TextStyle(fontSize: Sizes.largeFontSize)),
                     FlatButton(
                       padding: EdgeInsets.all(0.0),
-                      child: Text("-", style: TextStyle(fontSize: Sizes.largeFontSize)),
-                      onPressed: () => decLocationInterval(),
+                      child: Text("+", style: TextStyle(fontSize: Sizes.largeFontSize)),
+                      onPressed: () => incLocationInterval(),
                     ),
                   ],
                 ),
                 Divider(),
-                Text("Registration", style: TextStyle(fontSize: Sizes.largeFontSize-2)),
+                Text("Integration status", style: TextStyle(fontSize: Sizes.largeFontSize-2)),
                 Container(height: Sizes.rowPadding,),
                 Text("${HomeAssistant().userName}'s ${DeviceInfoManager().model}, ${DeviceInfoManager().osName} ${DeviceInfoManager().osVersion}"),
                 Container(height: 6.0,),
@@ -156,13 +162,13 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                     RaisedButton(
                         color: Colors.blue,
                         onPressed: () => updateRegistration(),
-                        child: Text("Check registration", style: TextStyle(color: Colors.white))
+                        child: Text("Check integration", style: TextStyle(color: Colors.white))
                     ),
                     Container(width: 10.0,),
                     RaisedButton(
                         color: Colors.redAccent,
                         onPressed: () => resetRegistration(),
-                        child: Text("Reset registration", style: TextStyle(color: Colors.white))
+                        child: Text("Reset integration", style: TextStyle(color: Colors.white))
                     )
                   ],
                 ),
