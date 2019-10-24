@@ -30,7 +30,7 @@ class LocationManager {
     }
   }
 
-  void setSettings(bool enabled, int interval) async {
+  setSettings(bool enabled, int interval) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (interval != _updateInterval.inMinutes) {
       prefs.setInt("location-interval", interval);

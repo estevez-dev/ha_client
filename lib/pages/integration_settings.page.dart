@@ -13,6 +13,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
   int _locationInterval = LocationManager().defaultUpdateIntervalMinutes;
   bool _locationTrackingEnabled = false;
+  bool _wait = false;
 
   @override
   void initState() {
@@ -108,13 +109,15 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                     Text("Enable device location tracking"),
                     Switch(
                       value: _locationTrackingEnabled,
-                      onChanged: (value) {
-                        SharedPreferences.getInstance().then((prefs) => prefs.setBool("location-enabled", value));
-                        if (value) {
-                          LocationManager().updateDeviceLocation();
-                        }
+                      onChanged: _wait ? null : (value) {
                         setState(() {
                           _locationTrackingEnabled = value;
+                          _wait = true;
+                        });
+                        LocationManager().setSettings(_locationTrackingEnabled, _locationInterval).then((_){
+                          setState(() {
+                            _wait = false;
+                          });
                         });
                       },
                     ),
