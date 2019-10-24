@@ -17,16 +17,16 @@ class LocationManager {
   final String backgroundTaskId = "haclocationtask4352";
   final String backgroundTaskTag = "haclocation";
   Duration _updateInterval;
-  bool _isEnabled;
+  bool _isRunning;
 
   void init() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.reload();
     _updateInterval = Duration(minutes: prefs.getInt("location-interval") ??
         defaultUpdateIntervalMinutes);
-    _isEnabled = prefs.getBool("location-enabled") ?? false;
-    if (_isEnabled) {
-      _startLocationService();
+    _isRunning = prefs.getBool("location-enabled") ?? false;
+    if (_isRunning) {
+      await _startLocationService();
     }
   }
 
@@ -35,23 +35,28 @@ class LocationManager {
     if (interval != _updateInterval.inMinutes) {
       prefs.setInt("location-interval", interval);
       _updateInterval = Duration(minutes: interval);
+      if (_isRunning) {
+        Logger.d("Stopping location tracking...");
+        _isRunning = false;
+        await _stopLocationService();
+      }
     }
-    if (enabled && !_isEnabled) {
-      Logger.d("Enabling location service");
+    if (enabled && !_isRunning) {
+      Logger.d("Starting location tracking");
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool("location-enabled", enabled);
-      _isEnabled = true;
-      _startLocationService();
-    } else if (!enabled && _isEnabled) {
-      Logger.d("Disabling location service");
+      _isRunning = true;
+      await _startLocationService();
+    } else if (!enabled && _isRunning) {
+      Logger.d("Stopping location tracking...");
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool("location-enabled", enabled);
-      _isEnabled = false;
-      _stopLocationService();
+      _isRunning = false;
+      await _stopLocationService();
     }
   }
 
-  void _startLocationService() async {
+  _startLocationService() async {
     Logger.d("Scheduling location update for every ${_updateInterval
         .inMinutes} minutes...");
     String webhookId = ConnectionManager().webhookId;
@@ -76,12 +81,12 @@ class LocationManager {
     }
   }
 
-  void _stopLocationService() async {
+  _stopLocationService() async {
     Logger.d("Canceling previous schedule if any...");
     await workManager.Workmanager.cancelByTag(backgroundTaskTag);
   }
 
-  void updateDeviceLocation() async {
+  updateDeviceLocation() async {
     if (ConnectionManager().webhookId != null &&
           ConnectionManager().webhookId.isNotEmpty) {
         String url = "${ConnectionManager()
@@ -92,9 +97,7 @@ class LocationManager {
             desiredAccuracy: LocationAccuracy.medium);
         Logger.d("[Location] Got location: ${location.latitude} ${location
             .longitude}. Sending home...");
-        int battery = DateTime
-            .now()
-            .hour;
+        int battery = await Battery().batteryLevel;
         var data = {
           "type": "update_location",
           "data": {
@@ -117,83 +120,52 @@ class LocationManager {
 
 void updateDeviceLocationIsolate() {
   workManager.Workmanager.executeTask((backgroundTask, data) {
-    print("[Background $backgroundTask] Started");
-
+    //print("[Background $backgroundTask] Started");
+    var battery = Battery();
+    int batteryLevel = 100;
     String webhookId = data["webhookId"];
     String httpWebHost = data["httpWebHost"];
     if (webhookId != null && webhookId.isNotEmpty) {
-        int battery = DateTime.now().hour;
-        print("[Background $backgroundTask] hour=$battery");
+        //print("[Background $backgroundTask] hour=$battery");
         String url = "$httpWebHost/api/webhook/$webhookId";
         Map<String, String> headers = {};
         headers["Content-Type"] = "application/json";
-        print("[Background $backgroundTask] Getting device location...");
-        Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.medium).then((location) {
-          print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
-          print("[Background $backgroundTask] sending data home...");
-          var data = {
-            "type": "update_location",
-            "data": {
-              "gps": [location.latitude, location.longitude],
-              "gps_accuracy": location.accuracy,
-              "battery": battery
-            }
-          };
-          http.post(
-              url,
-              headers: headers,
-              body: json.encode(data)
-          ).catchError((e) {
-            print("[Background $backgroundTask] Error sending data: ${e.toString()}");
-          }).then((_) {
-            print("[Background $backgroundTask] Success!");
-          });
-        }).catchError((e) {
-          print("[Background $backgroundTask] Error getting current location: ${e.toString()}. Trying last known...");
-          Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
-            print("[Background $backgroundTask] Got last known location: ${location.latitude} ${location.longitude}");
-            print("[Background $backgroundTask] sending data home...");
-            var data = {
-              "type": "update_location",
-              "data": {
-                "gps": [location.latitude, location.longitude],
-                "gps_accuracy": location.accuracy,
-                "battery": battery
-              }
-            };
+        Map data = {
+          "type": "update_location",
+          "data": {
+            "gps": [],
+            "gps_accuracy": 0,
+            "battery": batteryLevel
+          }
+        };
+        //print("[Background $backgroundTask] Getting battery level...");
+        battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
+          //print("[Background $backgroundTask] Getting device location...");
+          Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.medium).then((location) {
+            //print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
+            data["data"]["gps"] = [location.latitude, location.longitude];
+            data["data"]["gps_accuracy"] = location.accuracy;
+            //print("[Background $backgroundTask] Sending data home...");
             http.post(
                 url,
                 headers: headers,
                 body: json.encode(data)
-            ).catchError((e) {
-              print("[Background $backgroundTask] Error sending data: ${e.toString()}");
-            }).then((_) {
-              print("[Background $backgroundTask] Success!");
-            });
-          }).catchError((e){
-            print("[Background $backgroundTask] Error getting last known location: ${e.toString()}. Sending fake...");
-            print("[Background $backgroundTask] sending data home...");
-            var data = {
-              "type": "update_location",
-              "data": {
-                "gps": [40.34, 30.34],
-                "gps_accuracy": 300,
-                "battery": battery
-              }
-            };
-            http.post(
+            );
+          }).catchError((e) {
+            //print("[Background $backgroundTask] Error getting current location: ${e.toString()}. Trying last known...");
+            Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
+              //print("[Background $backgroundTask] Got last known location: ${location.latitude} ${location.longitude}");
+              data["data"]["gps"] = [location.latitude, location.longitude];
+              data["data"]["gps_accuracy"] = location.accuracy;
+              //print("[Background $backgroundTask] Sending data home...");
+              http.post(
                 url,
                 headers: headers,
                 body: json.encode(data)
-            ).catchError((e) {
-              print("[Background $backgroundTask] Error sending data: ${e.toString()}");
-            }).then((_) {
-              print("[Background $backgroundTask] Success!");
+              );
             });
           });
         });
-    } else {
-        print("[Background $backgroundTask] No webhook id. Aborting");
     }
     return Future.value(true);
   });

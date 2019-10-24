@@ -29,6 +29,7 @@ import 'plugins/spoiler_card.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:workmanager/workmanager.dart' as workManager;
 import 'package:geolocator/geolocator.dart';
+import 'package:battery/battery.dart';
 
 import 'utils/logger.dart';
 
