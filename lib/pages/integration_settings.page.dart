@@ -114,6 +114,18 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
         children: <Widget>[
                 Text("Location tracking", style: TextStyle(fontSize: Sizes.largeFontSize-2)),
                 Container(height: Sizes.rowPadding,),
+                InkWell(
+                  onTap: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.homemade.systems/docs#location-tracking"),
+                  child: Text(
+                    "Please read documentation!",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      decoration: TextDecoration.underline
+                    )
+                  ),
+                ),
+                Container(height: Sizes.rowPadding,),
                 Row(
                   children: <Widget>[
                     Text("Enable device location tracking"),
