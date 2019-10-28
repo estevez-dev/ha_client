@@ -142,6 +142,9 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
         _viewsTabController = TabController(vsync: this, length: currentViewCount);
         _previousViewCount = currentViewCount;
       }
+      if (_entityToShow != null) {
+        _entityToShow = HomeAssistant().entities.get(_entityToShow.entityId);
+      }
     }).catchError((e) {
       if (e is HAError) {
         _setErrorState(e);
