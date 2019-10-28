@@ -42,7 +42,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   }
 
   void decLocationInterval() {
-    if (_locationInterval > 1) {
+    if (_locationInterval > 15) {
       setState(() {
         _locationInterval = _locationInterval - 1;
       });
