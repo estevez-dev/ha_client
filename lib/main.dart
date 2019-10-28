@@ -142,7 +142,7 @@ final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
 const appVersionNumber = "0.7.0";
-const appVersionAdd = "alpha1";
+const appVersionAdd = "";
 const appVersion = "$appVersionNumber-$appVersionAdd";
 
 void main() async {

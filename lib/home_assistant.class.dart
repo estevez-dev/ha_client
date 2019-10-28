@@ -13,6 +13,7 @@ class HomeAssistant {
   Map _instanceConfig = {};
   Map services;
   String _userName;
+  bool childMode;
   HSVColor savedColor;
   int savedPlayerPosition;
   String sendToPlayerId;
@@ -68,7 +69,7 @@ class HomeAssistant {
     ));
     Future.wait(futures).then((_) {
       if (isMobileAppEnabled) {
-        _createUI();
+        if (!childMode) _createUI();
         _fetchCompleter.complete();
         MobileAppIntegrationManager.checkAppRegistration();
       } else {
@@ -113,8 +114,11 @@ class HomeAssistant {
 
   Future _getUserInfo() async {
     _userName = null;
-    await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) => _userName = data["name"]).catchError((e) {
-      Logger.w("Can't get user info: ${e}");
+    await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) {
+        _userName = data["name"];
+        childMode = _userName.startsWith("[child]");
+    }).catchError((e) {
+      Logger.w("Can't get user info: $e");
     });
   }
 
@@ -124,7 +128,7 @@ class HomeAssistant {
       Logger.d("Media extractor: ${data["media_extractor"]}");
       services = data;
     }).catchError((e) {
-      Logger.w("Can't get services: ${e}");
+      Logger.w("Can't get services: $e");
     });
   }
 
@@ -369,7 +373,7 @@ class SendMessageQueue {
   void add(String message) {
     _queue.add(HAMessage(_messageTimeout, message));
   }
-  
+
   List<String> getActualMessages() {
     _queue.removeWhere((item) => item.isExpired());
     List<String> result = [];
@@ -379,22 +383,22 @@ class SendMessageQueue {
     this.clear();
     return result;
   }
-  
+
   void clear() {
     _queue.clear();
   }
-  
+
 }
 
 class HAMessage {
   DateTime _timeStamp;
   int _messageTimeout;
   String message;
-  
+
   HAMessage(this._messageTimeout, this.message) {
     _timeStamp = DateTime.now();
   }
-  
+
   bool isExpired() {
     return DateTime.now().difference(_timeStamp).inSeconds > _messageTimeout;
   }
