@@ -350,7 +350,6 @@ class ConnectionManager {
 
   Future callService(String domain, String service, String entityId, Map additionalServiceData) {
     eventBus.fire(NotifyServiceCallEvent(domain, service, entityId));
-    Logger.d("[callService] $domain.$service $entityId $additionalServiceData");
     Completer completer = Completer();
     Map serviceData = {};
     if (entityId != null) {

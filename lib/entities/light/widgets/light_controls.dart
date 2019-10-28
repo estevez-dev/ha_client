@@ -227,8 +227,6 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
 
   Widget _buildEffectControl(LightEntity entity) {
     if ((entity.supportEffect) && (entity.effectList != null)) {
-      Logger.d("[LIGHT] entity effects: ${entity.effectList}");
-      Logger.d("[LIGHT] current effect: $_tmpEffect");
       List<String> list = List.from(entity.effectList);
       if (_tmpEffect!= null && !list.contains(_tmpEffect)) {
         list.insert(0, _tmpEffect);
