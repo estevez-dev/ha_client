@@ -25,9 +25,12 @@ class _AlarmControlPanelControlsWidgetWidgetState extends State<AlarmControlPane
 
 
   void _callService(AlarmControlPanelEntity entity, String service) {
-    eventBus.fire(new ServiceCallEvent(
-          entity.domain, service, entity.entityId,
-          {"code": "$code"}));
+    ConnectionManager().callService(
+      entity.domain,
+      service,
+      entity.entityId,
+      {"code": "$code"}
+    );
     setState(() {
       code = "";
     });
@@ -58,7 +61,12 @@ class _AlarmControlPanelControlsWidgetWidgetState extends State<AlarmControlPane
             FlatButton(
               child: new Text("Yes"),
               onPressed: () {
-                eventBus.fire(new ServiceCallEvent(entity.domain, "alarm_trigger", entity.entityId, null));
+                ConnectionManager().callService(
+                  entity.domain,
+                  "alarm_trigger",
+                  entity.entityId,
+                  null
+                );
                 Navigator.of(context).pop();
               },
             ),

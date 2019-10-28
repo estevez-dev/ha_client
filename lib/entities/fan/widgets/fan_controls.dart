@@ -24,9 +24,9 @@ class _FanControlsWidgetState extends State<FanControlsWidget> {
     setState(() {
       _tmpOscillate = oscillate;
       _changedHere = true;
-      eventBus.fire(new ServiceCallEvent(
+      ConnectionManager().callService(
           "fan", "oscillate", entity.entityId,
-          {"oscillating": oscillate}));
+          {"oscillating": oscillate});
     });
   }
 
@@ -34,9 +34,9 @@ class _FanControlsWidgetState extends State<FanControlsWidget> {
     setState(() {
       _tmpDirectionForward = forward;
       _changedHere = true;
-      eventBus.fire(new ServiceCallEvent(
+      ConnectionManager().callService(
           "fan", "set_direction", entity.entityId,
-          {"direction": forward ? "forward" : "reverse"}));
+          {"direction": forward ? "forward" : "reverse"});
     });
   }
 
@@ -44,9 +44,9 @@ class _FanControlsWidgetState extends State<FanControlsWidget> {
     setState(() {
       _tmpSpeed = value;
       _changedHere = true;
-      eventBus.fire(new ServiceCallEvent(
+      ConnectionManager().callService(
             "fan", "set_speed", entity.entityId,
-            {"speed": value}));
+            {"speed": value});
     });
   }
 

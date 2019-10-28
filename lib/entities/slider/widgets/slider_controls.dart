@@ -18,8 +18,8 @@ class _SliderControlsWidgetState extends State<SliderControlsWidget> {
       _newValue = newValue;
       _changedHere = true;
     });
-    eventBus.fire(new ServiceCallEvent(domain, "set_value", entityId,
-        {"value": "${newValue.toString()}"}));
+    ConnectionManager().callService(domain, "set_value", entityId,
+        {"value": "${newValue.toString()}"});
   }
 
   @override

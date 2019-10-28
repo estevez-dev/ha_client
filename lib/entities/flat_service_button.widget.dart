@@ -18,7 +18,7 @@ class FlatServiceButton extends StatelessWidget {
   }) : super(key: key);
 
   void _setNewState() {
-    eventBus.fire(new ServiceCallEvent(serviceDomain, serviceName, entityId, null));
+    ConnectionManager().callService(serviceDomain, serviceName, entityId, null);
   }
 
   @override
