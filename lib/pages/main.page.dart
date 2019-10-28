@@ -369,11 +369,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
         UserAccountsDrawerHeader(
           accountName: Text(HomeAssistant().userName),
           accountEmail: Text(ConnectionManager().displayHostname ?? "Not configured"),
-          onDetailsPressed: () {
-            Launcher.launchURLInCustomTab(
-              url: "${ConnectionManager().httpWebHost}/profile?external_auth=1"
-            );
-          },
           currentAccountPicture: CircleAvatar(
             child: Text(
               HomeAssistant().userAvatarText,
