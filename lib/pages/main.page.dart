@@ -368,7 +368,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     menuItems.add(
         UserAccountsDrawerHeader(
           accountName: Text(HomeAssistant().userName),
-          accountEmail: Text(ConnectionManager().displayHostname ?? "Not configured"),
+          accountEmail: Text(HomeAssistant().locationName ?? ""),
           currentAccountPicture: CircleAvatar(
             child: Text(
               HomeAssistant().userAvatarText,
