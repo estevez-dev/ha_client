@@ -50,8 +50,6 @@ class _EntityViewPageState extends State<EntityViewPage> {
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
           Navigator.pop(context);
         }),
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: new Text("${entity.displayName}"),
       ),
       body: body,
