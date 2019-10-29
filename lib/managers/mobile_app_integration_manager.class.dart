@@ -45,7 +45,7 @@ class MobileAppIntegrationManager {
             positiveText: "Restart now",
             negativeText: "Later",
             onPositive: () {
-              ConnectionManager().callService(domain: "homeassistant", service: "restart", entityId: null);
+              ConnectionManager().callService("homeassistant","restart", null, null);
             },
           ));
         });

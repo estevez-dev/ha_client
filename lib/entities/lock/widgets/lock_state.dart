@@ -7,11 +7,11 @@ class LockStateWidget extends StatelessWidget {
   const LockStateWidget({Key key, this.assumedState: false}) : super(key: key);
 
   void _lock(Entity entity) {
-    eventBus.fire(new ServiceCallEvent("lock", "lock", entity.entityId, null));
+    ConnectionManager().callService("lock", "lock", entity.entityId, null);
   }
 
   void _unlock(Entity entity) {
-    eventBus.fire(new ServiceCallEvent("lock", "unlock", entity.entityId, null));
+    ConnectionManager().callService("lock", "unlock", entity.entityId, null);
   }
 
   @override

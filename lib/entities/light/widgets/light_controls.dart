@@ -28,9 +28,9 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
     setState(() {
       _tmpBrightness = value.round();
       _changedHere = true;
-      eventBus.fire(new ServiceCallEvent(
+      ConnectionManager().callService(
           entity.domain, "turn_on", entity.entityId,
-          {"brightness": _tmpBrightness}));
+          {"brightness": _tmpBrightness});
     });
   }
 
@@ -38,9 +38,9 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
     setState(() {
       _tmpWhiteValue = value.round();
       _changedHere = true;
-      eventBus.fire(new ServiceCallEvent(
+      ConnectionManager().callService(
             entity.domain, "turn_on", entity.entityId,
-            {"white_value": _tmpWhiteValue}));
+            {"white_value": _tmpWhiteValue});
 
     });
   }
@@ -49,9 +49,9 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
     setState(() {
       _tmpColorTemp = value.round();
       _changedHere = true;
-      eventBus.fire(new ServiceCallEvent(
+      ConnectionManager().callService(
           entity.domain, "turn_on", entity.entityId,
-          {"color_temp": _tmpColorTemp}));
+          {"color_temp": _tmpColorTemp});
     });
   }
 
@@ -60,9 +60,9 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
       _tmpColor = color;
       _changedHere = true;
       Logger.d( "HS Color: [${color.hue}, ${color.saturation}]");
-      eventBus.fire(new ServiceCallEvent(
+      ConnectionManager().callService(
         entity.domain, "turn_on", entity.entityId,
-          {"hs_color": [color.hue, color.saturation*100]}));
+          {"hs_color": [color.hue, color.saturation*100]});
     });
   }
 
@@ -71,9 +71,9 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
       _tmpEffect = value;
       _changedHere = true;
       if (_tmpEffect != null) {
-        eventBus.fire(new ServiceCallEvent(
+        ConnectionManager().callService(
             entity.domain, "turn_on", entity.entityId,
-            {"effect": "$value"}));
+            {"effect": "$value"});
       }
     });
   }
@@ -227,8 +227,6 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
 
   Widget _buildEffectControl(LightEntity entity) {
     if ((entity.supportEffect) && (entity.effectList != null)) {
-      Logger.d("[LIGHT] entity effects: ${entity.effectList}");
-      Logger.d("[LIGHT] current effect: $_tmpEffect");
       List<String> list = List.from(entity.effectList);
       if (_tmpEffect!= null && !list.contains(_tmpEffect)) {
         list.insert(0, _tmpEffect);

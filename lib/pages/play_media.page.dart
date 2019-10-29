@@ -89,17 +89,22 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
       }
       Navigator.pop(context);
       ConnectionManager().callService(
-          domain: serviceDomain,
-          entityId: entity.entityId,
-          service: "play_media",
-          additionalServiceData: {
+          serviceDomain,
+          entity.entityId,
+          "play_media",
+          {
             "media_content_id": _mediaUrl,
             "media_content_type": _contentType
           }
       );
       HomeAssistant().sendToPlayerId = entity.entityId;
       if (HomeAssistant().sendFromPlayerId != null && HomeAssistant().sendFromPlayerId != HomeAssistant().sendToPlayerId) {
-        eventBus.fire(ServiceCallEvent(HomeAssistant().sendFromPlayerId.split(".")[0], "turn_off", HomeAssistant().sendFromPlayerId, null));
+        ConnectionManager().callService(
+          HomeAssistant().sendFromPlayerId.split(".")[0],
+          "turn_off",
+          HomeAssistant().sendFromPlayerId,
+          null
+        );
         HomeAssistant().sendFromPlayerId = null;
       }
       eventBus.fire(ShowEntityPageEvent(entity: entity));
@@ -241,5 +246,5 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
     _refreshDataSubscription?.cancel();
     super.dispose();
   }
-  
+
 }

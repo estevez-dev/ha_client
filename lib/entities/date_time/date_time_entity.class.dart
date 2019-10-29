@@ -35,8 +35,7 @@ class DateTimeEntity extends Entity {
     return formattedState;
   }
 
-  void setNewState(newValue) {
-    eventBus
-        .fire(new ServiceCallEvent(domain, "set_datetime", entityId, newValue));
+  void setNewState(Map newValue) {
+    ConnectionManager().callService(domain, "set_datetime", entityId, newValue);
   }
 }

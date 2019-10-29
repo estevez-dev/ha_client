@@ -56,12 +56,12 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
               color: Colors.orange,
               focusColor: Colors.white,
               onPressed: () {
-                eventBus.fire(ServiceCallEvent(
+                ConnectionManager().callService(
                     "media_player",
                     "media_seek",
                     "${entity.entityId}",
                     {"seek_position": _savedPosition}
-                ));
+                );
                 setState(() {
                   _savedPosition = 0;
                 });
@@ -103,12 +103,12 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
                 _seekStarted = false;
                 Timer(Duration(milliseconds: 500), () {
                   if (!_seekStarted) {
-                    eventBus.fire(ServiceCallEvent(
+                    ConnectionManager().callService(
                         "media_player",
                         "media_seek",
                         "${entity.entityId}",
                         {"seek_position": val}
-                    ));
+                    );
                     setState(() {
                       _changedHere = true;
                       _currentPosition = val;
