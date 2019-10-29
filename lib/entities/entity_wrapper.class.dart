@@ -32,17 +32,15 @@ class EntityWrapper {
   void handleTap() {
     switch (uiAction.tapAction) {
       case EntityUIAction.toggle: {
-        eventBus.fire(
-            ServiceCallEvent("homeassistant", "toggle", entity.entityId, null));
+        ConnectionManager().callService("homeassistant", "toggle", entity.entityId, null);
         break;
       }
 
       case EntityUIAction.callService: {
         if (uiAction.tapService != null) {
-          eventBus.fire(
-              ServiceCallEvent(uiAction.tapService.split(".")[0],
+          ConnectionManager().callService(uiAction.tapService.split(".")[0],
                   uiAction.tapService.split(".")[1], null,
-                  uiAction.tapServiceData));
+                  uiAction.tapServiceData);
         }
         break;
       }
@@ -76,17 +74,15 @@ class EntityWrapper {
   void handleHold() {
       switch (uiAction.holdAction) {
         case EntityUIAction.toggle: {
-          eventBus.fire(
-              ServiceCallEvent("homeassistant", "toggle", entity.entityId, null));
+          ConnectionManager().callService("homeassistant", "toggle", entity.entityId, null);
           break;
         }
 
         case EntityUIAction.callService: {
           if (uiAction.holdService != null) {
-            eventBus.fire(
-                ServiceCallEvent(uiAction.holdService.split(".")[0],
+            ConnectionManager().callService(uiAction.holdService.split(".")[0],
                     uiAction.holdService.split(".")[1], null,
-                    uiAction.holdServiceData));
+                    uiAction.holdServiceData);
           }
           break;
         }

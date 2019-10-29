@@ -17,7 +17,7 @@ class EntityPageLayout extends StatelessWidget {
             showClose ?
             Container(
               color: Colors.blue[300],
-              height: 36,
+              height: 40,
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -37,7 +37,7 @@ class EntityPageLayout extends StatelessWidget {
                     padding: EdgeInsets.all(0),
                     icon: Icon(Icons.close),
                     color: Colors.white,
-                    iconSize: 30.0,
+                    iconSize: 36.0,
                     onPressed: () {
                       eventBus.fire(ShowEntityPageEvent());
                     },

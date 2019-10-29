@@ -26,8 +26,8 @@ class _TextInputStateWidgetState extends State<TextInputStateWidget> {
 
   void setNewState(newValue, domain, entityId) {
     if (validate(newValue, _minLength, _maxLength)) {
-      eventBus.fire(new ServiceCallEvent(domain, "set_value", entityId,
-          {"value": "$newValue"}));
+      ConnectionManager().callService(domain, "set_value", entityId,
+          {"value": "$newValue"});
     } else {
       setState(() {
         _tmpValue = _entityState;

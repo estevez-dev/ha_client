@@ -77,9 +77,10 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:play")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                domain: "vacuum",
-                entityId: entity.entityId,
-                service: "start"
+                "vacuum",
+                entity.entityId,
+                "start",
+                null
             ),
           )
       );
@@ -90,9 +91,10 @@ class VacuumControls extends StatelessWidget {
           icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:play-pause")),
           iconSize: iconSize,
           onPressed: () => ConnectionManager().callService(
-              domain: "vacuum",
-              entityId: entity.entityId,
-              service: "start_pause"
+              "vacuum",
+              entity.entityId,
+              "start_pause",
+              null
           ),
         )
       );
@@ -102,9 +104,10 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:pause")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                domain: "vacuum",
-                entityId: entity.entityId,
-                service: "pause"
+                "vacuum",
+                entity.entityId,
+                "pause",
+                null
             ),
           )
       );
@@ -115,9 +118,10 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:stop")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                domain: "vacuum",
-                entityId: entity.entityId,
-                service: "stop"
+                "vacuum",
+                entity.entityId,
+                "stop",
+                null
             ),
           )
       );
@@ -128,9 +132,10 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:broom")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                domain: "vacuum",
-                entityId: entity.entityId,
-                service: "clean_spot"
+                "vacuum",
+                entity.entityId,
+                "clean_spot",
+                null
             ),
           )
       );
@@ -141,9 +146,10 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:map-marker")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                domain: "vacuum",
-                entityId: entity.entityId,
-                service: "locate"
+                "vacuum",
+                entity.entityId,
+                "locate",
+                null
             ),
           )
       );
@@ -154,9 +160,10 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:home-map-marker")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                domain: "vacuum",
-                entityId: entity.entityId,
-                service: "return_to_base"
+                "vacuum",
+                entity.entityId,
+                "return_to_base",
+                null
             ),
           )
       );
@@ -194,10 +201,10 @@ class VacuumControls extends StatelessWidget {
             options: entity.fanSpeedList,
             value: entity.fanSpeed,
             onChange: (val) => ConnectionManager().callService(
-                domain: "vacuum",
-                entityId: entity.entityId,
-                service: "set_fan_speed",
-                additionalServiceData: {"fan_speed": val}
+                "vacuum",
+                entity.entityId,
+                "set_fan_speed",
+                {"fan_speed": val}
             )
         ),
       );

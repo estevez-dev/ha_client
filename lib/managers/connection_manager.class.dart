@@ -195,7 +195,7 @@ class ConnectionManager {
       _messageResolver.remove("${data["id"]}");
     } else if (data["type"] == "event") {
       if ((data["event"] != null) && (data["event"]["event_type"] == "state_changed")) {
-        //Logger.d("[Received] <== ${data['type']}.${data["event"]["event_type"]}: ${data["event"]["data"]["entity_id"]}");
+        Logger.d("[Received] <== ${data['type']}.${data["event"]["event_type"]}: ${data["event"]["data"]["entity_id"]}");
         onStateChangeCallback(data["event"]["data"]);
       } else if (data["event"] != null) {
         Logger.w("Unhandled event type: ${data["event"]["event_type"]}");
@@ -348,7 +348,8 @@ class ConnectionManager {
     _currentMessageId += 1;
   }
 
-  Future callService({String domain, String service, String entityId, Map additionalServiceData}) {
+  Future callService(String domain, String service, String entityId, Map additionalServiceData) {
+    eventBus.fire(NotifyServiceCallEvent(domain, service, entityId));
     Completer completer = Completer();
     Map serviceData = {};
     if (entityId != null) {

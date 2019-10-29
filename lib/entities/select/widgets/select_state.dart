@@ -11,8 +11,8 @@ class SelectStateWidget extends StatefulWidget {
 class _SelectStateWidgetState extends State<SelectStateWidget> {
 
   void setNewState(domain, entityId, newValue) {
-    eventBus.fire(new ServiceCallEvent(domain, "select_option", entityId,
-        {"option": "$newValue"}));
+    ConnectionManager().callService(domain, "select_option", entityId,
+        {"option": "$newValue"});
   }
 
   @override

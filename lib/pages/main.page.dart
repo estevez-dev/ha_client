@@ -26,7 +26,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
   String _savedSharedText;
-  String _entityToShow;
+  Entity _entityToShow;
 
   @override
   void initState() {
@@ -142,6 +142,9 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
         _viewsTabController = TabController(vsync: this, length: currentViewCount);
         _previousViewCount = currentViewCount;
       }
+      if (_entityToShow != null) {
+        _entityToShow = HomeAssistant().entities.get(_entityToShow.entityId);
+      }
     }).catchError((e) {
       if (e is HAError) {
         _setErrorState(e);
@@ -218,9 +221,8 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     }
     if (_serviceCallSubscription == null) {
       _serviceCallSubscription =
-          eventBus.on<ServiceCallEvent>().listen((event) {
-            _callService(event.domain, event.service, event.entityId,
-                event.additionalParams);
+          eventBus.on<NotifyServiceCallEvent>().listen((event) {
+            _notifyServiceCalled(event.domain, event.service, event.entityId);
           });
     }
 
@@ -318,27 +320,28 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     );
   }
 
-  //TODO remove this shit.... maybe
-  void _callService(String domain, String service, String entityId, Map additionalParams) {
+  void _notifyServiceCalled(String domain, String service, String entityId) {
     _showInfoBottomBar(
         message: "Calling $domain.$service",
-        duration: Duration(seconds: 3)
+        duration: Duration(seconds: 4)
     );
-    ConnectionManager().callService(domain: domain, service: service, entityId: entityId, additionalServiceData: additionalParams).catchError((e) => _setErrorState(e));
   }
 
   void _showEntityPage(String entityId) {
     setState(() {
-      _entityToShow = entityId;
+      _entityToShow = HomeAssistant().entities.get(entityId);
+      if (_entityToShow != null) {
+        _mainScrollController?.jumpTo(0);
+      }
     });
-    if (_entityToShow!= null && MediaQuery.of(context).size.width < Sizes.tabletMinWidth) {
+    /*if (_entityToShow!= null && MediaQuery.of(context).size.width < Sizes.tabletMinWidth) {
       Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => EntityViewPage(entityId: entityId),
           )
       );
-    }
+    }*/
   }
 
   void _showPage(String path, bool goBackFirst) {
@@ -368,12 +371,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     menuItems.add(
         UserAccountsDrawerHeader(
           accountName: Text(HomeAssistant().userName),
-          accountEmail: Text(ConnectionManager().displayHostname ?? "Not configured"),
-          onDetailsPressed: () {
-            Launcher.launchURLInCustomTab(
-              url: "${ConnectionManager().httpWebHost}/profile?external_auth=1"
-            );
-          },
+          accountEmail: Text(HomeAssistant().locationName ?? ""),
           currentAccountPicture: CircleAvatar(
             child: Text(
               HomeAssistant().userAvatarText,
@@ -636,6 +634,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final ScrollController _mainScrollController = ScrollController();
 
   Widget _buildScaffoldBody(bool empty) {
     List<PopupMenuItem<String>> serviceMenuItems = [];
@@ -730,7 +729,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
       }
     } else {
       if (_entityToShow != null && MediaQuery.of(context).size.width >= Sizes.tabletMinWidth) {
-        Entity entity = HomeAssistant().entities.get(_entityToShow);
         mainScrollBody = Flex(
           direction: Axis.horizontal,
           children: <Widget>[
@@ -743,12 +741,13 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
             ),
             ConstrainedBox(
               constraints: BoxConstraints.tightFor(width: Sizes.entityPageMaxWidth),
-              child: EntityPageLayout(entity: entity, showClose: true,),
+              child: EntityPageLayout(entity: _entityToShow, showClose: true,),
             )
           ],
         );
+      } else if (_entityToShow != null) {
+        mainScrollBody = EntityPageLayout(entity: _entityToShow, showClose: true,);
       } else {
-        _entityToShow = null;
         mainScrollBody = HomeAssistant().buildViews(context, _viewsTabController);
       }
     }
@@ -804,7 +803,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
                   _scaffoldKey.currentState.openDrawer();
                 },
               ),
-              bottom: empty ? null : TabBar(
+              bottom: (empty || _entityToShow != null) ? null : TabBar(
                 controller: _viewsTabController,
                 tabs: buildUIViewTabs(),
                 isScrollable: true,
@@ -813,7 +812,8 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
 
           ];
         },
-        body: mainScrollBody
+        body: mainScrollBody,
+        controller: _mainScrollController,
     );
   }
 
@@ -879,12 +879,24 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
           body: _buildScaffoldBody(true)
       );
     } else {
-      return Scaffold(
-        key: _scaffoldKey,
-        drawer: _buildAppDrawer(),
-        primary: false,
-        bottomNavigationBar: bottomBar,
-        body: _buildScaffoldBody(false)
+      return WillPopScope(
+        child: Scaffold(
+          key: _scaffoldKey,
+          drawer: _buildAppDrawer(),
+          primary: false,
+          bottomNavigationBar: bottomBar,
+          body: _buildScaffoldBody(false)
+        ),
+        onWillPop: () {
+          if (_entityToShow != null) {
+            setState(() {
+              _entityToShow = null;
+            });
+            return Future.value(false);
+          } else {
+            return Future.value(true);
+          }
+        },
       );
     }
   }

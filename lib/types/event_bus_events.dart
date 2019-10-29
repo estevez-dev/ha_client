@@ -33,13 +33,12 @@ class StartAuthEvent {
   StartAuthEvent(this.oauthUrl, this.showButton);
 }
 
-class ServiceCallEvent {
+class NotifyServiceCallEvent {
   String domain;
   String service;
   String entityId;
-  Map<String, dynamic> additionalParams;
 
-  ServiceCallEvent(this.domain, this.service, this.entityId, this.additionalParams);
+  NotifyServiceCallEvent(this.domain, this.service, this.entityId);
 }
 
 class ShowPopupDialogEvent {
