@@ -86,7 +86,11 @@ class RenderCustomLayoutBox extends RenderBox
     int columnsCount;
     List<double> columnXPositions = [];
     List<double> columnYPositions = [];
-    columnsCount = (constraints.maxWidth ~/ this.minColumnWidth);
+    if (constraints.maxWidth < this.minColumnWidth) {
+        columnsCount = 1;
+    } else {
+        columnsCount = (constraints.maxWidth ~/ this.minColumnWidth);
+    }
     if (childCount == 0 || columnsCount == 0) {
       size = constraints.biggest;
       assert(size.isFinite);
