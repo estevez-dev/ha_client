@@ -90,8 +90,8 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
       Navigator.pop(context);
       ConnectionManager().callService(
           serviceDomain,
-          entity.entityId,
           "play_media",
+          entity.entityId,
           {
             "media_content_id": _mediaUrl,
             "media_content_type": _contentType

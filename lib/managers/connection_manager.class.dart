@@ -350,6 +350,7 @@ class ConnectionManager {
 
   Future callService(String domain, String service, String entityId, Map additionalServiceData) {
     eventBus.fire(NotifyServiceCallEvent(domain, service, entityId));
+    Logger.d("Service call: $domain.$service, $entityId, $additionalServiceData");
     Completer completer = Completer();
     Map serviceData = {};
     if (entityId != null) {
@@ -367,7 +368,7 @@ class ConnectionManager {
     else
       sendHTTPPost(
           endPoint: "/api/services/$domain/$service"
-      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError("${e["message"]}")));;
+      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError("${e["message"]}")));
       //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service});
     return completer.future;
   }
@@ -408,10 +409,11 @@ class ConnectionManager {
         headers: headers,
         body: data
     ).then((response) {
-      Logger.d("[Received] <== HTTP ${response.statusCode}");
       if (response.statusCode >= 200 && response.statusCode < 300 ) {
+        Logger.d("[Received] <== HTTP ${response.statusCode}");
         completer.complete(response.body);
       } else {
+        Logger.d("[Received] <== HTTP ${response.statusCode}: ${response.body}");
         completer.completeError({"code": response.statusCode, "message": "${response.body}"});
       }
     }).catchError((e) {
