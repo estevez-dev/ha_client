@@ -889,9 +889,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
         ),
         onWillPop: () {
           if (_entityToShow != null) {
-            setState(() {
-              _entityToShow = null;
-            });
+            eventBus.fire(ShowEntityPageEvent());
             return Future.value(false);
           } else {
             return Future.value(true);

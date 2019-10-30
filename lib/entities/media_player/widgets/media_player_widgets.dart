@@ -431,14 +431,10 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
 
   void _duplicateTo(entity) {
     HomeAssistant().savedPlayerPosition = entity.getActualPosition().toInt();
-    if (MediaQuery.of(context).size.width < Sizes.tabletMinWidth) {
-      Navigator.of(context).popAndPushNamed("/play-media", arguments: {"url": entity.attributes["media_content_id"], "type": entity.attributes["media_content_type"]});
-    } else {
-      Navigator.of(context).pushNamed("/play-media", arguments: {
+    Navigator.of(context).pushNamed("/play-media", arguments: {
         "url": entity.attributes["media_content_id"],
         "type": entity.attributes["media_content_type"]
       });
-    }
   }
 
   void _switchTo(entity) {
