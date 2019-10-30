@@ -87,32 +87,55 @@ class LocationManager {
   }
 
   updateDeviceLocation() async {
-    if (ConnectionManager().webhookId != null &&
-          ConnectionManager().webhookId.isNotEmpty) {
-        String url = "${ConnectionManager()
-            .httpWebHost}/api/webhook/${ConnectionManager().webhookId}";
+    Logger.d("[Test location] Started");
+    var battery = Battery();
+    int batteryLevel = 100;
+    String webhookId = ConnectionManager().webhookId;
+    String httpWebHost = ConnectionManager().httpWebHost;
+    if (webhookId != null && webhookId.isNotEmpty) {
+        String url = "$httpWebHost/api/webhook/$webhookId";
         Map<String, String> headers = {};
-        Logger.d("[Location] Getting device location...");
-        Position location = await Geolocator().getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.medium);
-        Logger.d("[Location] Got location: ${location.latitude} ${location
-            .longitude}. Sending home...");
-        int battery = await Battery().batteryLevel;
-        var data = {
+        headers["Content-Type"] = "application/json";
+        Map data = {
           "type": "update_location",
           "data": {
-            "gps": [location.latitude, location.longitude],
-            "gps_accuracy": location.accuracy,
-            "battery": battery
+            "gps": [],
+            "gps_accuracy": 0,
+            "battery": batteryLevel
           }
         };
-        headers["Content-Type"] = "application/json";
-        await http.post(
-            url,
-            headers: headers,
-            body: json.encode(data)
-        );
-        Logger.d("[Location] ...done.");
+        Logger.d("[Test location] Getting battery level...");
+        battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
+          Logger.d("[Test location] Getting device location...");
+          Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
+            Logger.d("[Test location] Got location: ${location.latitude} ${location.longitude} with accuracy of ${location.accuracy}");
+            if (location != null) {
+              data["data"]["gps"] = [location.latitude, location.longitude];
+              data["data"]["gps_accuracy"] = location.accuracy;
+              Logger.d("[Test location] Sending data home...");
+              http.post(
+                  url,
+                  headers: headers,
+                  body: json.encode(data)
+              );
+            }
+          }).catchError((e) {
+            Logger.d("[Test location] Error getting current location: ${e.toString()}. Trying last known...");
+            Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
+              Logger.d("[Test location] Got last known location: ${location.latitude} ${location.longitude} with accuracy of ${location.accuracy}");
+              if (location != null) {
+                data["data"]["gps"] = [location.latitude, location.longitude];
+                data["data"]["gps_accuracy"] = location.accuracy;
+                Logger.d("[Test location] Sending data home...");
+                http.post(
+                  url,
+                  headers: headers,
+                  body: json.encode(data)
+                );
+              }
+            });
+          });
+        });
     }
   }
 
@@ -141,7 +164,7 @@ void updateDeviceLocationIsolate() {
         //print("[Background $backgroundTask] Getting battery level...");
         battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
           //print("[Background $backgroundTask] Getting device location...");
-          Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.medium).then((location) {
+          Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
             //print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
             if (location != null) {
               data["data"]["gps"] = [location.latitude, location.longitude];
