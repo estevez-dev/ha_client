@@ -88,6 +88,8 @@ class LocationManager {
 
   updateDeviceLocation() async {
     Logger.d("[Test location] Started");
+    Logger.d("[Test location] Forcing Android location manager...");
+    Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     var battery = Battery();
     int batteryLevel = 100;
     String webhookId = ConnectionManager().webhookId;
@@ -107,7 +109,7 @@ class LocationManager {
         Logger.d("[Test location] Getting battery level...");
         battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
           Logger.d("[Test location] Getting device location...");
-          Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
+          geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
             Logger.d("[Test location] Got location: ${location.latitude} ${location.longitude} with accuracy of ${location.accuracy}");
             if (location != null) {
               data["data"]["gps"] = [location.latitude, location.longitude];
@@ -121,7 +123,7 @@ class LocationManager {
             }
           }).catchError((e) {
             Logger.d("[Test location] Error getting current location: ${e.toString()}. Trying last known...");
-            Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
+            geolocator.getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
               Logger.d("[Test location] Got last known location: ${location.latitude} ${location.longitude} with accuracy of ${location.accuracy}");
               if (location != null) {
                 data["data"]["gps"] = [location.latitude, location.longitude];
@@ -144,6 +146,7 @@ class LocationManager {
 void updateDeviceLocationIsolate() {
   workManager.Workmanager.executeTask((backgroundTask, data) {
     //print("[Background $backgroundTask] Started");
+    Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     var battery = Battery();
     int batteryLevel = 100;
     String webhookId = data["webhookId"];
@@ -164,7 +167,7 @@ void updateDeviceLocationIsolate() {
         //print("[Background $backgroundTask] Getting battery level...");
         battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
           //print("[Background $backgroundTask] Getting device location...");
-          Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
+          geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
             //print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
             if (location != null) {
               data["data"]["gps"] = [location.latitude, location.longitude];
@@ -178,7 +181,7 @@ void updateDeviceLocationIsolate() {
             }
           }).catchError((e) {
             //print("[Background $backgroundTask] Error getting current location: ${e.toString()}. Trying last known...");
-            Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
+            geolocator.getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
               //print("[Background $backgroundTask] Got last known location: ${location.latitude} ${location.longitude}");
               if (location != null) {
                 data["data"]["gps"] = [location.latitude, location.longitude];
