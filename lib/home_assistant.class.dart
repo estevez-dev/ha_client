@@ -180,9 +180,17 @@ class HomeAssistant {
 
         if (rawView['badges'] != null && rawView['badges'] is List) {
           rawView['badges'].forEach((entity) {
-            if (entities.isExist(entity)) {
-              Entity e = entities.get(entity);
-              view.badges.add(e);
+            if (entity is String) {
+              if (entities.isExist(entity)) {
+                Entity e = entities.get(entity);
+                view.badges.add(e);
+              }
+            } else {
+              String eId = '${entity['entity']}';
+              if (entities.isExist(eId)) {
+                Entity e = entities.get(eId);
+                view.badges.add(e);
+              }
             }
           });
         }
