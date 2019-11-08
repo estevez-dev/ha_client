@@ -18,7 +18,7 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
     setState(() {
       _tmpPosition = position.roundToDouble();
       _changedHere = true;
-      ConnectionManager().callService(entity.domain, "set_cover_position", entity.entityId,{"position": _tmpPosition.round()});
+      ConnectionManager().callService(domain: entity.domain, service: "set_cover_position", entityId: entity.entityId, data: {"position": _tmpPosition.round()});
     });
   }
 
@@ -26,7 +26,7 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
     setState(() {
       _tmpTiltPosition = position.roundToDouble();
       _changedHere = true;
-      ConnectionManager().callService(entity.domain, "set_cover_tilt_position", entity.entityId,{"tilt_position": _tmpTiltPosition.round()});
+      ConnectionManager().callService(domain: entity.domain, service: "set_cover_tilt_position", entityId: entity.entityId, data: {"tilt_position": _tmpTiltPosition.round()});
     });
   }
 
@@ -136,17 +136,17 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
 class CoverTiltControlsWidget extends StatelessWidget {
   void _open(CoverEntity entity) {
     ConnectionManager().callService(
-        entity.domain, "open_cover_tilt", entity.entityId, null);
+        domain: entity.domain, service: "open_cover_tilt", entityId: entity.entityId);
   }
 
   void _close(CoverEntity entity) {
     ConnectionManager().callService(
-        entity.domain, "close_cover_tilt", entity.entityId, null);
+        domain: entity.domain, service: "close_cover_tilt", entityId: entity.entityId);
   }
 
   void _stop(CoverEntity entity) {
     ConnectionManager().callService(
-        entity.domain, "stop_cover_tilt", entity.entityId, null);
+        domain: entity.domain, service: "stop_cover_tilt", entityId: entity.entityId);
   }
 
   @override

@@ -84,10 +84,10 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       setState(() {
         _changedHere = true;
         ConnectionManager().callService(
-          entity.domain,
-          "set_temperature",
-          entity.entityId,
-          {"temperature": "${_tmpTemperature.toStringAsFixed(1)}"}
+          domain: entity.domain,
+          service: "set_temperature",
+          entityId: entity.entityId,
+          data: {"temperature": "${_tmpTemperature.toStringAsFixed(1)}"}
         );
         _resetStateTimer(entity);
       });
@@ -107,10 +107,10 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       setState(() {
         _changedHere = true;
         ConnectionManager().callService(
-          entity.domain,
-          "set_temperature",
-          entity.entityId,
-          {"target_temp_high": "${_tmpTargetHigh.toStringAsFixed(1)}", "target_temp_low": "${_tmpTargetLow.toStringAsFixed(1)}"}
+          domain: entity.domain,
+          service: "set_temperature",
+          entityId: entity.entityId,
+          data: {"target_temp_high": "${_tmpTargetHigh.toStringAsFixed(1)}", "target_temp_low": "${_tmpTargetLow.toStringAsFixed(1)}"}
         );
         _resetStateTimer(entity);
       });
@@ -121,7 +121,12 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     setState(() {
       _tmpTargetHumidity = value.roundToDouble();
       _changedHere = true;
-      ConnectionManager().callService(entity.domain, "set_humidity", entity.entityId, {"humidity": "$_tmpTargetHumidity"});
+      ConnectionManager().callService(
+          domain: entity.domain,
+          service: "set_humidity",
+          entityId: entity.entityId,
+          data: {"humidity": "$_tmpTargetHumidity"}
+        );
       _resetStateTimer(entity);
     });
   }
@@ -130,7 +135,12 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     setState(() {
       _tmpHVACMode = value;
       _changedHere = true;
-      ConnectionManager().callService(entity.domain, "set_hvac_mode", entity.entityId, {"hvac_mode": "$_tmpHVACMode"});
+      ConnectionManager().callService(
+          domain: entity.domain,
+          service: "set_hvac_mode",
+          entityId: entity.entityId,
+          data: {"hvac_mode": "$_tmpHVACMode"}
+        );
       _resetStateTimer(entity);
     });
   }
@@ -139,7 +149,12 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     setState(() {
       _tmpSwingMode = value;
       _changedHere = true;
-      ConnectionManager().callService(entity.domain, "set_swing_mode", entity.entityId, {"swing_mode": "$_tmpSwingMode"});
+      ConnectionManager().callService(
+          domain: entity.domain,
+          service: "set_swing_mode",
+          entityId: entity.entityId,
+          data: {"swing_mode": "$_tmpSwingMode"}
+        );
       _resetStateTimer(entity);
     });
   }
@@ -148,7 +163,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     setState(() {
       _tmpFanMode = value;
       _changedHere = true;
-      ConnectionManager().callService(entity.domain, "set_fan_mode", entity.entityId, {"fan_mode": "$_tmpFanMode"});
+      ConnectionManager().callService(domain: entity.domain, service: "set_fan_mode", entityId: entity.entityId, data: {"fan_mode": "$_tmpFanMode"});
       _resetStateTimer(entity);
     });
   }
@@ -157,7 +172,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     setState(() {
       _tmpPresetMode = value;
       _changedHere = true;
-      ConnectionManager().callService(entity.domain, "set_preset_mode", entity.entityId, {"preset_mode": "$_tmpPresetMode"});
+      ConnectionManager().callService(domain: entity.domain, service: "set_preset_mode", entityId: entity.entityId, data: {"preset_mode": "$_tmpPresetMode"});
       _resetStateTimer(entity);
     });
   }
@@ -175,7 +190,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     setState(() {
       _tmpAuxHeat = value;
       _changedHere = true;
-      ConnectionManager().callService(entity.domain, "set_aux_heat", entity.entityId, {"aux_heat": "$_tmpAuxHeat"});
+      ConnectionManager().callService(domain: entity.domain, service: "set_aux_heat", entityId: entity.entityId, data: {"aux_heat": "$_tmpAuxHeat"});
       _resetStateTimer(entity);
     });
   }

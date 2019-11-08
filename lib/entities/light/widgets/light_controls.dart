@@ -29,8 +29,11 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
       _tmpBrightness = value.round();
       _changedHere = true;
       ConnectionManager().callService(
-          entity.domain, "turn_on", entity.entityId,
-          {"brightness": _tmpBrightness});
+          domain: entity.domain,
+          service: "turn_on",
+          entityId: entity.entityId,
+          data: {"brightness": _tmpBrightness}
+        );
     });
   }
 
@@ -39,8 +42,11 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
       _tmpWhiteValue = value.round();
       _changedHere = true;
       ConnectionManager().callService(
-            entity.domain, "turn_on", entity.entityId,
-            {"white_value": _tmpWhiteValue});
+            domain: entity.domain,
+            service: "turn_on",
+            entityId: entity.entityId,
+            data: {"white_value": _tmpWhiteValue}
+          );
 
     });
   }
@@ -50,8 +56,11 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
       _tmpColorTemp = value.round();
       _changedHere = true;
       ConnectionManager().callService(
-          entity.domain, "turn_on", entity.entityId,
-          {"color_temp": _tmpColorTemp});
+          domain: entity.domain,
+          service: "turn_on",
+          entityId: entity.entityId,
+          data: {"color_temp": _tmpColorTemp}
+        );
     });
   }
 
@@ -59,10 +68,12 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
     setState(() {
       _tmpColor = color;
       _changedHere = true;
-      Logger.d( "HS Color: [${color.hue}, ${color.saturation}]");
       ConnectionManager().callService(
-        entity.domain, "turn_on", entity.entityId,
-          {"hs_color": [color.hue, color.saturation*100]});
+        domain: entity.domain,
+        service: "turn_on",
+        entityId: entity.entityId,
+        data: {"hs_color": [color.hue, color.saturation*100]}
+      );
     });
   }
 
@@ -72,8 +83,11 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
       _changedHere = true;
       if (_tmpEffect != null) {
         ConnectionManager().callService(
-            entity.domain, "turn_on", entity.entityId,
-            {"effect": "$value"});
+            domain: entity.domain,
+            service: "turn_on",
+            entityId: entity.entityId,
+            data: {"effect": "$value"}
+          );
       }
     });
   }

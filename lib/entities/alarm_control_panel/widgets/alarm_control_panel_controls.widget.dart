@@ -26,10 +26,10 @@ class _AlarmControlPanelControlsWidgetWidgetState extends State<AlarmControlPane
 
   void _callService(AlarmControlPanelEntity entity, String service) {
     ConnectionManager().callService(
-      entity.domain,
-      service,
-      entity.entityId,
-      {"code": "$code"}
+      domain: entity.domain,
+      service: service,
+      entityId: entity.entityId,
+      data: {"code": "$code"}
     );
     setState(() {
       code = "";
@@ -62,10 +62,9 @@ class _AlarmControlPanelControlsWidgetWidgetState extends State<AlarmControlPane
               child: new Text("Yes"),
               onPressed: () {
                 ConnectionManager().callService(
-                  entity.domain,
-                  "alarm_trigger",
-                  entity.entityId,
-                  null
+                  domain: entity.domain,
+                  service: "alarm_trigger",
+                  entityId: entity.entityId
                 );
                 Navigator.of(context).pop();
               },

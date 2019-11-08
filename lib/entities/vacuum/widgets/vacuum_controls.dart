@@ -77,10 +77,9 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:play")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                "vacuum",
-                entity.entityId,
-                "start",
-                null
+                domain: "vacuum",
+                entityId: entity.entityId,
+                service: "start"
             ),
           )
       );
@@ -91,10 +90,9 @@ class VacuumControls extends StatelessWidget {
           icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:play-pause")),
           iconSize: iconSize,
           onPressed: () => ConnectionManager().callService(
-              "vacuum",
-              entity.entityId,
-              "start_pause",
-              null
+              domain: "vacuum",
+              entityId: entity.entityId,
+              service: "start_pause"
           ),
         )
       );
@@ -104,10 +102,9 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:pause")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                "vacuum",
-                entity.entityId,
-                "pause",
-                null
+                domain: "vacuum",
+                entityId: entity.entityId,
+                service: "pause"
             ),
           )
       );
@@ -118,10 +115,9 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:stop")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                "vacuum",
-                entity.entityId,
-                "stop",
-                null
+                domain: "vacuum",
+                entityId: entity.entityId,
+                service: "stop"
             ),
           )
       );
@@ -132,10 +128,9 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:broom")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                "vacuum",
-                entity.entityId,
-                "clean_spot",
-                null
+                domain: "vacuum",
+                entityId: entity.entityId,
+                service: "clean_spot"
             ),
           )
       );
@@ -146,10 +141,9 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:map-marker")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                "vacuum",
-                entity.entityId,
-                "locate",
-                null
+                domain: "vacuum",
+                entityId: entity.entityId,
+                service: "locate"
             ),
           )
       );
@@ -160,10 +154,9 @@ class VacuumControls extends StatelessWidget {
             icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:home-map-marker")),
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
-                "vacuum",
-                entity.entityId,
-                "return_to_base",
-                null
+                domain: "vacuum",
+                entityId: entity.entityId,
+                service: "return_to_base"
             ),
           )
       );
@@ -201,10 +194,10 @@ class VacuumControls extends StatelessWidget {
             options: entity.fanSpeedList,
             value: entity.fanSpeed,
             onChange: (val) => ConnectionManager().callService(
-                "vacuum",
-                entity.entityId,
-                "set_fan_speed",
-                {"fan_speed": val}
+                domain: "vacuum",
+                entityId: entity.entityId,
+                service: "set_fan_speed",
+                data: {"fan_speed": val}
             )
         ),
       );

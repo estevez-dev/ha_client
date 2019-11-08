@@ -3,17 +3,26 @@ part of '../../../main.dart';
 class CoverStateWidget extends StatelessWidget {
   void _open(CoverEntity entity) {
     ConnectionManager().callService(
-        entity.domain, "open_cover", entity.entityId, null);
+        domain: entity.domain,
+        service: "open_cover",
+        entityId: entity.entityId
+      );
   }
 
   void _close(CoverEntity entity) {
     ConnectionManager().callService(
-        entity.domain, "close_cover", entity.entityId, null);
+        domain: entity.domain,
+        service: "close_cover",
+        entityId: entity.entityId
+      );
   }
 
   void _stop(CoverEntity entity) {
     ConnectionManager().callService(
-        entity.domain, "stop_cover", entity.entityId, null);
+        domain: entity.domain,
+        service: "stop_cover",
+        entityId: entity.entityId
+      );
   }
 
   @override

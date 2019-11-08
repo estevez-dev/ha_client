@@ -57,10 +57,10 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
               focusColor: Colors.white,
               onPressed: () {
                 ConnectionManager().callService(
-                    "media_player",
-                    "media_seek",
-                    "${entity.entityId}",
-                    {"seek_position": _savedPosition}
+                    domain: "media_player",
+                    service: "media_seek",
+                    entityId: entity.entityId,
+                    data: {"seek_position": _savedPosition}
                 );
                 setState(() {
                   _savedPosition = 0;
@@ -104,10 +104,10 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
                 Timer(Duration(milliseconds: 500), () {
                   if (!_seekStarted) {
                     ConnectionManager().callService(
-                        "media_player",
-                        "media_seek",
-                        "${entity.entityId}",
-                        {"seek_position": val}
+                        domain: "media_player",
+                        service: "media_seek",
+                        entityId: entity.entityId,
+                        data: {"seek_position": val}
                     );
                     setState(() {
                       _changedHere = true;

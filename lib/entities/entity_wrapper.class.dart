@@ -32,15 +32,17 @@ class EntityWrapper {
   void handleTap() {
     switch (uiAction.tapAction) {
       case EntityUIAction.toggle: {
-        ConnectionManager().callService("homeassistant", "toggle", entity.entityId, null);
+        ConnectionManager().callService(domain: "homeassistant", service: "toggle", entityId: entity.entityId);
         break;
       }
 
       case EntityUIAction.callService: {
         if (uiAction.tapService != null) {
-          ConnectionManager().callService(uiAction.tapService.split(".")[0],
-                  uiAction.tapService.split(".")[1], null,
-                  uiAction.tapServiceData);
+          ConnectionManager().callService(
+            domain: uiAction.tapService.split(".")[0],
+            service: uiAction.tapService.split(".")[1],
+            data: uiAction.tapServiceData
+          );
         }
         break;
       }
@@ -74,15 +76,17 @@ class EntityWrapper {
   void handleHold() {
       switch (uiAction.holdAction) {
         case EntityUIAction.toggle: {
-          ConnectionManager().callService("homeassistant", "toggle", entity.entityId, null);
+          ConnectionManager().callService(domain: "homeassistant", service: "toggle", entityId: entity.entityId);
           break;
         }
 
         case EntityUIAction.callService: {
           if (uiAction.holdService != null) {
-            ConnectionManager().callService(uiAction.holdService.split(".")[0],
-                    uiAction.holdService.split(".")[1], null,
-                    uiAction.holdServiceData);
+            ConnectionManager().callService(
+              domain: uiAction.holdService.split(".")[0],
+              service: uiAction.holdService.split(".")[1],
+              data: uiAction.holdServiceData
+            );
           }
           break;
         }

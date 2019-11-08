@@ -39,7 +39,10 @@ class _SwitchStateWidgetState extends State<SwitchStateWidget> {
       domain = entity.domain;
     }
     ConnectionManager().callService(
-        domain, (newValue as bool) ? "turn_on" : "turn_off", entity.entityId, null);
+        domain: domain,
+        service: (newValue as bool) ? "turn_on" : "turn_off",
+        entityId: entity.entityId
+      );
   }
 
   @override

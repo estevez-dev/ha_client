@@ -36,6 +36,6 @@ class DateTimeEntity extends Entity {
   }
 
   void setNewState(Map newValue) {
-    ConnectionManager().callService(domain, "set_datetime", entityId, newValue);
+    ConnectionManager().callService(domain: domain, service: "set_datetime", entityId: entityId, data: newValue);
   }
 }

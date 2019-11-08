@@ -89,21 +89,20 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
       }
       Navigator.pop(context);
       ConnectionManager().callService(
-          serviceDomain,
-          "play_media",
-          entity.entityId,
-          {
-            "media_content_id": _mediaUrl,
-            "media_content_type": _contentType
-          }
+          domain: serviceDomain,
+          service: "play_media",
+          entityId: entity.entityId,
+          data: {
+              "media_content_id": _mediaUrl,
+              "media_content_type": _contentType
+            }
       );
       HomeAssistant().sendToPlayerId = entity.entityId;
       if (HomeAssistant().sendFromPlayerId != null && HomeAssistant().sendFromPlayerId != HomeAssistant().sendToPlayerId) {
         ConnectionManager().callService(
-          HomeAssistant().sendFromPlayerId.split(".")[0],
-          "turn_off",
-          HomeAssistant().sendFromPlayerId,
-          null
+          domain: HomeAssistant().sendFromPlayerId.split(".")[0],
+          service: "turn_off",
+          entityId: HomeAssistant().sendFromPlayerId
         );
         HomeAssistant().sendFromPlayerId = null;
       }

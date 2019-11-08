@@ -122,13 +122,17 @@ class MediaPlayerPlaybackControls extends StatelessWidget {
       if (entity.state == EntityState.off) {
         Logger.d("${entity.entityId} turn_on");
         ConnectionManager().callService(
-            entity.domain, "turn_on", entity.entityId,
-            null);
+            domain: entity.domain,
+            service: "turn_on",
+            entityId: entity.entityId
+          );
       } else {
         Logger.d("${entity.entityId} turn_off");
         ConnectionManager().callService(
-            entity.domain, "turn_off", entity.entityId,
-            null);
+            domain: entity.domain,
+            service: "turn_off",
+            entityId: entity.entityId
+          );
       }
     }
   }
@@ -136,8 +140,10 @@ class MediaPlayerPlaybackControls extends StatelessWidget {
   void _callAction(MediaPlayerEntity entity, String action) {
     Logger.d("${entity.entityId} $action");
     ConnectionManager().callService(
-        entity.domain, "$action", entity.entityId,
-        null);
+        domain: entity.domain,
+        service: "$action",
+        entityId: entity.entityId
+      );
   }
 
   @override
@@ -264,27 +270,50 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
     setState(() {
       _changedHere = true;
       _newVolumeLevel = value;
-      ConnectionManager().callService("media_player", "volume_set", entityId, {"volume_level": value});
+      ConnectionManager().callService(
+        domain: "media_player",
+        service: "volume_set",
+        entityId: entityId,
+        data: {"volume_level": value}
+      );
     });
   }
 
   void _setVolumeMute(bool isMuted, String entityId) {
-    ConnectionManager().callService("media_player", "volume_mute", entityId, {"is_volume_muted": isMuted});
+    ConnectionManager().callService(
+      domain: "media_player",
+      service: "volume_mute",
+      entityId: entityId,
+      data: {"is_volume_muted": isMuted}
+    );
   }
 
   void _setVolumeUp(String entityId) {
-    ConnectionManager().callService("media_player", "volume_up", entityId, null);
+    ConnectionManager().callService(
+      domain: "media_player",
+      service: "volume_up",
+      entityId: entityId
+    );
   }
 
   void _setVolumeDown(String entityId) {
-    ConnectionManager().callService("media_player", "volume_down", entityId, null);
+    ConnectionManager().callService(
+      domain: "media_player",
+      service: "volume_down",
+      entityId: entityId
+    );
   }
 
   void _setSoundMode(String value, String entityId) {
     setState(() {
       _newSoundMode = value;
       _changedHere = true;
-      ConnectionManager().callService("media_player", "select_sound_mode", entityId, {"sound_mode": "$value"});
+      ConnectionManager().callService(
+        domain: "media_player",
+        service: "select_sound_mode",
+        entityId: entityId,
+        data: {"sound_mode": "$value"}
+      );
     });
   }
 
@@ -292,7 +321,12 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
     setState(() {
       _newSource = source;
       _changedHere = true;
-      ConnectionManager().callService("media_player", "select_source", entityId, {"source": "$source"});
+      ConnectionManager().callService(
+        domain: "media_player",
+        service: "select_source",
+        entityId: entityId,
+        data: {"source": "$source"}
+      );
     });
   }
 

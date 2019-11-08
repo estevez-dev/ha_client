@@ -348,16 +348,16 @@ class ConnectionManager {
     _currentMessageId += 1;
   }
 
-  Future callService(String domain, String service, String entityId, Map additionalServiceData) {
+  Future callService({@required String domain, @required String service, String entityId, Map data}) {
     eventBus.fire(NotifyServiceCallEvent(domain, service, entityId));
-    Logger.d("Service call: $domain.$service, $entityId, $additionalServiceData");
+    Logger.d("Service call: $domain.$service, $entityId, $data");
     Completer completer = Completer();
     Map serviceData = {};
     if (entityId != null) {
       serviceData["entity_id"] = entityId;
     }
-    if (additionalServiceData != null && additionalServiceData.isNotEmpty) {
-      serviceData.addAll(additionalServiceData);
+    if (data != null && data.isNotEmpty) {
+      serviceData.addAll(data);
     }
     if (serviceData.isNotEmpty)
       sendHTTPPost(

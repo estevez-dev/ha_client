@@ -56,7 +56,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
       positiveText: "Sure. Make it so",
       negativeText: "What?? No!",
       onPositive: () {
-        ConnectionManager().callService("homeassistant", "restart", null, null);
+        ConnectionManager().callService(domain: "homeassistant", service: "restart");
       },
     ));
   }
@@ -68,7 +68,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
       positiveText: "Sure. Make it so",
       negativeText: "What?? No!",
       onPositive: () {
-        ConnectionManager().callService("homeassistant","stop", null, null);
+        ConnectionManager().callService(domain: "homeassistant", service: "stop");
       },
     ));
   }
