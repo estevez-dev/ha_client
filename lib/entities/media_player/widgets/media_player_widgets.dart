@@ -118,23 +118,19 @@ class MediaPlayerPlaybackControls extends StatelessWidget {
 
 
   void _setPower(MediaPlayerEntity entity) {
-    if (entity.state != EntityState.unavailable && entity.state != EntityState.unknown) {
       if (entity.state == EntityState.off) {
-        Logger.d("${entity.entityId} turn_on");
         ConnectionManager().callService(
             domain: entity.domain,
             service: "turn_on",
             entityId: entity.entityId
           );
       } else {
-        Logger.d("${entity.entityId} turn_off");
         ConnectionManager().callService(
             domain: entity.domain,
             service: "turn_off",
             entityId: entity.entityId
           );
       }
-    }
   }
 
   void _callAction(MediaPlayerEntity entity, String action) {
