@@ -106,10 +106,20 @@ class HomeAssistant {
     });
   }
 
-  Future _getLovelace() async {
-    await ConnectionManager().sendSocketMessage(type: "lovelace/config").then((data) => _rawLovelaceData = data).catchError((e) {
-      throw HAError("Error getting lovelace config: $e");
+  Future _getLovelace() {
+    Completer completer = Completer();
+    ConnectionManager().sendSocketMessage(type: "lovelace/config").then((data) {
+      _rawLovelaceData = data;
+      completer.complete();
+    }).catchError((e) {
+      if ("$e" == "config_not_found") {
+        ConnectionManager().useLovelace = false;
+        completer.complete();
+      } else {
+        completer.completeError(HAError("Error getting lovelace config: $e"));
+      }
     });
+    return completer.future;
   }
 
   Future _getUserInfo() async {
@@ -125,7 +135,6 @@ class HomeAssistant {
   Future _getServices() async {
     await ConnectionManager().sendSocketMessage(type: "get_services").then((data) {
       Logger.d("Got ${data.length} services");
-      Logger.d("Media extractor: ${data["media_extractor"]}");
       services = data;
     }).catchError((e) {
       Logger.w("Can't get services: $e");

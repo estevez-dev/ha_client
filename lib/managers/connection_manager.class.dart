@@ -189,8 +189,8 @@ class ConnectionManager {
         //Logger.d("[Received] <== Request id ${data['id']} was successful");
         _messageResolver["${data["id"]}"]?.complete(data["result"]);
       } else if (data["id"] != null) {
-        //Logger.e("[Received] <== Error received on request id ${data['id']}: ${data['error']}");
-        _messageResolver["${data["id"]}"]?.completeError("${data['error']["message"]}");
+        Logger.e("[Received] <== Error received on request id ${data['id']}: ${data['error']}");
+        _messageResolver["${data["id"]}"]?.completeError("${data["error"]["code"]}");
       }
       _messageResolver.remove("${data["id"]}");
     } else if (data["type"] == "event") {
