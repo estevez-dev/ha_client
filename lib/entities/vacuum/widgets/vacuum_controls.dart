@@ -78,8 +78,8 @@ class VacuumControls extends StatelessWidget {
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
                 "vacuum",
-                entity.entityId,
                 "start",
+                entity.entityId,
                 null
             ),
           )
@@ -92,8 +92,8 @@ class VacuumControls extends StatelessWidget {
           iconSize: iconSize,
           onPressed: () => ConnectionManager().callService(
               "vacuum",
-              entity.entityId,
               "start_pause",
+              entity.entityId,
               null
           ),
         )
@@ -105,8 +105,8 @@ class VacuumControls extends StatelessWidget {
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
                 "vacuum",
-                entity.entityId,
                 "pause",
+                entity.entityId,
                 null
             ),
           )
@@ -119,8 +119,8 @@ class VacuumControls extends StatelessWidget {
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
                 "vacuum",
-                entity.entityId,
                 "stop",
+                entity.entityId,
                 null
             ),
           )
@@ -133,8 +133,8 @@ class VacuumControls extends StatelessWidget {
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
                 "vacuum",
-                entity.entityId,
                 "clean_spot",
+                entity.entityId,
                 null
             ),
           )
@@ -147,8 +147,8 @@ class VacuumControls extends StatelessWidget {
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
                 "vacuum",
-                entity.entityId,
                 "locate",
+                entity.entityId,
                 null
             ),
           )
@@ -161,8 +161,8 @@ class VacuumControls extends StatelessWidget {
             iconSize: iconSize,
             onPressed: () => ConnectionManager().callService(
                 "vacuum",
-                entity.entityId,
                 "return_to_base",
+                entity.entityId,
                 null
             ),
           )
@@ -202,8 +202,8 @@ class VacuumControls extends StatelessWidget {
             value: entity.fanSpeed,
             onChange: (val) => ConnectionManager().callService(
                 "vacuum",
-                entity.entityId,
                 "set_fan_speed",
+                entity.entityId,
                 {"fan_speed": val}
             )
         ),
