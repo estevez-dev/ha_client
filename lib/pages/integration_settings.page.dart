@@ -29,6 +29,9 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
       setState(() {
         _locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
         _locationInterval = prefs.getInt("location-interval") ?? LocationManager().defaultUpdateIntervalMinutes;
+        if (_locationInterval % 5 != 0) {
+          _locationInterval = 5 * (_locationInterval ~/ 5);
+        }
       });
     });
   }
@@ -36,15 +39,15 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   void incLocationInterval() {
     if (_locationInterval < 720) {
       setState(() {
-        _locationInterval = _locationInterval + 1;
+        _locationInterval = _locationInterval + 5;
       });
     }
   }
 
   void decLocationInterval() {
-    if (_locationInterval > 15) {
+    if (_locationInterval > 5) {
       setState(() {
-        _locationInterval = _locationInterval - 1;
+        _locationInterval = _locationInterval - 5;
       });
     }
   }

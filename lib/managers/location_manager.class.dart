@@ -14,7 +14,7 @@ class LocationManager {
   }
 
   final int defaultUpdateIntervalMinutes = 20;
-  final String backgroundTaskId = "haclocationtask4352";
+  final String backgroundTaskId = "haclocationtask0";
   final String backgroundTaskTag = "haclocation";
   Duration _updateInterval;
   bool _isRunning;
@@ -57,27 +57,48 @@ class LocationManager {
   }
 
   _startLocationService() async {
-    Logger.d("Scheduling location update for every ${_updateInterval
-        .inMinutes} minutes...");
     String webhookId = ConnectionManager().webhookId;
     String httpWebHost = ConnectionManager().httpWebHost;
     if (webhookId != null && webhookId.isNotEmpty) {
-      await workManager.Workmanager.registerPeriodicTask(
-        backgroundTaskId,
-        "haClientLocationTracking",
-        tag: backgroundTaskTag,
-        inputData: {
-          "webhookId": webhookId,
-          "httpWebHost": httpWebHost
-        },
-        frequency: _updateInterval,
-        existingWorkPolicy: workManager.ExistingWorkPolicy.keep,
-        backoffPolicy: workManager.BackoffPolicy.linear,
-        backoffPolicyDelay: _updateInterval,
-        constraints: workManager.Constraints(
-          networkType: workManager.NetworkType.connected
-        )
-      );
+      Duration interval;
+      int delayFactor;
+      int taskCount;
+      Logger.d("Starting location update for every ${_updateInterval
+        .inMinutes} minutes...");
+      if (_updateInterval.inMinutes == 10) {
+        interval = Duration(minutes: 20);
+        taskCount = 2;
+        delayFactor = 10;
+      } else if (_updateInterval.inMinutes == 5) {
+        interval = Duration(minutes: 15);
+        taskCount = 3;
+        delayFactor = 5;
+      } else {
+        interval = _updateInterval;
+        taskCount = 1;
+        delayFactor = 0;
+      }
+      for (int i = 1; i <= taskCount; i++) {
+        int delay = i*delayFactor;
+        Logger.d("Scheduling location update task #$i for every ${interval.inMinutes} minutes in $delay minutes...");
+        await workManager.Workmanager.registerPeriodicTask(
+          "$backgroundTaskId$n",
+          "haClientLocationTracking",
+          tag: backgroundTaskTag,
+          inputData: {
+            "webhookId": webhookId,
+            "httpWebHost": httpWebHost
+          },
+          frequency: interval,
+          initialDelay: Duration(minutes: delay),
+          existingWorkPolicy: workManager.ExistingWorkPolicy.keep,
+          backoffPolicy: workManager.BackoffPolicy.linear,
+          backoffPolicyDelay: interval,
+          constraints: workManager.Constraints(
+            networkType: workManager.NetworkType.connected
+          )
+        );
+      }
     }
   }
 
