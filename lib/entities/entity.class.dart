@@ -153,7 +153,7 @@ class Entity {
     domain = rawData["entity_id"].split(".")[0];
     entityId = rawData["entity_id"];
     deviceClass = attributes["device_class"];
-    state = rawData["state"];
+    state = rawData["state"] is bool ? (rawData["state"] ? EntityState.on : EntityState.off) : rawData["state"];
     displayState = Entity.StateByDeviceClass["$deviceClass.$state"] ?? (state.toLowerCase() == 'unknown' ? '-' : state);
     _lastUpdated = DateTime.tryParse(rawData["last_updated"]);
     entityPicture = _getEntityPictureUrl(webHost);
