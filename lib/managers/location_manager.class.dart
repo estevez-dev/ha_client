@@ -27,6 +27,7 @@ class LocationManager {
     _isRunning = prefs.getBool("location-enabled") ?? false;
     if (_isRunning) {
       await _startLocationService();
+      updateDeviceLocation(false);
     }
   }
 
@@ -107,58 +108,46 @@ class LocationManager {
     await workManager.Workmanager.cancelByTag(backgroundTaskTag);
   }
 
-  updateDeviceLocation() async {
-    Logger.d("[Test location] Started");
-    Logger.d("[Test location] Forcing Android location manager...");
+  updateDeviceLocation(bool force) async {
+    if (!force && !_isRunning) {
+      Logger.d("[Foreground location] Not enabled. Aborting.");
+      return;
+    }
+    Logger.d("[Foreground location] Started");
+    //Logger.d("[Foreground location] Forcing Android location manager...");
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     var battery = Battery();
-    int batteryLevel = 100;
     String webhookId = ConnectionManager().webhookId;
     String httpWebHost = ConnectionManager().httpWebHost;
     if (webhookId != null && webhookId.isNotEmpty) {
-        String url = "$httpWebHost/api/webhook/$webhookId";
-        Map<String, String> headers = {};
-        headers["Content-Type"] = "application/json";
-        Map data = {
-          "type": "update_location",
-          "data": {
-            "gps": [],
-            "gps_accuracy": 0,
-            "battery": batteryLevel
-          }
-        };
-        Logger.d("[Test location] Getting battery level...");
-        battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
-          Logger.d("[Test location] Getting device location...");
-          geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
-            Logger.d("[Test location] Got location: ${location.latitude} ${location.longitude} with accuracy of ${location.accuracy}");
-            if (location != null) {
-              data["data"]["gps"] = [location.latitude, location.longitude];
-              data["data"]["gps_accuracy"] = location.accuracy;
-              Logger.d("[Test location] Sending data home...");
-              http.post(
-                  url,
-                  headers: headers,
-                  body: json.encode(data)
-              );
+        Logger.d("[Foreground location] Getting battery level...");
+        int batteryLevel = await battery.batteryLevel;
+        Logger.d("[Foreground location] Getting device location...");
+        Position position = await geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+            locationPermissionLevel: GeolocationPermission.locationAlways
+          );
+        if (position != null) {
+          Logger.d("[Foreground location] Location: ${position.latitude} ${position.longitude}. Accuracy: ${position.accuracy}. (${position.timestamp})");
+          String url = "$httpWebHost/api/webhook/$webhookId";
+          Map data = {
+            "type": "update_location",
+            "data": {
+              "gps": [position.latitude, position.longitude],
+              "gps_accuracy": position.accuracy,
+              "battery": batteryLevel ?? 100
             }
-          }).catchError((e) {
-            Logger.d("[Test location] Error getting current location: ${e.toString()}. Trying last known...");
-            geolocator.getLastKnownPosition(desiredAccuracy: LocationAccuracy.medium).then((location){
-              Logger.d("[Test location] Got last known location: ${location.latitude} ${location.longitude} with accuracy of ${location.accuracy}");
-              if (location != null) {
-                data["data"]["gps"] = [location.latitude, location.longitude];
-                data["data"]["gps_accuracy"] = location.accuracy;
-                Logger.d("[Test location] Sending data home...");
-                http.post(
-                  url,
-                  headers: headers,
-                  body: json.encode(data)
-                );
-              }
-            });
-          });
-        });
+          };
+          Logger.d("[Foreground location] Sending data home...");
+          var response = await http.post(
+            url,
+            headers: {"Content-Type": "application/json"},
+            body: json.encode(data)
+          );
+          Logger.d("[Foreground location] Got HTTP ${response.statusCode}");
+        } else {
+          Logger.d("[Foreground location] No location. Aborting.");
+        }
     }
   }
 

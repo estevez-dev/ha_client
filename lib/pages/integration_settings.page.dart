@@ -94,7 +94,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
   _switchLocationTrackingState(bool state) async {
     if (state) {
-      await LocationManager().updateDeviceLocation();
+      await LocationManager().updateDeviceLocation(true);
     }
     await LocationManager().setSettings(_locationTrackingEnabled, _locationInterval);
     setState(() {
