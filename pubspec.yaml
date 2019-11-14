@@ -1,7 +1,7 @@
 name: hass_client
 description: Home Assistant Android Client
 
-version: 0.7.2+720
+version: 0.7.3+730
 
 
 environment:
