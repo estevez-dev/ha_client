@@ -27,7 +27,6 @@ class LocationManager {
     _isRunning = prefs.getBool("location-enabled") ?? false;
     if (_isRunning) {
       await _startLocationService();
-      updateDeviceLocation(false);
     }
   }
 
@@ -108,11 +107,7 @@ class LocationManager {
     await workManager.Workmanager.cancelByTag(backgroundTaskTag);
   }
 
-  updateDeviceLocation(bool force) async {
-    if (!force && !_isRunning) {
-      Logger.d("[Foreground location] Not enabled. Aborting.");
-      return;
-    }
+  updateDeviceLocation() async {
     Logger.d("[Foreground location] Started");
     //Logger.d("[Foreground location] Forcing Android location manager...");
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
