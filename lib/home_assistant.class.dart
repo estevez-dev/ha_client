@@ -218,9 +218,6 @@ class HomeAssistant {
       try {
         //bool isThereCardOptionsInside = rawCard["card"] != null;
         var rawCardInfo =  rawCard["card"] ?? rawCard;
-        if (rawCardInfo['state_filter'] != null) {
-            Logger.d("Hey!!!!!! We found a card with state filter: ${rawCardInfo['state_filter']}");
-        }
         HACard card = HACard(
             id: "card",
             name: rawCardInfo["title"] ?? rawCardInfo["name"],
