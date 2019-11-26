@@ -143,7 +143,7 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLoc
 const String appName = "HA Client";
 const appVersionNumber = "0.7.3";
 const appVersionAdd = "";
-const appVersion = "$appVersionNumber-$appVersionAdd";
+const appVersion = "$appVersionNumber$appVersionAdd";
 
 void main() async {
   FlutterError.onError = (errorDetails) {
