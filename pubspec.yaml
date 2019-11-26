@@ -18,7 +18,7 @@ dependencies:
   url_launcher: any
   date_format: any
   charts_flutter: ^0.8.1
-  flutter_markdown: any
+  flutter_markdown: 0.3.0
   in_app_purchase: ^0.2.1+4
   flutter_custom_tabs: ^0.6.0
   firebase_messaging: ^5.1.6
