@@ -23,6 +23,10 @@ class Logger {
     return inDebugMode;
   }
 
+  static void p(data) {
+    print(data);
+  }
+
   static void e(String message) {
     _writeToLog("Error", message);
   }
