@@ -143,7 +143,7 @@ final SentryClient _sentry = SentryClient(dsn: "https://03ef364745cc4c23a60ddbc8
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
-const appVersionNumber = "0.7.4";
+const appVersionNumber = "0.7.5";
 const appVersionAdd = "";
 const appVersion = "$appVersionNumber$appVersionAdd";
 
