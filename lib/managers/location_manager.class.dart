@@ -150,6 +150,7 @@ class LocationManager {
 void updateDeviceLocationIsolate() {
   workManager.Workmanager.executeTask((backgroundTask, data) {
     print("[Background $backgroundTask] Started");
+    final SentryClient sentryClient = SentryClient(dsn: "https://5c868e5ef26947e2b61b189e391ec31b@sentry.io/1836366");
     Geolocator geolocator = Geolocator();
     var battery = Battery();
     int batteryLevel = 100;
@@ -183,9 +184,13 @@ void updateDeviceLocationIsolate() {
                   body: json.encode(data)
               );
             } else {
-              print("[Background $backgroundTask] No location. Finishing.");
+              throw "Can't get device location. Location is null";
             }
           }).catchError((e) {
+            sentryClient.captureException(
+              exception: "Error tracking location",
+              stackTrace: "${e.toString()}",
+            );
             print("[Background $backgroundTask] Error getting current location: ${e.toString()}");
           });
         });
