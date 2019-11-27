@@ -328,7 +328,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
 
   void _showEntityPage(String entityId) {
     setState(() {
-      _entityToShow = HomeAssistant().entities.get(entityId);
+      _entityToShow = HomeAssistant().entities?.get(entityId);
       if (_entityToShow != null) {
         _mainScrollController?.jumpTo(0);
       }
