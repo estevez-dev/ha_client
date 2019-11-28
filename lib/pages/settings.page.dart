@@ -75,10 +75,16 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
 
   _saveSettings() async {
     _newHassioDomain = _newHassioDomain.trim();
-    if (_newHassioDomain.indexOf("http") == 0 && _newHassioDomain.indexOf("//") > 0) {
+    if (_newHassioDomain.startsWith("http") && _newHassioDomain.indexOf("//") > 0) {
+      _newHassioDomain.startsWith("https") ? _newSocketProtocol = "wss" : _newSocketProtocol = "ws";
       _newHassioDomain = _newHassioDomain.split("//")[1];
     }
     _newHassioDomain = _newHassioDomain.split("/")[0];
+    if (_newHassioDomain.contains(":")) {
+      List<String> domainAndPort = _newHassioDomain.split(":");
+      _newHassioDomain = domainAndPort[0];
+      _newHassioPort = domainAndPort[1];
+    }
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final storage = new FlutterSecureStorage();
     if (_newLongLivedToken.isNotEmpty) {
