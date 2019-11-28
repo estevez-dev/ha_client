@@ -81,7 +81,7 @@ class MobileAppIntegrationManager {
         }
         completer.complete();
       }).catchError((e) {
-        if (e['code'] != null && e['code'] == 410) {
+        if (e is http.Response && e.statusCode == 410) {
           Logger.e("MobileApp integration was removed");
           _askToRegisterApp();
         } else {

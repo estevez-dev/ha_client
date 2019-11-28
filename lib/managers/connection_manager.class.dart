@@ -367,12 +367,12 @@ class ConnectionManager {
       sendHTTPPost(
         endPoint: "/api/services/$domain/$service",
         data: json.encode(serviceData)
-      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError("${e["message"]}")));
+      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError(e.toString())));
       //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service, "service_data": serviceData});
     else
       sendHTTPPost(
           endPoint: "/api/services/$domain/$service"
-      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError("${e["message"]}")));
+      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError(e.toString())));
       //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service});
     return completer.future;
   }
@@ -418,7 +418,7 @@ class ConnectionManager {
         completer.complete(response.body);
       } else {
         Logger.d("[Received] <== HTTP ${response.statusCode}: ${response.body}");
-        completer.completeError({"code": response.statusCode, "message": "${response.body}"});
+        completer.completeError(response);
       }
     }).catchError((e) {
       completer.completeError(e);
