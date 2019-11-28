@@ -84,25 +84,22 @@ class MediaPlayerEntity extends Entity {
   }
 
   bool canCalculateActualPosition() {
-    return positionLastUpdated != null && durationSeconds != null && positionSeconds != null && durationSeconds >= 0;
+    return positionLastUpdated != null && durationSeconds != null && positionSeconds != null && durationSeconds > 0;
   }
 
   double getActualPosition() {
     double result = 0;
-    if (canCalculateActualPosition()) {
-      Duration durationD;
-      Duration positionD;
-      durationD = Duration(seconds: durationSeconds);
-      positionD = Duration(
+    Duration durationD;
+    Duration positionD;
+    durationD = Duration(seconds: durationSeconds);
+    positionD = Duration(
           seconds: positionSeconds);
-      result = positionD.inSeconds.toDouble();
-      int differenceInSeconds = DateTime
+    result = positionD.inSeconds.toDouble();
+    int differenceInSeconds = DateTime
           .now()
           .difference(positionLastUpdated)
           .inSeconds;
-      result = ((result + differenceInSeconds) <= durationD.inSeconds) ? (result + differenceInSeconds) : durationD.inSeconds.toDouble();
-    }
-
+    result = ((result + differenceInSeconds) <= durationD.inSeconds) ? (result + differenceInSeconds) : durationD.inSeconds.toDouble();
     return result;
 
   }

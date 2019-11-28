@@ -22,13 +22,13 @@ class _MediaPlayerProgressBarState extends State<MediaPlayerProgressBar> {
   Widget build(BuildContext context) {
     final EntityModel entityModel = EntityModel.of(context);
     final MediaPlayerEntity entity = entityModel.entityWrapper.entity;
-    double progress;
+    double progress = 0;
     int currentPosition;
     if (entity.canCalculateActualPosition()) {
       currentPosition = entity.getActualPosition().toInt();
-      progress = (currentPosition <= entity.durationSeconds) ? currentPosition / entity.durationSeconds : 100;
-    } else {
-      progress = 0;
+      if (currentPosition > 0) {
+          progress = (currentPosition <= entity.durationSeconds) ? currentPosition / entity.durationSeconds : 100;
+      }
     }
     return LinearProgressIndicator(
       value: progress,
