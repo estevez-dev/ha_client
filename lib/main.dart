@@ -176,12 +176,7 @@ void main() async {
   };
 
   runZoned(() {
-      workManager.Workmanager.initialize(
-        updateDeviceLocationIsolate,
-        isInDebugMode: false
-      );
       runApp(new HAClientApp());
-
   }, onError: (error, stack) {
     _reportError(error, stack);
   });

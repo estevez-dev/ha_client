@@ -30,12 +30,16 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
 
   @override
   void initState() {
+    super.initState();
     final Stream purchaseUpdates =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
     _subscription = purchaseUpdates.listen((purchases) {
       _handlePurchaseUpdates(purchases);
     });
-    super.initState();
+    workManager.Workmanager.initialize(
+      updateDeviceLocationIsolate,
+      isInDebugMode: false
+    );
     enableShareReceiving();
     WidgetsBinding.instance.addObserver(this);
 
