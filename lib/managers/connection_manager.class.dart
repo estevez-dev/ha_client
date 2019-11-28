@@ -330,12 +330,16 @@ class ConnectionManager {
     String rawMessage = json.encode(dataObject);
     if (!isConnected) {
       _connect().timeout(connectTimeout, onTimeout: (){
-        _completer.completeError(HAError("No connection to Home Assistant", actions: [HAErrorAction.reconnect()]));
+        if (!_completer.isCompleted) {
+            _completer.completeError(HAError("No connection to Home Assistant", actions: [HAErrorAction.reconnect()]));
+        }
       }).then((_) {
         Logger.d("[Sending] ==> ${auth ? "type="+dataObject['type'] : rawMessage}");
         _socket.sink.add(rawMessage);
       }).catchError((e) {
-        _completer.completeError(e);
+        if (!_completer.isCompleted) {
+            _completer.completeError(e);
+        }
       });
     } else {
       Logger.d("[Sending] ==> ${auth ? "type="+dataObject['type'] : rawMessage}");
