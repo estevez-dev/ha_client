@@ -129,40 +129,44 @@ class ConnectionManager {
       connecting = Completer();
       _disconnect().then((_) {
         Logger.d("Socket connecting...");
-        _socket = IOWebSocketChannel.connect(
+        try {
+          _socket = IOWebSocketChannel.connect(
             _webSocketAPIEndpoint, pingInterval: Duration(seconds: 15));
-        _socketSubscription = _socket.stream.listen(
-                (message) {
-              isConnected = true;
-              var data = json.decode(message);
-              if (data["type"] == "auth_required") {
-                Logger.d("[Received] <== ${data.toString()}");
-                _authenticate().then((_) {
-                  Logger.d('Authentication complete');
-                  connecting.complete();
-                }).catchError((e) {
-                  if (!connecting.isCompleted) connecting.completeError(e);
-                });
-              } else if (data["type"] == "auth_ok") {
-                Logger.d("[Received] <== ${data.toString()}");
-                _messageResolver["auth"]?.complete();
-                _messageResolver.remove("auth");
-                if (_token != null) {
-                  if (!connecting.isCompleted) connecting.complete();
+          _socketSubscription = _socket.stream.listen(
+                  (message) {
+                isConnected = true;
+                var data = json.decode(message);
+                if (data["type"] == "auth_required") {
+                  Logger.d("[Received] <== ${data.toString()}");
+                  _authenticate().then((_) {
+                    Logger.d('Authentication complete');
+                    connecting.complete();
+                  }).catchError((e) {
+                    if (!connecting.isCompleted) connecting.completeError(e);
+                  });
+                } else if (data["type"] == "auth_ok") {
+                  Logger.d("[Received] <== ${data.toString()}");
+                  _messageResolver["auth"]?.complete();
+                  _messageResolver.remove("auth");
+                  if (_token != null) {
+                    if (!connecting.isCompleted) connecting.complete();
+                  }
+                } else if (data["type"] == "auth_invalid") {
+                  Logger.d("[Received] <== ${data.toString()}");
+                  _messageResolver["auth"]?.completeError(HAError("${data["message"]}", actions: [HAErrorAction.loginAgain()]));
+                  _messageResolver.remove("auth");
+                  if (!connecting.isCompleted) connecting.completeError(HAError("${data["message"]}", actions: [HAErrorAction.tryAgain(title: "Retry"), HAErrorAction.loginAgain(title: "Relogin")]));
+                } else {
+                  _handleMessage(data);
                 }
-              } else if (data["type"] == "auth_invalid") {
-                Logger.d("[Received] <== ${data.toString()}");
-                _messageResolver["auth"]?.completeError(HAError("${data["message"]}", actions: [HAErrorAction.loginAgain()]));
-                _messageResolver.remove("auth");
-                if (!connecting.isCompleted) connecting.completeError(HAError("${data["message"]}", actions: [HAErrorAction.tryAgain(title: "Retry"), HAErrorAction.loginAgain(title: "Relogin")]));
-              } else {
-                _handleMessage(data);
-              }
-            },
-            cancelOnError: true,
-            onDone: () => _handleSocketClose(connecting),
-            onError: (e) => _handleSocketError(e, connecting)
-        );
+              },
+              cancelOnError: true,
+              onDone: () => _handleSocketClose(connecting),
+              onError: (e) => _handleSocketError(e, connecting)
+          );
+        } catch(exeption) {
+          connecting.completeError(HAError("${exeption.toString()}"));
+        }
       });
       return connecting.future;
     }
@@ -214,38 +218,24 @@ class ConnectionManager {
 
   void _handleSocketClose(Completer connectionCompleter) {
     Logger.d("Socket disconnected.");
-    if (!connectionCompleter.isCompleted) {
-      isConnected = false;
-      connectionCompleter.completeError(HAError("Disconnected", actions: [HAErrorAction.reconnect()]));
-    } else {
-      _disconnect().then((_) {
-        Timer(Duration(seconds: 5), () {
-          Logger.d("Trying to reconnect...");
-          _connect().catchError((e) {
-            isConnected = false;
-            eventBus.fire(ShowErrorEvent(HAError("Unable to connect to Home Assistant")));
-          });
-        });
-      });
-    }
+    _disconnect().then((_) {
+      if (!connectionCompleter.isCompleted) {
+        isConnected = false;
+        connectionCompleter.completeError(HAError("Disconnected", actions: [HAErrorAction.reconnect()]));
+      }
+      eventBus.fire(ShowErrorEvent(HAError("Unable to connect to Home Assistant")));  
+    });
   }
 
   void _handleSocketError(e, Completer connectionCompleter) {
     Logger.e("Socket stream Error: $e");
-    if (!connectionCompleter.isCompleted) {
-      isConnected = false;
-      connectionCompleter.completeError(HAError("Unable to connect to Home Assistant"));
-    } else {
-      _disconnect().then((_) {
-        Timer(Duration(seconds: 5), () {
-          Logger.d("Trying to reconnect...");
-          _connect().catchError((e) {
-            isConnected = false;
-            eventBus.fire(ShowErrorEvent(HAError("Unable to connect to Home Assistant")));
-          });
-        });
-      });
-    }
+    _disconnect().then((_) {
+      if (!connectionCompleter.isCompleted) {
+        isConnected = false;
+        connectionCompleter.completeError(HAError("Disconnected", actions: [HAErrorAction.reconnect()]));
+      }
+      eventBus.fire(ShowErrorEvent(HAError("Unable to connect to Home Assistant")));  
+    });
   }
 
   Future _authenticate() {
