@@ -82,8 +82,8 @@ class LocationManager {
         int delay = i*delayFactor;
         Logger.d("Scheduling location update task #$i for every ${interval.inMinutes} minutes in $delay minutes...");
         await workManager.Workmanager.registerPeriodicTask(
-          "$backgroundTaskId$n",
-          "haClientLocationTracking-0$n",
+          "$backgroundTaskId$i",
+          "haClientLocationTracking-0$i",
           tag: backgroundTaskTag,
           inputData: {
             "webhookId": webhookId,
