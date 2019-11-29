@@ -225,7 +225,7 @@ class HomeAssistant {
             columnsCount: rawCardInfo['columns'] ?? 4,
             showName: rawCardInfo['show_name'] ?? true,
             showState: rawCardInfo['show_state'] ?? true,
-            showEmpty: rawCardInfo['show_empty'] ?? true,
+            showEmpty: (rawCardInfo['show_empty'] ?? rawCard['show_empty']) ?? true,
             stateFilter: (rawCard['state_filter'] ?? rawCardInfo['state_filter']) ?? [],
             states: rawCardInfo['states'],
             conditions: rawCard['conditions'] ?? [],
