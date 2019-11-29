@@ -98,16 +98,21 @@ class ConnectionManager {
 
   void _doConnect({Completer completer, bool forceReconnect}) {
     if (forceReconnect || !isConnected) {
-      _connect().timeout(connectTimeout, onTimeout: () {
-        _disconnect().then((_) {
-          if (completer != null && !completer.isCompleted) {
-            completer.completeError(HAError("Connection timeout"));
-          }
-        });
-      }).then((_) {
+      _connect().timeout(connectTimeout).then((_) {
         completer?.complete();
       }).catchError((e) {
-        completer?.completeError(e);
+        _disconnect().then((_) {
+          if (e is TimeoutException) {
+            if (connecting != null && !connecting.isCompleted) {
+              connecting.completeError(HAError("Connection timeout"));
+            }
+            completer?.completeError(HAError("Connection timeout"));
+          } else if (e is HAError) {
+            completer?.completeError(e);
+          } else {
+            completer?.completeError(HAError("${e.toString()}"));
+          }
+        });
       });
     } else {
       completer?.complete();
@@ -329,6 +334,7 @@ class ConnectionManager {
     _messageResolver[callbackName] = _completer;
     String rawMessage = json.encode(dataObject);
     if (!isConnected) {
+      //TODO fix onTImeout
       _connect().timeout(connectTimeout, onTimeout: (){
         if (!_completer.isCompleted) {
             _completer.completeError(HAError("No connection to Home Assistant", actions: [HAErrorAction.reconnect()]));
