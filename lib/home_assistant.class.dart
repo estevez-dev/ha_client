@@ -63,10 +63,6 @@ class HomeAssistant {
     futures.add(_getServices());
     futures.add(_getUserInfo());
     futures.add(_getPanels());
-    futures.add(ConnectionManager().sendSocketMessage(
-      type: "subscribe_events",
-      additionalData: {"event_type": "state_changed"},
-    ));
     Future.wait(futures).then((_) {
       if (isMobileAppEnabled) {
         if (!childMode) _createUI();

@@ -148,11 +148,17 @@ class ConnectionManager {
                   });
                 } else if (data["type"] == "auth_ok") {
                   Logger.d("[Received] <== ${data.toString()}");
-                  _messageResolver["auth"]?.complete();
-                  _messageResolver.remove("auth");
-                  if (_token != null) {
-                    if (!connecting.isCompleted) connecting.complete();
-                  }
+                  Logger.d("[Connection] Subscribing to events");
+                  sendSocketMessage(
+                    type: "subscribe_events",
+                    additionalData: {"event_type": "state_changed"},
+                  ).whenComplete((){
+                    _messageResolver["auth"]?.complete();
+                    _messageResolver.remove("auth");
+                    if (_token != null) {
+                      if (!connecting.isCompleted) connecting.complete();
+                    }
+                  });
                 } else if (data["type"] == "auth_invalid") {
                   Logger.d("[Received] <== ${data.toString()}");
                   _messageResolver["auth"]?.completeError(HAError("${data["message"]}", actions: [HAErrorAction.loginAgain()]));
