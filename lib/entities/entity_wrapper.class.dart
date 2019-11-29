@@ -58,7 +58,7 @@ class EntityWrapper {
       }
 
       case EntityUIAction.navigate: {
-        if (uiAction.tapService.startsWith("/")) {
+        if (uiAction.tapService != null && uiAction.tapService.startsWith("/")) {
           //TODO handle local urls
           Logger.w("Local urls is not supported yet");
         } else {
@@ -98,7 +98,7 @@ class EntityWrapper {
         }
 
         case EntityUIAction.navigate: {
-          if (uiAction.holdService.startsWith("/")) {
+          if (uiAction.holdService != null && uiAction.holdService.startsWith("/")) {
             //TODO handle local urls
             Logger.w("Local urls is not supported yet");
           } else {

@@ -98,20 +98,22 @@ class ConnectionManager {
 
   void _doConnect({Completer completer, bool forceReconnect}) {
     if (forceReconnect || !isConnected) {
-      _connect().timeout(connectTimeout).then((_) {
-        completer?.complete();
-      }).catchError((e) {
-        _disconnect().then((_) {
-          if (e is TimeoutException) {
-            if (connecting != null && !connecting.isCompleted) {
-              connecting.completeError(HAError("Connection timeout"));
+      _disconnect().then((_){
+        _connect().timeout(connectTimeout).then((_) {
+          completer?.complete();
+        }).catchError((e) {
+          _disconnect().then((_) {
+            if (e is TimeoutException) {
+              if (connecting != null && !connecting.isCompleted) {
+                connecting.completeError(HAError("Connection timeout"));
+              }
+              completer?.completeError(HAError("Connection timeout"));
+            } else if (e is HAError) {
+              completer?.completeError(e);
+            } else {
+              completer?.completeError(HAError("${e.toString()}"));
             }
-            completer?.completeError(HAError("Connection timeout"));
-          } else if (e is HAError) {
-            completer?.completeError(e);
-          } else {
-            completer?.completeError(HAError("${e.toString()}"));
-          }
+          });
         });
       });
     } else {
