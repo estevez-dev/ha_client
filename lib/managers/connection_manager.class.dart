@@ -324,17 +324,12 @@ class ConnectionManager {
     _messageResolver[callbackName] = _completer;
     String rawMessage = json.encode(dataObject);
     if (!isConnected) {
-      //TODO fix onTImeout
-      _connect().timeout(connectTimeout, onTimeout: (){
-        if (!_completer.isCompleted) {
-            _completer.completeError(HAError("No connection to Home Assistant", actions: [HAErrorAction.reconnect()]));
-        }
-      }).then((_) {
+      _connect().timeout(connectTimeout).then((_) {
         Logger.d("[Sending] ==> ${auth ? "type="+dataObject['type'] : rawMessage}");
         _socket.sink.add(rawMessage);
       }).catchError((e) {
         if (!_completer.isCompleted) {
-            _completer.completeError(e);
+          _completer.completeError(HAError("No connection to Home Assistant", actions: [HAErrorAction.reconnect()]));
         }
       });
     } else {
