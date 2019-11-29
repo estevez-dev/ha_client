@@ -2,8 +2,10 @@ part of '../../main.dart';
 
 class EntityButtonCardBody extends StatelessWidget {
 
+  final bool showName;
+
   EntityButtonCardBody({
-    Key key,
+    Key key, this.showName: true,
   }) : super(key: key);
 
   @override
@@ -39,13 +41,16 @@ class EntityButtonCardBody extends StatelessWidget {
   }
 
   Widget _buildName() {
-    return EntityName(
-      padding: EdgeInsets.fromLTRB(Sizes.buttonPadding, 0.0, Sizes.buttonPadding, Sizes.rowPadding),
-      textOverflow: TextOverflow.ellipsis,
-      maxLines: 3,
-      wordsWrap: true,
-      textAlign: TextAlign.center,
-      fontSize: Sizes.nameFontSize,
-    );
+    if (showName) {
+      return EntityName(
+        padding: EdgeInsets.fromLTRB(Sizes.buttonPadding, 0.0, Sizes.buttonPadding, Sizes.rowPadding),
+        textOverflow: TextOverflow.ellipsis,
+        maxLines: 3,
+        wordsWrap: true,
+        textAlign: TextAlign.center,
+        fontSize: Sizes.nameFontSize,
+      );
+    }
+    return Container(width: 0, height: 0);
   }
 }
