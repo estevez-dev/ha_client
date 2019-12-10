@@ -139,12 +139,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     }
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
-      int currentViewCount = HomeAssistant().ui?.views?.length ?? 0;
-      if (_previousViewCount != currentViewCount) {
-        Logger.d("Views count changed ($_previousViewCount->$currentViewCount). Creating new tabs controller.");
-        _viewsTabController = TabController(vsync: this, length: currentViewCount);
-        _previousViewCount = currentViewCount;
-      }
       if (_entityToShow != null) {
         _entityToShow = HomeAssistant().entities.get(_entityToShow.entityId);
       }
@@ -642,6 +636,13 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   Widget _buildScaffoldBody(bool empty) {
     List<PopupMenuItem<String>> serviceMenuItems = [];
     List<PopupMenuItem<String>> mediaMenuItems = [];
+
+    int currentViewCount = HomeAssistant().ui?.views?.length ?? 0;
+    if (_previousViewCount != currentViewCount) {
+      Logger.d("Views count changed ($_previousViewCount->$currentViewCount). Creating new tabs controller.");
+      _viewsTabController = TabController(vsync: this, length: currentViewCount);
+      _previousViewCount = currentViewCount;
+    }
 
     serviceMenuItems.add(PopupMenuItem<String>(
       child: new Text("Reload"),
