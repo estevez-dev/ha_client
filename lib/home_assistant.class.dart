@@ -104,6 +104,7 @@ class HomeAssistant {
 
   Future _getLovelace() {
     Completer completer = Completer();
+
     ConnectionManager().sendSocketMessage(type: "lovelace/config").then((data) {
       _rawLovelaceData = data;
       completer.complete();

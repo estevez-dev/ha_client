@@ -149,15 +149,14 @@ class LocationManager {
 
 void updateDeviceLocationIsolate() {
   workManager.Workmanager.executeTask((backgroundTask, data) {
-    print("[Background $backgroundTask] Started");
-    final SentryClient sentryBackgroundClient = SentryClient(dsn: "https://5c868e5ef26947e2b61b189e391ec31b@sentry.io/1836366");
+    //print("[Background $backgroundTask] Started");
     Geolocator geolocator = Geolocator();
     var battery = Battery();
     int batteryLevel = 100;
     String webhookId = data["webhookId"];
     String httpWebHost = data["httpWebHost"];
     if (webhookId != null && webhookId.isNotEmpty) {
-        print("[Background $backgroundTask] hour=$battery");
+        //print("[Background $backgroundTask] hour=$battery");
         String url = "$httpWebHost/api/webhook/$webhookId";
         Map<String, String> headers = {};
         headers["Content-Type"] = "application/json";
@@ -169,15 +168,15 @@ void updateDeviceLocationIsolate() {
             "battery": batteryLevel
           }
         };
-        print("[Background $backgroundTask] Getting battery level...");
+        //print("[Background $backgroundTask] Getting battery level...");
         battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
-          print("[Background $backgroundTask] Getting device location...");
+          //print("[Background $backgroundTask] Getting device location...");
           geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
             if (location != null) {
-              print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
+              //print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
               data["data"]["gps"] = [location.latitude, location.longitude];
               data["data"]["gps_accuracy"] = location.accuracy;
-              print("[Background $backgroundTask] Sending data home.");
+              //print("[Background $backgroundTask] Sending data home.");
               http.post(
                   url,
                   headers: headers,
@@ -187,10 +186,7 @@ void updateDeviceLocationIsolate() {
               throw "Can't get device location. Location is null";
             }
           }).catchError((e) {
-            sentryBackgroundClient.captureException(
-              exception: "${e.toString()}"
-            );
-            print("[Background $backgroundTask] Error getting current location: ${e.toString()}");
+            //print("[Background $backgroundTask] Error getting current location: ${e.toString()}");
           });
         });
     }
