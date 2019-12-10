@@ -464,11 +464,11 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
         },
       ),
       new ListTile(
-        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:discord")),
-        title: Text("Join Discord channel"),
+        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:forum")),
+        title: Text("Contacts/Discussion"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURL("https://discord.gg/AUzEvwn");
+          Launcher.launchURL("https://spectrum.chat/ha-client");
         },
       ),
       new AboutListTile(
