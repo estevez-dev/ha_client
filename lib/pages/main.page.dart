@@ -9,7 +9,7 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => new _MainPageState();
 }
 
-class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObserver, TickerProviderStateMixin {
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver, TickerProviderStateMixin {
 
   StreamSubscription<List<PurchaseDetails>> _subscription;
   StreamSubscription _stateSubscription;
@@ -22,6 +22,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
   StreamSubscription _showPopupMessageSubscription;
   StreamSubscription _reloadUISubscription;
   StreamSubscription _showPageSubscription;
+  StreamSubscription _intentDataStreamSubscription;
   int _previousViewCount;
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
@@ -40,7 +41,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
       updateDeviceLocationIsolate,
       isInDebugMode: false
     );
-    enableShareReceiving();
     WidgetsBinding.instance.addObserver(this);
 
     _firebaseMessaging.configure(
@@ -59,6 +59,13 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     );
 
     _firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
+
+    _intentDataStreamSubscription = ReceiveSharingIntent.getTextStream().listen((String value) {
+      Logger.d("[SHARED] Got share from stream: $value");
+      _handleShare(value);
+    }, onError: (err) {
+      Logger.w("[SHARE] getLinkStream error: $err");
+    });
 
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     var initializationSettingsAndroid =
@@ -79,12 +86,6 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     });
 
     _fullLoad();
-  }
-
-  @override void receiveShare(Share shared) {
-    if (shared.mimeType == ShareType.TYPE_PLAIN_TEXT) {
-      _savedSharedText = shared.text;
-    }
   }
 
   Future onSelectNotification(String payload) async {
@@ -131,12 +132,17 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     });
   }
 
-  _fetchData() async {
-    if (_savedSharedText != null && !HomeAssistant().isNoEntities) {
-      Logger.d("Got shared text: $_savedSharedText");
-      Navigator.pushNamed(context, "/play-media", arguments: {"url": _savedSharedText});
-      _savedSharedText = null;
+  _handleShare(String text) {
+    if (text != null && !HomeAssistant().isNoEntities) {
+      Navigator.pushNamed(context, "/play-media", arguments: {"url": text});
     }
+  }
+
+  _fetchData() async {
+    ReceiveSharingIntent.getInitialText().then((String value) {
+      Logger.d("[SHARED] Got initial share: $value");
+      _handleShare(value);
+    });
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
       if (_entityToShow != null) {
@@ -918,6 +924,7 @@ class _MainPageState extends ReceiveShareState<MainPage> with WidgetsBindingObse
     _subscription?.cancel();
     _showPageSubscription?.cancel();
     _reloadUISubscription?.cancel();
+    _intentDataStreamSubscription?.cancel();
     //TODO disconnect
     //widget.homeAssistant?.disconnect();
     super.dispose();

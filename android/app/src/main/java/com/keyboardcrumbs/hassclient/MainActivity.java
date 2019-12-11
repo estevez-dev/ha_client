@@ -3,9 +3,8 @@ package com.keyboardcrumbs.hassclient;
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
-import io.flutter.plugins.share.FlutterShareReceiverActivity;
 
-public class MainActivity extends FlutterShareReceiverActivity {
+public class MainActivity extends FlutterActivity {
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
