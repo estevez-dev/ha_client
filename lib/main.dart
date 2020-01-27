@@ -201,6 +201,16 @@ class HAClientApp extends StatelessWidget {
           mediaType: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['type'] ?? '' : ''}",
         ),
         "/log-view": (context) => LogViewPage(title: "Log"),
+        "/webview": (context) => WebviewScaffold(
+          url: "${(ModalRoute.of(context).settings.arguments as Map)['url']}",
+          appBar: new AppBar(
+            leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop()
+            ),
+            title: new Text("${(ModalRoute.of(context).settings.arguments as Map)['title']}"),
+          ),
+        ),
         "/whats-new": (context) => WhatsNewPage(),
         "/auth": (context) => new WebviewScaffold(
           url: "${ConnectionManager().oauthUrl}",

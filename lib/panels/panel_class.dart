@@ -35,7 +35,7 @@ class Panel {
           )
       );
     } else {
-      Launcher.launchURLInCustomTab(url: "${ConnectionManager().httpWebHost}/$urlPath");
+      Launcher.launchAuthenticatedWebView(context: context, url: "${ConnectionManager().httpWebHost}/$urlPath", title: "${this.title}");
     }
   }
 

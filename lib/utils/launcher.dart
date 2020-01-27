@@ -35,4 +35,28 @@ class Launcher {
     }
   }
 
+  static void launchAuthenticatedWebView({BuildContext context, String url, String title}) {
+    if (url.contains("?")) {
+      url += "&external_auth=1";
+    } else {
+      url += "?external_auth=1";
+    }
+    final flutterWebViewPlugin = new FlutterWebviewPlugin();
+    flutterWebViewPlugin.onStateChanged.listen((viewState) async {
+      if (viewState.type == WebViewState.startLoad) {
+        Logger.d("[WebView] Injecting external auth JS");
+        rootBundle.loadString('assets/js/externalAuth.js').then((js){
+          flutterWebViewPlugin.evalJavascript(js.replaceFirst("[token]", ConnectionManager()._token));
+        });
+      }
+    });
+    Navigator.of(context).pushNamed(
+        "/webview",
+        arguments: {
+          "url": "$url",
+          "title": "${title ?? ''}"
+        }
+    );
+  }
+
 }

@@ -376,7 +376,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                     children: <Widget>[
                       Text("${panel.title}"),
                       Container(width: 4.0,),
-                      panel.isWebView ? Text("WEB", style: TextStyle(fontSize: 8.0, color: Colors.black45),) : Container(width: 1.0,)
+                      panel.isWebView ? Text("webview", style: TextStyle(fontSize: 8.0, color: Colors.black45),) : Container(width: 1.0,)
                     ],
                   ),
                   onTap: () {
@@ -892,6 +892,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    final flutterWebviewPlugin = new FlutterWebviewPlugin();
+    flutterWebviewPlugin.dispose();
     _viewsTabController?.dispose();
     _stateSubscription?.cancel();
     _settingsSubscription?.cancel();
