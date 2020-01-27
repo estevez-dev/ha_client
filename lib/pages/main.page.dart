@@ -22,11 +22,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   StreamSubscription _showPopupMessageSubscription;
   StreamSubscription _reloadUISubscription;
   StreamSubscription _showPageSubscription;
-  StreamSubscription _intentDataStreamSubscription;
   int _previousViewCount;
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
-  String _savedSharedText;
   Entity _entityToShow;
 
   @override
@@ -59,13 +57,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     );
 
     _firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
-
-    _intentDataStreamSubscription = ReceiveSharingIntent.getTextStream().listen((String value) {
-      Logger.d("[SHARED] Got share from stream: $value");
-      _handleShare(value);
-    }, onError: (err) {
-      Logger.w("[SHARE] getLinkStream error: $err");
-    });
 
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     var initializationSettingsAndroid =
@@ -132,17 +123,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     });
   }
 
-  _handleShare(String text) {
-    if (text != null && !HomeAssistant().isNoEntities) {
-      Navigator.pushNamed(context, "/play-media", arguments: {"url": text});
-    }
-  }
-
   _fetchData() async {
-    ReceiveSharingIntent.getInitialText().then((String value) {
-      Logger.d("[SHARED] Got initial share: $value");
-      _handleShare(value);
-    });
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
       if (_entityToShow != null) {
@@ -924,7 +905,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _subscription?.cancel();
     _showPageSubscription?.cancel();
     _reloadUISubscription?.cancel();
-    _intentDataStreamSubscription?.cancel();
     //TODO disconnect
     //widget.homeAssistant?.disconnect();
     super.dispose();

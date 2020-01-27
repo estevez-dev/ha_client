@@ -22,7 +22,6 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/circular_slider/single_circular_slider.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
 import 'plugins/spoiler_card.dart';
 import 'package:uni_links/uni_links.dart';

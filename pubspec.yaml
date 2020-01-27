@@ -30,7 +30,6 @@ dependencies:
   workmanager: ^0.1.5
   battery: ^0.3.1+1
   sentry: ^2.3.1
-  receive_sharing_intent: ^1.3.2
   
 
 dev_dependencies:
