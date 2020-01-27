@@ -29,6 +29,7 @@ import 'package:workmanager/workmanager.dart' as workManager;
 import 'package:geolocator/geolocator.dart';
 import 'package:battery/battery.dart';
 import 'package:sentry/sentry.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 import 'utils/logger.dart';
 
@@ -201,7 +202,13 @@ class HAClientApp extends StatelessWidget {
           mediaType: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['type'] ?? '' : ''}",
         ),
         "/log-view": (context) => LogViewPage(title: "Log"),
-        "/whats-new": (context) => WhatsNewPage()
+        "/whats-new": (context) => WhatsNewPage(),
+        "/test": (_) => new WebviewScaffold(
+          url: "https://www.google.com",
+          appBar: new AppBar(
+            title: new Text("Widget webview"),
+          ),
+        )
       },
     );
   }

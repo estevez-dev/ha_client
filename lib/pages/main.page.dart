@@ -437,6 +437,20 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       ),
       Divider(),
       new ListTile(
+        leading: Icon(Icons.build),
+        title: Text("TEST"),
+        onTap: () {
+          Navigator.of(context).pop();
+          final flutterWebviewPlugin = new FlutterWebviewPlugin();
+          flutterWebviewPlugin.onUrlChanged.listen((String url) {
+            Logger.d("[Webview] URL Changed: $url");  
+          });
+          Logger.d("[Webview] Listener attached");
+          Navigator.of(context).pushNamed("/test");  
+        },
+      ),
+      Divider(),
+      new ListTile(
         leading: Icon(Icons.help),
         title: Text("Help"),
         onTap: () {
