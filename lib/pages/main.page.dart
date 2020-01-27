@@ -239,6 +239,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           _showOAuth();
         } else {
           _preventAppRefresh = false;
+          Navigator.of(context).pop();
         }
       });
     }
@@ -252,9 +253,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 
   void _showOAuth() {
     _preventAppRefresh = true;
-    Launcher.launchURLInCustomTab(
-      url: ConnectionManager().oauthUrl
-    );
+    Navigator.of(context).pushNamed("/auth", arguments: {"url": ConnectionManager().oauthUrl});
   }
 
   _setErrorState(HAError e) {
@@ -433,20 +432,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         onTap: () {
           Navigator.of(context).pop();
           Navigator.of(context).pushNamed('/putchase');
-        },
-      ),
-      Divider(),
-      new ListTile(
-        leading: Icon(Icons.build),
-        title: Text("TEST"),
-        onTap: () {
-          Navigator.of(context).pop();
-          final flutterWebviewPlugin = new FlutterWebviewPlugin();
-          flutterWebviewPlugin.onUrlChanged.listen((String url) {
-            Logger.d("[Webview] URL Changed: $url");  
-          });
-          Logger.d("[Webview] Listener attached");
-          Navigator.of(context).pushNamed("/test");  
         },
       ),
       Divider(),

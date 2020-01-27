@@ -23,7 +23,6 @@ dependencies:
   flutter_custom_tabs: ^0.6.0
   flutter_webview_plugin: ^0.3.10+1
   firebase_messaging: ^5.1.6
-  uni_links: ^0.2.0
   flutter_secure_storage: ^3.3.1+1
   device_info: ^0.4.0+3
   flutter_local_notifications: ^0.8.4

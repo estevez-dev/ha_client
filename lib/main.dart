@@ -24,7 +24,6 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/circular_slider/single_circular_slider.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
 import 'plugins/spoiler_card.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:workmanager/workmanager.dart' as workManager;
 import 'package:geolocator/geolocator.dart';
 import 'package:battery/battery.dart';
@@ -203,10 +202,22 @@ class HAClientApp extends StatelessWidget {
         ),
         "/log-view": (context) => LogViewPage(title: "Log"),
         "/whats-new": (context) => WhatsNewPage(),
-        "/test": (_) => new WebviewScaffold(
-          url: "https://www.google.com",
+        "/auth": (context) => new WebviewScaffold(
+          url: "${ConnectionManager().oauthUrl}",
           appBar: new AppBar(
-            title: new Text("Widget webview"),
+            leading: IconButton(
+                icon: Icon(Icons.help),
+                onPressed: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.homemade.systems/docs#authentication")
+            ),
+            title: new Text("Login with HA"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Manual", style: TextStyle(color: Colors.white)),
+                onPressed: () {
+                  eventBus.fire(ShowPageEvent(path: "/connection-settings", goBackFirst: true));
+                },
+              )
+            ],
           ),
         )
       },
