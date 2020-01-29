@@ -15,6 +15,7 @@ build/
 .settings/
 
 flutter_export_environment.sh
+.flutter-plugins-dependencies
 
 key.properties
 premium_features_manager.class.dart
