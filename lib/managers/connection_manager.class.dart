@@ -59,9 +59,9 @@ class ConnectionManager {
           _token = await storage.read(key: "hacl_llt");
           Logger.e("Long-lived token read successful");
           oauthUrl = "$httpWebHost/auth/authorize?client_id=${Uri.encodeComponent(
-              'http://ha-client.homemade.systems')}&redirect_uri=${Uri
+              'http://ha-client.estevez.dev')}&redirect_uri=${Uri
               .encodeComponent(
-              'http://ha-client.homemade.systems/service/auth_callback.html')}";
+              'http://ha-client.estevez.dev/service/auth_callback.html')}";
           settingsLoaded = true;
         } catch (e) {
           completer.completeError(HAError("Error reading login details", actions: [HAErrorAction.tryAgain(type: HAErrorActionType.FULL_RELOAD), HAErrorAction.loginAgain()]));

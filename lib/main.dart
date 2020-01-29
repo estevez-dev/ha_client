@@ -217,7 +217,7 @@ class HAClientApp extends StatelessWidget {
           appBar: new AppBar(
             leading: IconButton(
                 icon: Icon(Icons.help),
-                onPressed: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.homemade.systems/docs#authentication")
+                onPressed: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.estevez.dev/docs#authentication")
             ),
             title: new Text("Login with HA"),
             actions: <Widget>[

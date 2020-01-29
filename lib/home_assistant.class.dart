@@ -69,7 +69,7 @@ class HomeAssistant {
         _fetchCompleter.complete();
         MobileAppIntegrationManager.checkAppRegistration();
       } else {
-        _fetchCompleter.completeError(HAError("Mobile app component not found", actions: [HAErrorAction.tryAgain(), HAErrorAction(type: HAErrorActionType.URL ,title: "Help",url: "http://ha-client.homemade.systems/docs#mobile-app-integration")]));
+        _fetchCompleter.completeError(HAError("Mobile app component not found", actions: [HAErrorAction.tryAgain(), HAErrorAction(type: HAErrorActionType.URL ,title: "Help",url: "http://ha-client.estevez.dev/docs#mobile-app-integration")]));
       }
     }).catchError((e) {
       _fetchCompleter.completeError(e);

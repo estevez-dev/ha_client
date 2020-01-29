@@ -440,7 +440,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         title: Text("Help"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURL("http://ha-client.homemade.systems/docs");
+          Launcher.launchURL("http://ha-client.estevez.dev/docs");
         },
       ),
       new ListTile(
@@ -456,10 +456,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
-                Launcher.launchURL("http://ha-client.homemade.systems/");
+                Launcher.launchURL("http://ha-client.estevez.dev/");
               },
               child: Text(
-                "ha-client.homemade.systems",
+                "ha-client.estevez.dev",
                 style: TextStyle(
                     color: Colors.blue,
                     decoration: TextDecoration.underline
@@ -472,7 +472,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
-                Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.homemade.systems/terms_and_conditions");
+                Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.estevez.dev/terms_and_conditions");
               },
               child: Text(
                 "Terms and Conditions",
@@ -488,7 +488,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
-                Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.homemade.systems/privacy_policy");
+                Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.estevez.dev/privacy_policy");
               },
               child: Text(
                 "Privacy Policy",
