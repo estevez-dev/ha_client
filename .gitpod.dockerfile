@@ -7,7 +7,7 @@ ENV ANDROID_HOME=/workspace/android-sdk \
 USER root
 
 RUN apt-get update && \
-    apt-get -y remove openjdk-11-jre-headless && \
+    apt-get -y remove openjdk-11-jdk && \
     apt-get -y install build-essential libkrb5-dev gcc make gradle openjdk-8-jdk && \
     apt-get clean && \
     apt-get -y autoremove && \
