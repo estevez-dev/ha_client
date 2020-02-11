@@ -131,7 +131,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       }
     });
     eventBus.fire(RefreshDataFinishedEvent());
-    throw new Exception("There is an error thrown specifically for Crashlitycs reporting test!");
   }
 
   @override

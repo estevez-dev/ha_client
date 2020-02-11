@@ -137,7 +137,6 @@ part 'entities/media_player/widgets/media_player_progress_bar.widget.dart';
 part 'pages/whats_new.page.dart';
 
 EventBus eventBus = new EventBus();
-//final SentryClient _sentry = SentryClient(dsn: "https://03ef364745cc4c23a60ddbc874c69925@sentry.io/1836118");
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
@@ -156,8 +155,7 @@ Future<void> _reportError(dynamic error, dynamic stackTrace) async {
 }
 
 void main() async {
-  //TODO remove when configured
-  Crashlytics.instance.enableInDevMode = true;
+  Crashlytics.instance.enableInDevMode = false;
 
   FlutterError.onError = (FlutterErrorDetails details) {
     Logger.e(" Caut Flutter runtime error: ${details.exception}");
