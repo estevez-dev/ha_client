@@ -14,3 +14,22 @@ window.externalApp.getExternalAuth = function(options) {
         }, 500);
     }
 };
+window.externalApp.externalBus = function(message) {
+    console.log("External bus message: " + message);
+    var messageObj = JSON.parse(message);
+    if (messageObj.type == "config/get") {
+        var responseData = {
+            id: messageObj.id,
+            type: "result",
+            success: true,
+            result: {
+                hasSettingsScreen: true
+            }
+        };
+        setTimeout(function(){
+            window.externalBus(responseData);
+        }, 500);
+    } else if (messageObj.type == "config_screen/show") {
+        window.location.href = "htcmd://show-settings";
+    }
+};

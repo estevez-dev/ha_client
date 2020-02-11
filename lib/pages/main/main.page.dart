@@ -24,7 +24,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   int _previousViewCount;
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
-  bool _showWebViewControls = true;
   Entity _entityToShow;
 
   @override
@@ -130,11 +129,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           });
         }
       });
-
-      flutterWebViewPlugin.onScrollYChanged.listen((double offsetY) {
-        setState(() {
-          _showWebViewControls = (offsetY == 0);
-        });
+      
+      flutterWebViewPlugin.onUrlChanged.listen((String url) {
+        if (url.contains("htcmd://show-settings")) {
+          flutterWebViewPlugin.hide();
+          Navigator.pushNamed(context, "/connection-settings");
+        }
       });
     }
     await HomeAssistant().fetchData().then((_) {
@@ -867,25 +867,17 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           )
       );
     } else if (ConnectionManager().settingsLoaded && ConnectionManager().useWebView) {
+      String webUIurl = ConnectionManager().httpWebHost;
+      if (webUIurl.contains("?")) {
+        webUIurl += "&external_auth=1";
+      } else {
+        webUIurl += "?external_auth=1";
+      }
       return WebviewScaffold(
-        url: ConnectionManager().httpWebHost,
+        url: webUIurl,
         primary: false,
-        appBar: !_showWebViewControls ? EmptyAppBar() : AppBar(
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.smartphone),
-              onPressed: () {
-                Navigator.of(context).pushNamed('/integration-settings');
-              }
-            ),
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                Navigator.of(context).pushNamed('/connection-settings');
-              }
-            )
-          ]
-        ),
+        debuggingEnabled: true,
+        appBar: EmptyAppBar(),
         bottomNavigationBar: bottomBar,
       );
     } else {
@@ -944,29 +936,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 class  EmptyAppBar  extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      color: Colors.blue,
+    );
   }
   @override
   Size get preferredSize => Size(0.0,0.0);
-}
-
-class  WebViewAppBar  extends StatelessWidget implements PreferredSizeWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.smartphone),
-          onPressed: () {
-            Navigator.of(context).pushNamed('/connection-settings');
-          },
-        ),
-      ],
-    );
-    //return Container();
-  }
-  @override
-  Size get preferredSize => Size(0.0,30.0);
 }

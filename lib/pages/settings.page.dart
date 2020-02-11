@@ -20,7 +20,7 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
   String _newLongLivedToken = "";
   bool _useLovelace = true;
   bool _newUseLovelace = true;
-  bool _useWebView = true;
+  bool _useWebView = false;
   bool _newUseWebView = true;
 
   String oauthUrl;
@@ -63,9 +63,9 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
         _useLovelace = _newUseLovelace = true;
       }
       try {
-        _useWebView = _newUseWebView = prefs.getBool("use-webview") ?? true;
+        _useWebView = _newUseWebView = prefs.getBool("use-webview") ?? false;
       } catch (e) {
-        _useWebView = _newUseWebView = true;
+        _useWebView = _newUseWebView = false;
       }
     });
   }
