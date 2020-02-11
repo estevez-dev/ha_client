@@ -11,7 +11,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver, TickerProviderStateMixin {
 
-  StreamSubscription<List<PurchaseDetails>> _subscription;
   StreamSubscription _stateSubscription;
   StreamSubscription _settingsSubscription;
   StreamSubscription _serviceCallSubscription;
@@ -30,11 +29,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   @override
   void initState() {
     super.initState();
-    final Stream purchaseUpdates =
-        InAppPurchaseConnection.instance.purchaseUpdatedStream;
-    _subscription = purchaseUpdates.listen((purchases) {
-      _handlePurchaseUpdates(purchases);
-    });
     workManager.Workmanager.initialize(
       updateDeviceLocationIsolate,
       isInDebugMode: false
@@ -144,22 +138,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     Logger.d("$state");
     if (state == AppLifecycleState.resumed && ConnectionManager().settingsLoaded && !_preventAppRefresh) {
       _quickLoad();
-    }
-  }
-
-  void _handlePurchaseUpdates(purchase) {
-    if (purchase is List<PurchaseDetails>) {
-      if (purchase[0].status == PurchaseStatus.purchased) {
-        eventBus.fire(ShowPopupMessageEvent(
-            title: "Thanks a lot!",
-            body: "Thank you for supporting HA Client development!",
-            buttonText: "Ok"
-        ));
-      } else {
-        Logger.d("Purchase change handler: ${purchase[0].status}");
-      }
-    } else {
-      Logger.e("Something wrong with purchase handling. Got: $purchase");
     }
   }
 
@@ -903,7 +881,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _showEntityPageSubscription?.cancel();
     _showErrorSubscription?.cancel();
     _startAuthSubscription?.cancel();
-    _subscription?.cancel();
     _showPageSubscription?.cancel();
     _reloadUISubscription?.cancel();
     //TODO disconnect

@@ -10,16 +10,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  web_socket_channel: any
-  shared_preferences: any
-  progress_indicators: any
-  event_bus: any
-  cached_network_image: any
-  url_launcher: any
-  date_format: any
+  web_socket_channel: ^1.1.0
+  shared_preferences: ^0.5.6+1
+  progress_indicators: ^0.1.4
+  event_bus: ^1.1.1
+  cached_network_image: ^2.0.0
+  url_launcher: ^5.4.1
+  date_format: ^1.0.8
   charts_flutter: ^0.8.1
-  flutter_markdown: 0.3.0
-  in_app_purchase: ^0.2.1+4
+  flutter_markdown: ^0.3.3
+  in_app_purchase: ^0.3.0+3
   flutter_custom_tabs: ^0.6.0
   flutter_webview_plugin: ^0.3.10+1
   firebase_messaging: ^5.1.6

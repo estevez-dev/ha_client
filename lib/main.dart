@@ -180,7 +180,42 @@ void main() async {
   });
 }
 
-class HAClientApp extends StatelessWidget {
+class HAClientApp extends StatefulWidget {
+
+  @override
+  _HAClientAppState createState() => new _HAClientAppState();
+
+}
+
+class _HAClientAppState extends State<HAClientApp> {
+  StreamSubscription<List<PurchaseDetails>> _subscription;
+  
+  @override
+  void initState() {
+    InAppPurchaseConnection.enablePendingPurchases();
+    final Stream purchaseUpdates =
+        InAppPurchaseConnection.instance.purchaseUpdatedStream;
+    _subscription = purchaseUpdates.listen((purchases) {
+      _handlePurchaseUpdates(purchases);
+    });
+    super.initState();
+  }
+
+  void _handlePurchaseUpdates(purchase) {
+    if (purchase is List<PurchaseDetails>) {
+      if (purchase[0].status == PurchaseStatus.purchased) {
+        eventBus.fire(ShowPopupMessageEvent(
+            title: "Thanks a lot!",
+            body: "Thank you for supporting HA Client development!",
+            buttonText: "Ok"
+        ));
+      } else {
+        Logger.d("Purchase change handler: ${purchase[0].status}");
+      }
+    } else {
+      Logger.e("Something wrong with purchase handling. Got: $purchase");
+    }
+  }
 
   // This widget is the root of your application.
   @override
@@ -232,5 +267,11 @@ class HAClientApp extends StatelessWidget {
         )
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }
