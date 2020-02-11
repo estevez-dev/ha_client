@@ -27,7 +27,7 @@ dependencies:
   device_info: ^0.4.1+4
   flutter_local_notifications: ^1.1.6
   geolocator: ^5.2.1
-  workmanager: ^0.1.5
+  workmanager: ^0.2.0
   battery: ^0.3.1+1
   sentry: ^2.3.1
   
