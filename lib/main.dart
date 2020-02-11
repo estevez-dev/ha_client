@@ -104,7 +104,7 @@ part 'pages/widgets/product_purchase.widget.dart';
 part 'pages/widgets/page_loading_indicator.dart';
 part 'pages/widgets/page_loading_error.dart';
 part 'pages/panel.page.dart';
-part 'pages/main.page.dart';
+part 'pages/main/main.page.dart';
 part 'pages/integration_settings.page.dart';
 part 'home_assistant.class.dart';
 part 'pages/log.page.dart';

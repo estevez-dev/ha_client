@@ -20,6 +20,8 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
   String _newLongLivedToken = "";
   bool _useLovelace = true;
   bool _newUseLovelace = true;
+  bool _useWebView = true;
+  bool _newUseWebView = true;
 
   String oauthUrl;
   bool useOAuth = false;
@@ -60,6 +62,11 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
       } catch (e) {
         _useLovelace = _newUseLovelace = true;
       }
+      try {
+        _useWebView = _newUseWebView = prefs.getBool("use-webview") ?? true;
+      } catch (e) {
+        _useWebView = _newUseWebView = true;
+      }
     });
   }
 
@@ -69,6 +76,7 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
       (_newHassioDomain != _hassioDomain) ||
       (_newSocketProtocol != _socketProtocol) ||
       (_newUseLovelace != _useLovelace) ||
+      (_newUseWebView != _useWebView) ||
       (_newLongLivedToken != _longLivedToken));
 
   }
@@ -104,6 +112,7 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
     prefs.setString("hassio-protocol", _newSocketProtocol);
     prefs.setString("hassio-res-protocol", _newSocketProtocol == "wss" ? "https" : "http");
     prefs.setBool("use-lovelace", _newUseLovelace);
+    prefs.setBool("use-webview", _newUseWebView);
   }
 
   @override
@@ -196,6 +205,19 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
                 onChanged: (value) {
                   setState(() {
                     _newUseLovelace = value;
+                  });
+                },
+              )
+            ],
+          ),
+          new Row(
+            children: [
+              Text("Use web UI"),
+              Switch(
+                value: _newUseWebView,
+                onChanged: (value) {
+                  setState(() {
+                    _newUseWebView = value;
                   });
                 },
               )

@@ -1,4 +1,4 @@
-part of '../main.dart';
+part of '../../main.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.title}) : super(key: key);
@@ -24,6 +24,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   int _previousViewCount;
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
+  bool _showWebViewControls = true;
   Entity _entityToShow;
 
   @override
@@ -128,6 +129,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             flutterWebViewPlugin.evalJavascript(js.replaceFirst("[token]", ConnectionManager()._token));
           });
         }
+      });
+
+      flutterWebViewPlugin.onScrollYChanged.listen((double offsetY) {
+        setState(() {
+          _showWebViewControls = (offsetY == 0);
+        });
       });
     }
     await HomeAssistant().fetchData().then((_) {
@@ -855,14 +862,30 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           key: _scaffoldKey,
           primary: false,
           bottomNavigationBar: bottomBar,
-          body: _buildScaffoldBody(true)
+          body: Container(
+            color: Colors.white,
+          )
       );
     } else if (ConnectionManager().settingsLoaded && ConnectionManager().useWebView) {
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
       return WebviewScaffold(
         url: ConnectionManager().httpWebHost,
         primary: false,
-        appBar: EmptyAppBar (),
+        appBar: !_showWebViewControls ? EmptyAppBar() : AppBar(
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.smartphone),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/integration-settings');
+              }
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/connection-settings');
+              }
+            )
+          ]
+        ),
         bottomNavigationBar: bottomBar,
       );
     } else {
@@ -925,4 +948,25 @@ class  EmptyAppBar  extends StatelessWidget implements PreferredSizeWidget {
   }
   @override
   Size get preferredSize => Size(0.0,0.0);
+}
+
+class  WebViewAppBar  extends StatelessWidget implements PreferredSizeWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        IconButton(
+          icon: Icon(Icons.smartphone),
+          onPressed: () {
+            Navigator.of(context).pushNamed('/connection-settings');
+          },
+        ),
+      ],
+    );
+    //return Container();
+  }
+  @override
+  Size get preferredSize => Size(0.0,30.0);
 }
