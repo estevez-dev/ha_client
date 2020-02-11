@@ -27,7 +27,7 @@ import 'plugins/spoiler_card.dart';
 import 'package:workmanager/workmanager.dart' as workManager;
 import 'package:geolocator/geolocator.dart';
 import 'package:battery/battery.dart';
-import 'package:sentry/sentry.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 import 'utils/logger.dart';
@@ -137,7 +137,7 @@ part 'entities/media_player/widgets/media_player_progress_bar.widget.dart';
 part 'pages/whats_new.page.dart';
 
 EventBus eventBus = new EventBus();
-final SentryClient _sentry = SentryClient(dsn: "https://03ef364745cc4c23a60ddbc874c69925@sentry.io/1836118");
+//final SentryClient _sentry = SentryClient(dsn: "https://03ef364745cc4c23a60ddbc874c69925@sentry.io/1836118");
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
@@ -150,27 +150,21 @@ Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     if (Logger.isInDebugMode) {
       Logger.e('Caught error: $error');
       Logger.p(stackTrace);
-      return;
-    } else {
-      Logger.e('Caught error: $error. Reporting to Senrty.');
-      // Send the Exception and Stacktrace to Sentry in Production mode.
-      _sentry.captureException(
-        exception: error,
-        stackTrace: stackTrace,
-      );
     }
+    Crashlytics.instance.recordError(error, stackTrace);
+
 }
 
 void main() async {
+  //TODO remove when configured
+  Crashlytics.instance.enableInDevMode = true;
+
   FlutterError.onError = (FlutterErrorDetails details) {
     Logger.e(" Caut Flutter runtime error: ${details.exception}");
     if (Logger.isInDebugMode) {
       FlutterError.dumpErrorToConsole(details);
-    } else {
-      // In production mode, report to the application zone to report to
-      // Sentry.
-      Zone.current.handleUncaughtError(details.exception, details.stack);
     }
+    Crashlytics.instance.recordFlutterError(details);
   };
 
   runZoned(() {
