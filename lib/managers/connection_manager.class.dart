@@ -20,6 +20,7 @@ class ConnectionManager {
   String oauthUrl;
   String webhookId;
   bool useLovelace = true;
+  bool useWebView = true;
   bool settingsLoaded = false;
   bool get isAuthenticated => _token != null;
   StreamSubscription _socketSubscription;

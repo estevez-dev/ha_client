@@ -118,6 +118,18 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   _fetchData() async {
+    if (ConnectionManager().useWebView) {
+      final flutterWebViewPlugin = new FlutterWebviewPlugin();
+      
+      flutterWebViewPlugin.onStateChanged.listen((viewState) async {
+        if (viewState.type == WebViewState.startLoad) {
+          Logger.d("[WebView] Injecting external auth JS");
+          rootBundle.loadString('assets/js/externalAuth.js').then((js){
+            flutterWebViewPlugin.evalJavascript(js.replaceFirst("[token]", ConnectionManager()._token));
+          });
+        }
+      });
+    }
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
       if (_entityToShow != null) {
@@ -143,6 +155,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 
   Future _subscribe() {
     Completer completer = Completer();
+
     if (_stateSubscription == null) {
       _stateSubscription = eventBus.on<StateChangedEvent>().listen((event) {
         if (event.needToRebuildUI) {
@@ -837,33 +850,49 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         );
       }
     }
-    // This method is rerun every time setState is called.
-    if (HomeAssistant().isNoViews) {
+    if (!ConnectionManager().settingsLoaded) {
       return Scaffold(
           key: _scaffoldKey,
           primary: false,
-          drawer: _buildAppDrawer(),
           bottomNavigationBar: bottomBar,
           body: _buildScaffoldBody(true)
       );
-    } else {
-      return WillPopScope(
-        child: Scaffold(
-          key: _scaffoldKey,
-          drawer: _buildAppDrawer(),
-          primary: false,
-          bottomNavigationBar: bottomBar,
-          body: _buildScaffoldBody(false)
-        ),
-        onWillPop: () {
-          if (_entityToShow != null) {
-            eventBus.fire(ShowEntityPageEvent());
-            return Future.value(false);
-          } else {
-            return Future.value(true);
-          }
-        },
+    } else if (ConnectionManager().settingsLoaded && ConnectionManager().useWebView) {
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+      return WebviewScaffold(
+        url: ConnectionManager().httpWebHost,
+        primary: false,
+        appBar: EmptyAppBar (),
+        bottomNavigationBar: bottomBar,
       );
+    } else {
+      if (HomeAssistant().isNoViews) {
+        return Scaffold(
+            key: _scaffoldKey,
+            primary: false,
+            drawer: _buildAppDrawer(),
+            bottomNavigationBar: bottomBar,
+            body: _buildScaffoldBody(true)
+        );
+      } else {
+        return WillPopScope(
+          child: Scaffold(
+            key: _scaffoldKey,
+            drawer: _buildAppDrawer(),
+            primary: false,
+            bottomNavigationBar: bottomBar,
+            body: _buildScaffoldBody(false)
+          ),
+          onWillPop: () {
+            if (_entityToShow != null) {
+              eventBus.fire(ShowEntityPageEvent());
+              return Future.value(false);
+            } else {
+              return Future.value(true);
+            }
+          },
+        );
+      }
     }
   }
 
@@ -887,4 +916,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     //widget.homeAssistant?.disconnect();
     super.dispose();
   }
+}
+
+class  EmptyAppBar  extends StatelessWidget implements PreferredSizeWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+  @override
+  Size get preferredSize => Size(0.0,0.0);
 }
