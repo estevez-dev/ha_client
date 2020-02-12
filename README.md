@@ -3,7 +3,7 @@
 ## Native Android client for Home Assistant
 ### With notifications and Lovelace UI support
 
-Visit [ha-client.estevez.dev](http://ha-client.estevez.dev/) for more info.
+Visit [ha-client.app](http://ha-client.app/) for more info.
 
 Download the app from [Google Play](https://play.google.com/apps/testing/com.keyboardcrumbs.haclient)
 
