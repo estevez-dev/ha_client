@@ -244,7 +244,7 @@ class _HAClientAppState extends State<HAClientApp> {
           appBar: new AppBar(
             leading: IconButton(
                 icon: Icon(Icons.help),
-                onPressed: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.estevez.dev/docs#authentication")
+                onPressed: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.app/docs#authentication")
             ),
             title: new Text("Login with HA"),
             actions: <Widget>[

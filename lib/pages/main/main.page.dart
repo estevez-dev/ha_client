@@ -438,7 +438,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         title: Text("Help"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURL("http://ha-client.estevez.dev/docs");
+          Launcher.launchURL("http://ha-client.app/docs");
         },
       ),
       new ListTile(
@@ -454,10 +454,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
-                Launcher.launchURL("http://ha-client.estevez.dev/");
+                Launcher.launchURL("http://ha-client.app/");
               },
               child: Text(
-                "ha-client.estevez.dev",
+                "ha-client.app",
                 style: TextStyle(
                     color: Colors.blue,
                     decoration: TextDecoration.underline
@@ -470,7 +470,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
-                Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.estevez.dev/terms_and_conditions");
+                Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.app/terms_and_conditions");
               },
               child: Text(
                 "Terms and Conditions",
@@ -486,7 +486,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
-                Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.estevez.dev/privacy_policy");
+                Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.app/privacy_policy");
               },
               child: Text(
                 "Privacy Policy",

@@ -14,7 +14,7 @@ class AuthManager {
     Completer completer = Completer();
     final flutterWebviewPlugin = new FlutterWebviewPlugin();
     flutterWebviewPlugin.onUrlChanged.listen((String url) {
-      if (url.startsWith("https://ha-client.estevez.dev/service/auth_callback.html")) {
+      if (url.startsWith("https://ha-client.app/service/auth_callback.html")) {
         Logger.d("url=$url");
         String authCode = url.split("=")[1];
         Logger.d("authCode=$authCode");
@@ -23,7 +23,7 @@ class AuthManager {
           endPoint: "/auth/token",
           contentType: "application/x-www-form-urlencoded",
           includeAuthHeader: false,
-          data: "grant_type=authorization_code&code=$authCode&client_id=${Uri.encodeComponent('https://ha-client.estevez.dev')}"
+          data: "grant_type=authorization_code&code=$authCode&client_id=${Uri.encodeComponent('https://ha-client.app')}"
         ).then((response) {
           Logger.d("Got temp token");
           String tempToken = json.decode(response)['access_token'];

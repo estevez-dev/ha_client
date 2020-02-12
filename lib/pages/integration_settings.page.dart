@@ -118,7 +118,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                 Text("Location tracking", style: TextStyle(fontSize: Sizes.largeFontSize-2)),
                 Container(height: Sizes.rowPadding,),
                 InkWell(
-                  onTap: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.estevez.dev/docs#location-tracking"),
+                  onTap: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.app/docs#location-tracking"),
                   child: Text(
                     "Please read documentation!",
                     style: TextStyle(
