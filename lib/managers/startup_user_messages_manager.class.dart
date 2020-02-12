@@ -9,7 +9,7 @@ class StartupUserMessagesManager {
     return _instance;
   }
 
-  StartupUserMessagesManager._internal() {}
+  StartupUserMessagesManager._internal();
 
   bool _supportAppDevelopmentMessageShown;
   bool _whatsNewMessageShown;

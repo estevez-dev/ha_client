@@ -22,6 +22,7 @@ dependencies:
   in_app_purchase: ^0.3.0+3
   flutter_custom_tabs: ^0.6.0
   flutter_webview_plugin: ^0.3.10+1
+  webview_flutter: ^0.3.19+7
   firebase_messaging: ^6.0.9
   flutter_secure_storage: ^3.3.1+1
   device_info: ^0.4.1+4

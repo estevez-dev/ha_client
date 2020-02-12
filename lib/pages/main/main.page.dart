@@ -119,9 +119,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 
   _fetchData() async {
     if (ConnectionManager().useWebView) {
-      final flutterWebViewPlugin = new FlutterWebviewPlugin();
+      //final flutterWebViewPlugin = new FlutterWebviewPlugin();
       
-      flutterWebViewPlugin.onStateChanged.listen((viewState) async {
+      /*flutterWebViewPlugin.onStateChanged.listen((viewState) async {
         if (viewState.type == WebViewState.startLoad) {
           Logger.d("[WebView] Injecting external auth JS");
           rootBundle.loadString('assets/js/externalAuth.js').then((js){
@@ -135,7 +135,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           flutterWebViewPlugin.hide();
           Navigator.pushNamed(context, "/connection-settings");
         }
-      });
+      });*/
     }
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
@@ -806,6 +806,14 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   TabController _viewsTabController;
+  WebViewController _mainWebViewController;
+
+  _loadJSInterface() {
+    Logger.d("[MainWebView] Injecting JS interface");
+    rootBundle.loadString('assets/js/externalAuth.js').then((js){
+      _mainWebViewController.evaluateJavascript(js.replaceFirst("[token]", ConnectionManager()._token));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -867,11 +875,49 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           )
       );
     } else if (ConnectionManager().settingsLoaded && ConnectionManager().useWebView) {
-      return WebviewScaffold(
-        url: ConnectionManager().httpWebHostWithExtAuth,
-        primary: false,
-        debuggingEnabled: true,
-        appBar: EmptyAppBar()
+      return WillPopScope(
+        child: Scaffold(
+          primary: true,
+          appBar: EmptyAppBar(),
+          body: WebView(
+            initialUrl: ConnectionManager().httpWebHostWithExtAuth,
+            debuggingEnabled: Logger.isInDebugMode,
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (webviewController) {
+              _mainWebViewController = webviewController;
+            },
+            onPageStarted: (url) {
+              Logger.d("[MainWebView] Page started: $url");
+              if (url.contains(ConnectionManager()._domain)) {
+                _loadJSInterface();
+              } else if (url.contains("htcmd://show-settings")) {
+                Navigator.of(context).pushNamed("/connection-settings").then((_) {
+                  _mainWebViewController.goBack();
+                });
+              }
+            },
+            gestureNavigationEnabled: true,
+            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+              new Factory<OneSequenceGestureRecognizer>(
+                () => new EagerGestureRecognizer(),
+              ),
+            ].toSet(),
+          )
+        ),
+        onWillPop: () {
+          Completer completer = Completer();
+          if (_mainWebViewController != null) {
+            _mainWebViewController.canGoBack().then((canGoBack) {
+              if (canGoBack) {
+                _mainWebViewController.goBack();
+              }
+              completer.complete(!canGoBack);  
+            });
+          } else {
+            completer.complete(true);
+          }
+          return completer.future;
+        },
       );
     } else {
       if (HomeAssistant().isNoViews) {
@@ -907,8 +953,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    final flutterWebviewPlugin = new FlutterWebviewPlugin();
-    flutterWebviewPlugin.dispose();
+    //final flutterWebviewPlugin = new FlutterWebviewPlugin();
+    //flutterWebviewPlugin.dispose();
     _viewsTabController?.dispose();
     _stateSubscription?.cancel();
     _settingsSubscription?.cancel();
