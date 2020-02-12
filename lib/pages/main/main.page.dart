@@ -867,18 +867,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           )
       );
     } else if (ConnectionManager().settingsLoaded && ConnectionManager().useWebView) {
-      String webUIurl = ConnectionManager().httpWebHost;
-      if (webUIurl.contains("?")) {
-        webUIurl += "&external_auth=1";
-      } else {
-        webUIurl += "?external_auth=1";
-      }
       return WebviewScaffold(
-        url: webUIurl,
+        url: ConnectionManager().httpWebHostWithExtAuth,
         primary: false,
         debuggingEnabled: true,
-        appBar: EmptyAppBar(),
-        bottomNavigationBar: bottomBar,
+        appBar: EmptyAppBar()
       );
     } else {
       if (HomeAssistant().isNoViews) {
