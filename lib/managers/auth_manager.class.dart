@@ -12,7 +12,7 @@ class AuthManager {
 
   Future start({String oauthUrl}) {
     Completer completer = Completer();
-    final flutterWebviewPlugin = new FlutterWebviewPlugin();
+    final flutterWebviewPlugin = new standaloneWebview.FlutterWebviewPlugin();
     flutterWebviewPlugin.onUrlChanged.listen((String url) {
       if (url.startsWith("https://ha-client.app/service/auth_callback.html")) {
         Logger.d("url=$url");

@@ -871,10 +871,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           primary: false,
           bottomNavigationBar: bottomBar,
           body: Container(
-            color: Colors.white,
+            color: Colors.blue,
           )
       );
-    } else if (ConnectionManager().settingsLoaded && ConnectionManager().useWebView) {
+    } else if (ConnectionManager().settingsLoaded && ConnectionManager().useWebView && !_showLoginButton) {
       return WillPopScope(
         child: Scaffold(
           primary: true,
@@ -890,10 +890,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
               Logger.d("[MainWebView] Page started: $url");
               if (url.contains(ConnectionManager()._domain)) {
                 _loadJSInterface();
-              } else if (url.contains("htcmd://show-settings")) {
-                Navigator.of(context).pushNamed("/connection-settings").then((_) {
-                  _mainWebViewController.goBack();
-                });
               }
             },
             gestureNavigationEnabled: true,
@@ -902,6 +898,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                 () => new EagerGestureRecognizer(),
               ),
             ].toSet(),
+            javascriptChannels: {
+              new JavascriptChannel(name: 'HAClient', onMessageReceived: (JavascriptMessage message) {
+                if (message.message == "show-settings") {
+                  Navigator.of(context).pushNamed("/connection-settings");
+                }
+              })
+            }
           )
         ),
         onWillPop: () {

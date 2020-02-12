@@ -41,9 +41,9 @@ class Launcher {
     } else {
       url += "?external_auth=1";
     }
-    final flutterWebViewPlugin = new FlutterWebviewPlugin();
+    final flutterWebViewPlugin = new standaloneWebview.FlutterWebviewPlugin();
     flutterWebViewPlugin.onStateChanged.listen((viewState) async {
-      if (viewState.type == WebViewState.startLoad) {
+      if (viewState.type == standaloneWebview.WebViewState.startLoad) {
         Logger.d("[WebView] Injecting external auth JS");
         rootBundle.loadString('assets/js/externalAuth.js').then((js){
           flutterWebViewPlugin.evalJavascript(js.replaceFirst("[token]", ConnectionManager()._token));

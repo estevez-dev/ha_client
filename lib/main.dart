@@ -30,7 +30,7 @@ import 'package:workmanager/workmanager.dart' as workManager;
 import 'package:geolocator/geolocator.dart';
 import 'package:battery/battery.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standaloneWebview;
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'utils/logger.dart';
@@ -231,7 +231,7 @@ class _HAClientAppState extends State<HAClientApp> {
           mediaType: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['type'] ?? '' : ''}",
         ),
         "/log-view": (context) => LogViewPage(title: "Log"),
-        "/webview": (context) => WebviewScaffold(
+        "/webview": (context) => standaloneWebview.WebviewScaffold(
           url: "${(ModalRoute.of(context).settings.arguments as Map)['url']}",
           appBar: new AppBar(
             leading: IconButton(
@@ -242,7 +242,7 @@ class _HAClientAppState extends State<HAClientApp> {
           ),
         ),
         "/whats-new": (context) => WhatsNewPage(),
-        "/auth": (context) => new WebviewScaffold(
+        "/auth": (context) => new standaloneWebview.WebviewScaffold(
           url: "${ConnectionManager().oauthUrl}",
           appBar: new AppBar(
             leading: IconButton(

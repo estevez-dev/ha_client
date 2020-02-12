@@ -30,6 +30,6 @@ window.externalApp.externalBus = function(message) {
             window.externalBus(responseData);
         }, 500);
     } else if (messageObj.type == "config_screen/show") {
-        window.location.href = "htcmd://show-settings";
+        HAClient.postMessage('show-settings');
     }
 };
