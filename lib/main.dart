@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:event_bus/event_bus.dart';
@@ -192,6 +191,10 @@ class _HAClientAppState extends State<HAClientApp> {
     _subscription = purchaseUpdates.listen((purchases) {
       _handlePurchaseUpdates(purchases);
     });
+    workManager.Workmanager.initialize(
+      updateDeviceLocationIsolate,
+      isInDebugMode: false
+    );
     super.initState();
   }
 

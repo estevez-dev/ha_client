@@ -91,12 +91,12 @@ class LocationManager {
           },
           frequency: interval,
           initialDelay: Duration(minutes: delay),
-          existingWorkPolicy: workManager.ExistingWorkPolicy.keep,
+          existingWorkPolicy: workManager.ExistingWorkPolicy.replace,
           backoffPolicy: workManager.BackoffPolicy.linear,
           backoffPolicyDelay: interval,
           constraints: workManager.Constraints(
-            networkType: workManager.NetworkType.connected
-          )
+            networkType: workManager.NetworkType.connected,
+          ),
         );
       }
     }
@@ -149,46 +149,52 @@ class LocationManager {
 
 void updateDeviceLocationIsolate() {
   workManager.Workmanager.executeTask((backgroundTask, data) {
-    //print("[Background $backgroundTask] Started");
+    Completer completer = Completer();
+    print("[Background $backgroundTask] Started");
     Geolocator geolocator = Geolocator();
     var battery = Battery();
-    int batteryLevel = 100;
+    int batteryLevel = 1;
     String webhookId = data["webhookId"];
     String httpWebHost = data["httpWebHost"];
     if (webhookId != null && webhookId.isNotEmpty) {
-        //print("[Background $backgroundTask] hour=$battery");
-        String url = "$httpWebHost/api/webhook/$webhookId";
-        Map<String, String> headers = {};
-        headers["Content-Type"] = "application/json";
-        Map data = {
-          "type": "update_location",
-          "data": {
-            "gps": [],
-            "gps_accuracy": 0,
-            "battery": batteryLevel
+      String url = "$httpWebHost/api/webhook/$webhookId";
+      Map<String, String> headers = {};
+      headers["Content-Type"] = "application/json";
+      Map data = {
+        "type": "update_location",
+        "data": {
+          "gps": [],
+          "gps_accuracy": 0,
+          "battery": batteryLevel
+        }
+      };
+      print("[Background $backgroundTask] Getting battery level...");
+      battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
+        print("[Background $backgroundTask] Battery level is ${data["data"]["battery"]}. Getting device location...");
+        geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
+          if (location != null) {
+            print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
+            data["data"]["gps"] = [location.latitude, location.longitude];
+            data["data"]["gps_accuracy"] = location.accuracy;
+            print("[Background $backgroundTask] Sending data home.");
+            http.post(
+                url,
+                headers: headers,
+                body: json.encode(data)
+            );
+            completer.complete(true);
+          } else {
+            print("[Background $backgroundTask] Can't get device location. Location is null");
+            completer.complete(true);
           }
-        };
-        //print("[Background $backgroundTask] Getting battery level...");
-        battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
-          //print("[Background $backgroundTask] Getting device location...");
-          geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
-            if (location != null) {
-              //print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
-              data["data"]["gps"] = [location.latitude, location.longitude];
-              data["data"]["gps_accuracy"] = location.accuracy;
-              //print("[Background $backgroundTask] Sending data home.");
-              http.post(
-                  url,
-                  headers: headers,
-                  body: json.encode(data)
-              );
-            } else {
-              throw "Can't get device location. Location is null";
-            }
-          }).catchError((e) {
-            //print("[Background $backgroundTask] Error getting current location: ${e.toString()}");
-          });
+        }).catchError((e) {
+          print("[Background $backgroundTask] Error getting current location: ${e.toString()}");
+          completer.complete(true);
         });
+      });
+    } else {
+      print("[Background $backgroundTask] Not configured");
+      completer.complete(true);
     }
     return Future.value(true);
   });

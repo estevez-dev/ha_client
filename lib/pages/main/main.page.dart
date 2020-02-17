@@ -29,10 +29,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   @override
   void initState() {
     super.initState();
-    workManager.Workmanager.initialize(
-      updateDeviceLocationIsolate,
-      isInDebugMode: false
-    );
     WidgetsBinding.instance.addObserver(this);
 
     _firebaseMessaging.configure(
@@ -118,25 +114,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   _fetchData() async {
-    if (ConnectionManager().useWebView) {
-      //final flutterWebViewPlugin = new FlutterWebviewPlugin();
-      
-      /*flutterWebViewPlugin.onStateChanged.listen((viewState) async {
-        if (viewState.type == WebViewState.startLoad) {
-          Logger.d("[WebView] Injecting external auth JS");
-          rootBundle.loadString('assets/js/externalAuth.js').then((js){
-            flutterWebViewPlugin.evalJavascript(js.replaceFirst("[token]", ConnectionManager()._token));
-          });
-        }
-      });
-      
-      flutterWebViewPlugin.onUrlChanged.listen((String url) {
-        if (url.contains("htcmd://show-settings")) {
-          flutterWebViewPlugin.hide();
-          Navigator.pushNamed(context, "/connection-settings");
-        }
-      });*/
-    }
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
       if (_entityToShow != null) {
@@ -857,17 +834,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         );
       }
     }
-    if (!ConnectionManager().settingsLoaded) {
-      return Scaffold(
-          key: _scaffoldKey,
-          primary: false,
-          //bottomNavigationBar: bottomBar,
-          body: Container(
-            color: Colors.blue,
-          )
-      );
-    } else {
-      if (HomeAssistant().isNoViews) {
+    if (HomeAssistant().isNoViews) {
         return Scaffold(
             key: _scaffoldKey,
             primary: false,
@@ -894,7 +861,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           },
         );
       }
-    }
   }
 
   @override
