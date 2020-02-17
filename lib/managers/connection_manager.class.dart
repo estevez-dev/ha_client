@@ -15,7 +15,6 @@ class ConnectionManager {
   String displayHostname;
   String _webSocketAPIEndpoint;
   String httpWebHost;
-  String httpWebHostWithExtAuth;
   String _token;
   String _tempToken;
   String oauthUrl;
@@ -52,12 +51,6 @@ class ConnectionManager {
       "${prefs.getString('hassio-protocol')}://$_domain:$_port/api/websocket";
       httpWebHost =
       "${prefs.getString('hassio-res-protocol')}://$_domain:$_port";
-      httpWebHostWithExtAuth = httpWebHost;
-      if (httpWebHostWithExtAuth.contains("?")) {
-        httpWebHostWithExtAuth += "&external_auth=1";
-      } else {
-        httpWebHostWithExtAuth += "?external_auth=1";
-      }
       if ((_domain == null) || (_port == null) ||
           (_domain.isEmpty) || (_port.isEmpty)) {
         completer.completeError(HAError.checkConnectionSettings());

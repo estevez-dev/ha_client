@@ -806,14 +806,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   TabController _viewsTabController;
-  WebViewController _mainWebViewController;
-
-  _loadJSInterface() {
-    Logger.d("[MainWebView] Injecting JS interface");
-    rootBundle.loadString('assets/js/externalAuth.js').then((js){
-      _mainWebViewController.evaluateJavascript(js.replaceFirst("[token]", ConnectionManager()._token));
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -869,58 +861,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       return Scaffold(
           key: _scaffoldKey,
           primary: false,
-          bottomNavigationBar: bottomBar,
+          //bottomNavigationBar: bottomBar,
           body: Container(
             color: Colors.blue,
           )
-      );
-    } else if (ConnectionManager().settingsLoaded && ConnectionManager().useWebView && !_showLoginButton) {
-      return WillPopScope(
-        child: Scaffold(
-          primary: true,
-          appBar: EmptyAppBar(),
-          body: WebView(
-            initialUrl: ConnectionManager().httpWebHostWithExtAuth,
-            debuggingEnabled: Logger.isInDebugMode,
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (webviewController) {
-              _mainWebViewController = webviewController;
-            },
-            onPageStarted: (url) {
-              Logger.d("[MainWebView] Page started: $url");
-              if (url.contains(ConnectionManager()._domain)) {
-                _loadJSInterface();
-              }
-            },
-            gestureNavigationEnabled: true,
-            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-              new Factory<OneSequenceGestureRecognizer>(
-                () => new EagerGestureRecognizer(),
-              ),
-            ].toSet(),
-            javascriptChannels: {
-              new JavascriptChannel(name: 'HAClient', onMessageReceived: (JavascriptMessage message) {
-                if (message.message == "show-settings") {
-                  Navigator.of(context).pushNamed("/connection-settings");
-                }
-              })
-            }
-          )
-        ),
-        onWillPop: () {
-          Completer completer = Completer();
-          if (_mainWebViewController != null) {
-            _mainWebViewController.canGoBack().then((canGoBack) {
-              if (canGoBack) {
-                _mainWebViewController.goBack();
-              }
-              completer.complete(!canGoBack);  
-            });
-          } else {
-            completer.complete(true);
-          }
-          return completer.future;
-        },
       );
     } else {
       if (HomeAssistant().isNoViews) {
@@ -973,15 +917,4 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     //widget.homeAssistant?.disconnect();
     super.dispose();
   }
-}
-
-class  EmptyAppBar  extends StatelessWidget implements PreferredSizeWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.blue,
-    );
-  }
-  @override
-  Size get preferredSize => Size(0.0,0.0);
 }
