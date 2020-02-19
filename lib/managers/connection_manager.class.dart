@@ -352,7 +352,7 @@ class ConnectionManager {
     _currentMessageId += 1;
   }
 
-  Future callService({@required String domain, @required String service, String entityId, Map data}) {
+  Future callService({@required String domain, @required String service, entityId, Map data}) {
     eventBus.fire(NotifyServiceCallEvent(domain, service, entityId));
     Logger.d("Service call: $domain.$service, $entityId, $data");
     Completer completer = Completer();

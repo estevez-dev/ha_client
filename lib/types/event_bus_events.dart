@@ -36,7 +36,7 @@ class StartAuthEvent {
 class NotifyServiceCallEvent {
   String domain;
   String service;
-  String entityId;
+  var entityId;
 
   NotifyServiceCallEvent(this.domain, this.service, this.entityId);
 }

@@ -278,7 +278,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     );
   }
 
-  void _notifyServiceCalled(String domain, String service, String entityId) {
+  void _notifyServiceCalled(String domain, String service, entityId) {
     _showInfoBottomBar(
         message: "Calling $domain.$service",
         duration: Duration(seconds: 4)

@@ -132,7 +132,33 @@ class CardWidget extends StatelessWidget {
       return Container(height: 0.0, width: 0.0,);
     }
     List<Widget> body = [];
-    body.add(CardHeader(name: card.name));
+    Widget headerSwitch;
+    if (card.showHeaderToggle) {
+      bool headerToggleVal = entitiesToShow.any((EntityWrapper en){ return en.entity.state == EntityState.on; });
+      List<String> entitiesToToggle = entitiesToShow.where((EntityWrapper enw) {
+        return <String>["switch", "light", "automation", "input_boolean"].contains(enw.entity.domain);
+      }).map((EntityWrapper en) {
+          return en.entity.entityId;
+      }).toList();
+      headerSwitch = Switch(
+            value: headerToggleVal,
+            onChanged: (val) {
+              if (entitiesToToggle.isNotEmpty) {
+                ConnectionManager().callService(
+                  domain: "homeassistant",
+                  service: val ? "turn_on" : "turn_off",
+                  entityId: entitiesToToggle
+                );
+              }
+            },
+          );
+    }
+    body.add(
+      CardHeader(
+        name: card.name,
+        trailing: headerSwitch 
+      )
+    );
     entitiesToShow.forEach((EntityWrapper entity) {
       body.add(
           Padding(
@@ -329,7 +355,11 @@ class CardWidget extends StatelessWidget {
 
   Widget _buildUnsupportedCard(BuildContext context) {
     List<Widget> body = [];
-    body.add(CardHeader(name: card.name ?? ""));
+    body.add(
+      CardHeader(
+        name: card.name ?? ""
+      )
+    );
     List<Widget> result = [];
     if (card.linkedEntityWrapper != null) {
       result.addAll(<Widget>[

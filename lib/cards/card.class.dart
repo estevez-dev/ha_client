@@ -10,6 +10,7 @@ class HACard {
   bool showName;
   bool showState;
   bool showEmpty;
+  bool showHeaderToggle;
   int columnsCount;
   List stateFilter;
   List states;
@@ -26,6 +27,7 @@ class HACard {
     this.linkedEntityWrapper,
     this.columnsCount: 4,
     this.showName: true,
+    this.showHeaderToggle: true,
     this.showState: true,
     this.stateFilter: const [],
     this.showEmpty: true,
