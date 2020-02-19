@@ -357,12 +357,12 @@ class _MediaPlayerControlsState extends State<MediaPlayerControls> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             IconButton(
-                icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:plus")),
-                onPressed: () => _setVolumeUp(entity.entityId)
-            ),
-            IconButton(
                 icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:minus")),
                 onPressed: () => _setVolumeDown(entity.entityId)
+            ),
+            IconButton(
+                icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:plus")),
+                onPressed: () => _setVolumeUp(entity.entityId)
             )
           ],
         );
