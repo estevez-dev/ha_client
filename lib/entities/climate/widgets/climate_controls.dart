@@ -10,9 +10,8 @@ class ClimateControlWidget extends StatefulWidget {
 
 class _ClimateControlWidgetState extends State<ClimateControlWidget> {
 
-  bool _showPending = false;
+  bool _temperaturePending = false;
   bool _changedHere = false;
-  Timer _resetTimer;
   Timer _tempThrottleTimer;
   Timer _targetTempThrottleTimer;
   double _tmpTemperature = 0.0;
@@ -27,9 +26,11 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
   bool _tmpAuxHeat = false;
 
   void _resetVars(ClimateEntity entity) {
-    _tmpTemperature = entity.temperature;
-    _tmpTargetHigh = entity.targetHigh;
-    _tmpTargetLow = entity.targetLow;
+    if (!_temperaturePending) {
+      _tmpTemperature = entity.temperature;
+      _tmpTargetHigh = entity.targetHigh;
+      _tmpTargetLow = entity.targetLow;
+    }
     _tmpHVACMode = entity.state;
     _tmpFanMode = entity.fanMode;
     _tmpSwingMode = entity.swingMode;
@@ -38,7 +39,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     _tmpAuxHeat = entity.auxHeat;
     _tmpTargetHumidity = entity.targetHumidity;
 
-    _showPending = false;
     _changedHere = false;
   }
 
@@ -73,46 +73,44 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
   }
 
   void _setTemperature(ClimateEntity entity) {
-    if (_tempThrottleTimer!=null) {
-      _tempThrottleTimer.cancel();
-    }
+    _tempThrottleTimer?.cancel();
     setState(() {
       _changedHere = true;
+      _temperaturePending = true;
       _tmpTemperature = double.parse(_tmpTemperature.toStringAsFixed(1));
     });
     _tempThrottleTimer = Timer(Duration(seconds: 2), () {
       setState(() {
         _changedHere = true;
+        _temperaturePending = false;
         ConnectionManager().callService(
           domain: entity.domain,
           service: "set_temperature",
           entityId: entity.entityId,
           data: {"temperature": "${_tmpTemperature.toStringAsFixed(1)}"}
         );
-        _resetStateTimer(entity);
       });
     });
   }
 
   void _setTargetTemp(ClimateEntity entity) {
-    if (_targetTempThrottleTimer!=null) {
-      _targetTempThrottleTimer.cancel();
-    }
+    _targetTempThrottleTimer?.cancel();
     setState(() {
       _changedHere = true;
+      _temperaturePending = true;
       _tmpTargetLow = double.parse(_tmpTargetLow.toStringAsFixed(1));
       _tmpTargetHigh = double.parse(_tmpTargetHigh.toStringAsFixed(1));
     });
     _targetTempThrottleTimer = Timer(Duration(seconds: 2), () {
       setState(() {
         _changedHere = true;
+        _temperaturePending = false;
         ConnectionManager().callService(
           domain: entity.domain,
           service: "set_temperature",
           entityId: entity.entityId,
           data: {"target_temp_high": "${_tmpTargetHigh.toStringAsFixed(1)}", "target_temp_low": "${_tmpTargetLow.toStringAsFixed(1)}"}
         );
-        _resetStateTimer(entity);
       });
     });
   }
@@ -127,7 +125,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
           entityId: entity.entityId,
           data: {"humidity": "$_tmpTargetHumidity"}
         );
-      _resetStateTimer(entity);
     });
   }
 
@@ -141,7 +138,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
           entityId: entity.entityId,
           data: {"hvac_mode": "$_tmpHVACMode"}
         );
-      _resetStateTimer(entity);
     });
   }
 
@@ -155,7 +151,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
           entityId: entity.entityId,
           data: {"swing_mode": "$_tmpSwingMode"}
         );
-      _resetStateTimer(entity);
     });
   }
 
@@ -164,7 +159,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       _tmpFanMode = value;
       _changedHere = true;
       ConnectionManager().callService(domain: entity.domain, service: "set_fan_mode", entityId: entity.entityId, data: {"fan_mode": "$_tmpFanMode"});
-      _resetStateTimer(entity);
     });
   }
 
@@ -173,7 +167,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       _tmpPresetMode = value;
       _changedHere = true;
       ConnectionManager().callService(domain: entity.domain, service: "set_preset_mode", entityId: entity.entityId, data: {"preset_mode": "$_tmpPresetMode"});
-      _resetStateTimer(entity);
     });
   }
 
@@ -191,17 +184,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       _tmpAuxHeat = value;
       _changedHere = true;
       ConnectionManager().callService(domain: entity.domain, service: "set_aux_heat", entityId: entity.entityId, data: {"aux_heat": "$_tmpAuxHeat"});
-      _resetStateTimer(entity);
-    });
-  }
-
-  void _resetStateTimer(ClimateEntity entity) {
-    if (_resetTimer!=null) {
-      _resetTimer.cancel();
-    }
-    _resetTimer = Timer(Duration(seconds: 3), () {
-      setState(() {});
-      _resetVars(entity);
     });
   }
 
@@ -209,11 +191,11 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
   Widget build(BuildContext context) {
     final entityModel = EntityModel.of(context);
     final ClimateEntity entity = entityModel.entityWrapper.entity;
+    Logger.d("[Climate widget build] changed here = $_changedHere");
     if (_changedHere) {
-      _showPending = (_tmpTemperature != entity.temperature || _tmpTargetHigh != entity.targetHigh || _tmpTargetLow != entity.targetLow);
+      //_showPending = (_tmpTemperature != entity.temperature || _tmpTargetHigh != entity.targetHigh || _tmpTargetLow != entity.targetLow);
       _changedHere = false;
     } else {
-      _resetTimer?.cancel();
       _resetVars(entity);
     }
     return Padding(
@@ -321,7 +303,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
           )),
           TemperatureControlWidget(
             value: _tmpTemperature,
-            fontColor: _showPending ? Colors.red : Colors.black,
+            fontColor: _temperaturePending ? Colors.red : Colors.black,
             onDec: () => _temperatureDown(entity),
             onInc: () => _temperatureUp(entity),
           )
@@ -338,7 +320,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       controls.addAll(<Widget>[
         TemperatureControlWidget(
           value: _tmpTargetLow,
-          fontColor: _showPending ? Colors.red : Colors.black,
+          fontColor: _temperaturePending ? Colors.red : Colors.black,
           onDec: () => _targetLowDown(entity),
           onInc: () => _targetLowUp(entity),
         ),
@@ -351,7 +333,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       controls.add(
           TemperatureControlWidget(
             value: _tmpTargetHigh,
-            fontColor: _showPending ? Colors.red : Colors.black,
+            fontColor: _temperaturePending ? Colors.red : Colors.black,
             onDec: () => _targetHighDown(entity),
             onInc: () => _targetHighUp(entity),
           )
@@ -429,7 +411,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
 
   @override
   void dispose() {
-    _resetTimer?.cancel();
     super.dispose();
   }
 
