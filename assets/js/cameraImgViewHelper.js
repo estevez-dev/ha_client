@@ -9,7 +9,12 @@ function fixCameraImgView() {
         img[0].removeAttribute('style');
         setTimeout(function() {
             window[messageChannel].postMessage(document.body.clientWidth / img[0].offsetHeight);
-        }, 100);
+        }, 200);
+        setTimeout(function() {
+            document.body.style.pointerEvents = 'none';
+            document.body.style.overflow = 'hidden';
+            window.onscroll = function () { window.scrollTo(0, 0); };
+        }, 200);
     }
 }
 

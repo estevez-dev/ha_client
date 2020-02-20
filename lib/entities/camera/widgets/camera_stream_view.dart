@@ -105,6 +105,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
           initialUrl: streamUrl,
           initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
           debuggingEnabled: Logger.isInDebugMode,
+          gestureNavigationEnabled: false,
           javascriptMode: JavascriptMode.unrestricted,
           javascriptChannels: {
             JavascriptChannel(
