@@ -31,6 +31,7 @@ dependencies:
   workmanager: ^0.2.0
   battery: ^0.3.1+7
   firebase_crashlytics: ^0.1.2+5
+  video_player: ^0.10.7
   
 
 dev_dependencies:

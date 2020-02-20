@@ -31,6 +31,7 @@ import 'package:battery/battery.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standaloneWebview;
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:video_player/video_player.dart';
 
 import 'utils/logger.dart';
 

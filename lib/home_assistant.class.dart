@@ -119,6 +119,17 @@ class HomeAssistant {
     return completer.future;
   }
 
+  Future getCameraStream(String entityId) {
+    Completer completer = Completer();
+
+    ConnectionManager().sendSocketMessage(type: "camera/stream", additionalData: {"entity_id": entityId}).then((data) {
+      completer.complete(data);
+    }).catchError((e) {
+      completer.completeError(e);
+    });
+    return completer.future;
+  }
+
   Future _getUserInfo() async {
     _userName = null;
     await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) {
