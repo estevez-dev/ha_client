@@ -16,8 +16,8 @@ class _CameraStreamViewState extends State<CameraStreamView> {
   }
 
   CameraEntity _entity;
-  bool started = false;
   String streamUrl = "";
+  WebViewController webViewController;
 
   launchStream() {
     Launcher.launchURLInCustomTab(
@@ -28,26 +28,28 @@ class _CameraStreamViewState extends State<CameraStreamView> {
 
   @override
   Widget build(BuildContext context) {
-    if (!started) {
-      _entity = EntityModel
+    _entity = EntityModel
           .of(context)
           .entityWrapper
           .entity;
-      started = true;
-    }
     streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
         .entityId}?token=${_entity.attributes['access_token']}';
-    return Column(
-      children: <Widget>[
-        Container(
-            padding: const EdgeInsets.all(20.0),
-            child: IconButton(
-              icon: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:monitor-screenshot"), color: Colors.amber),
-              iconSize: 50.0,
-              onPressed: () => launchStream(),
-            )
-        )
-      ],
+    return AspectRatio(
+      aspectRatio: 1.33,
+      child: WebView(
+        initialUrl: streamUrl,
+        initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+        debuggingEnabled: Logger.isInDebugMode,
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController controller) {
+          webViewController = controller;
+        },
+        onPageStarted: (url) {
+          rootBundle.loadString('assets/js/cameraImgViewHelper.js').then((js){
+            webViewController.evaluateJavascript(js);
+          });
+        },
+      ),
     );
   }
 
