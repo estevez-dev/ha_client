@@ -16,7 +16,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
   VideoPlayerController videoPlayerController;
   Timer monitorTimer;
   bool started = false;
-  double aspectRatio = 1.78;
+  double aspectRatio = 1.33;
 
   @override
   void initState() {
@@ -24,9 +24,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
   }
 
   void loadStreamUrl() {
-    setState((){
-      started = true;
-    });
     Logger.d("[Camera Player] Loading stream url");
     HomeAssistant().getCameraStream(_entity.entityId)
       .then((data) {
@@ -44,6 +41,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
     videoPlayerController = VideoPlayerController.network("${ConnectionManager().httpWebHost}${data["url"]}");
     videoPlayerController.initialize().then((_) {
       setState((){
+        started = true;
         aspectRatio = videoPlayerController.value.aspectRatio;
       });
       autoPlay();
@@ -89,7 +87,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
     if (_entity.supportStream && !started) {
       loadStreamUrl();
       return buildLoading();
-    } else if (_entity.supportStream && started) {
+    } else if (_entity.supportStream) {
       if (videoPlayerController.value.initialized) {
         return AspectRatio(
           aspectRatio: aspectRatio,
@@ -102,18 +100,28 @@ class _CameraStreamViewState extends State<CameraStreamView> {
       streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
           .entityId}?token=${_entity.attributes['access_token']}';
       return AspectRatio(
-        aspectRatio: 1.33,
+        aspectRatio: aspectRatio,
         child: WebView(
           initialUrl: streamUrl,
           initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
           debuggingEnabled: Logger.isInDebugMode,
           javascriptMode: JavascriptMode.unrestricted,
+          javascriptChannels: {
+            JavascriptChannel(
+              name: 'HA_${_entity.entityId.replaceAll('.', '_')}',
+              onMessageReceived: ((message) {
+                setState((){
+                  aspectRatio = double.tryParse(message.message) ?? 1.33;
+                });
+              })
+            )
+          },
           onWebViewCreated: (WebViewController controller) {
             webViewController = controller;
           },
           onPageStarted: (url) {
             rootBundle.loadString('assets/js/cameraImgViewHelper.js').then((js){
-              webViewController.evaluateJavascript(js);
+              webViewController.evaluateJavascript(js.replaceFirst('entity_id_placeholder', _entity.entityId.replaceAll('.', '_')));
             });
           },
         ),
