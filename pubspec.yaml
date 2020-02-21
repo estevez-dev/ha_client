@@ -5,7 +5,7 @@ version: 0.8.0+880
 
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -52,6 +52,7 @@ flutter:
     - images/hassio-192x192.png
     - assets/js/externalAuth.js
     - assets/js/cameraImgViewHelper.js
+    - assets/html/cameraView.html
 
   fonts:
     - family: "Material Design Icons"

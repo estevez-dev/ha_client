@@ -17,24 +17,42 @@ class _CameraStreamViewState extends State<CameraStreamView> {
   Timer monitorTimer;
   bool started = false;
   double aspectRatio = 1.33;
+  String htmlView;
+  String messageChannelName = 'unknown';
 
   @override
   void initState() {
     super.initState();
   }
 
-  void loadStreamUrl() {
-    Logger.d("[Camera Player] Loading stream url");
-    HomeAssistant().getCameraStream(_entity.entityId)
-      .then((data) {
-        Logger.d("[Camera Player] Stream url: ${ConnectionManager().httpWebHost}${data["url"]}");
-        if (videoPlayerController != null) {
-          videoPlayerController.dispose().then((_) => createPlayer(data));
-        } else {
-          createPlayer(data);
-        }
-      })
-      .catchError((e) => Logger.e("[Camera Player] $e"));
+  void loadResources() {
+    Logger.d("[Camera Player] Loading resources");
+    if (_entity.supportStream) {
+      HomeAssistant().getCameraStream(_entity.entityId)
+        .then((data) {
+          Logger.d("[Camera Player] Stream url: ${ConnectionManager().httpWebHost}${data["url"]}");
+          if (videoPlayerController != null) {
+            videoPlayerController.dispose().then((_) => createPlayer(data));
+          } else {
+            createPlayer(data);
+          }
+        })
+        .catchError((e) => Logger.e("[Camera Player] $e"));
+    } else {
+      streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
+          .entityId}?token=${_entity.attributes['access_token']}';
+      messageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
+      rootBundle.loadString('assets/html/cameraView.html').then((file) {
+        htmlView = Uri.dataFromString(
+            file.replaceFirst('{{stream_url}}', streamUrl).replaceFirst('{{message_channel}}', messageChannelName),
+            mimeType: 'text/html',
+            encoding: Encoding.getByName('utf-8')
+        ).toString();
+        setState((){
+          started = true;
+        });
+      });
+    }
   }
 
   void createPlayer(data) {
@@ -48,7 +66,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
       startMonitor();
     }).catchError((e) {
       Logger.e("[Camera Player] Error player init. Retrying");
-      loadStreamUrl();
+      loadResources();
     });
   }
 
@@ -80,12 +98,12 @@ class _CameraStreamViewState extends State<CameraStreamView> {
 
   @override
   Widget build(BuildContext context) {
-    _entity = EntityModel
+    if (!started) {
+      _entity = EntityModel
           .of(context)
           .entityWrapper
           .entity;
-    if (_entity.supportStream && !started) {
-      loadStreamUrl();
+      loadResources();
       return buildLoading();
     } else if (_entity.supportStream) {
       if (videoPlayerController.value.initialized) {
@@ -97,19 +115,17 @@ class _CameraStreamViewState extends State<CameraStreamView> {
         return buildLoading();
       }
     } else {
-      streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
-          .entityId}?token=${_entity.attributes['access_token']}';
       return AspectRatio(
         aspectRatio: aspectRatio,
         child: WebView(
-          initialUrl: streamUrl,
+          initialUrl: htmlView,
           initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
           debuggingEnabled: Logger.isInDebugMode,
           gestureNavigationEnabled: false,
           javascriptMode: JavascriptMode.unrestricted,
           javascriptChannels: {
             JavascriptChannel(
-              name: 'HA_${_entity.entityId.replaceAll('.', '_')}',
+              name: messageChannelName,
               onMessageReceived: ((message) {
                 setState((){
                   aspectRatio = double.tryParse(message.message) ?? 1.33;
@@ -121,9 +137,9 @@ class _CameraStreamViewState extends State<CameraStreamView> {
             webViewController = controller;
           },
           onPageStarted: (url) {
-            rootBundle.loadString('assets/js/cameraImgViewHelper.js').then((js){
+            /*rootBundle.loadString('assets/js/cameraImgViewHelper.js').then((js){
               webViewController.evaluateJavascript(js.replaceFirst('entity_id_placeholder', _entity.entityId.replaceAll('.', '_')));
-            });
+            });*/
           },
         ),
       );

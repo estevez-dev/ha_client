@@ -1,0 +1,28 @@
+<html>
+<head>
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        widows: 100%;
+        height: 100%;
+    }
+
+    img {
+        width: 100%;
+    }
+</style>
+<script>
+    var messageChannel = '{{message_channel}}';
+    window.onload = function() {
+        var img = document.getElementById('screen');
+        if (img) {
+            window[messageChannel].postMessage(document.body.clientWidth / img.offsetHeight);
+        }
+    };
+</script>
+</head>
+<body>
+<img id="screen" src="{{stream_url}}">
+</body>
+</html>
