@@ -2,7 +2,9 @@ part of '../../../main.dart';
 
 class CameraStreamView extends StatefulWidget {
 
-  CameraStreamView({Key key}) : super(key: key);
+  final bool withControls;
+
+  CameraStreamView({Key key, this.withControls: true}) : super(key: key);
 
   @override
   _CameraStreamViewState createState() => _CameraStreamViewState();
@@ -11,145 +13,220 @@ class CameraStreamView extends StatefulWidget {
 class _CameraStreamViewState extends State<CameraStreamView> {
 
   CameraEntity _entity;
-  String streamUrl = "";
-  WebViewController webViewController;
-  VideoPlayerController videoPlayerController;
-  Timer monitorTimer;
-  bool started = false;
-  double aspectRatio = 1.33;
-  String htmlView;
-  String messageChannelName = 'unknown';
+  String _streamUrl = "";
+  WebViewController _webViewController;
+  VideoPlayerController _videoPlayerController;
+  Timer _monitorTimer;
+  bool _isLoaded = false;
+  double _aspectRatio = 1.33;
+  String _webViewHtml;
+  String _jsMessageChannelName = 'unknown';
+  String _playerInfo = '';
+  Completer _loading;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void loadResources() {
+  Future _loadResources() {
+    if (_loading != null && !_loading.isCompleted) {
+      Logger.d("[Camera Player] Resources loading is not finished yet");
+      return _loading.future;  
+    }
     Logger.d("[Camera Player] Loading resources");
+    _loading = Completer();
+    _entity = EntityModel
+          .of(context)
+          .entityWrapper
+          .entity;
     if (_entity.supportStream) {
       HomeAssistant().getCameraStream(_entity.entityId)
         .then((data) {
-          Logger.d("[Camera Player] Stream url: ${ConnectionManager().httpWebHost}${data["url"]}");
-          if (videoPlayerController != null) {
-            videoPlayerController.dispose().then((_) => createPlayer(data));
+          if (_videoPlayerController != null) {
+            _videoPlayerController.dispose().then((_) => createPlayer(data));
           } else {
             createPlayer(data);
           }
         })
-        .catchError((e) => Logger.e("[Camera Player] $e"));
+        .catchError((e) {
+          _loading.completeError(e);
+          Logger.e("[Camera Player] $e");
+        });
     } else {
-      streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
+      _streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
           .entityId}?token=${_entity.attributes['access_token']}';
-      messageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
+      _jsMessageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
       rootBundle.loadString('assets/html/cameraView.html').then((file) {
-        htmlView = Uri.dataFromString(
-            file.replaceFirst('{{stream_url}}', streamUrl).replaceFirst('{{message_channel}}', messageChannelName),
+        _webViewHtml = Uri.dataFromString(
+            file.replaceFirst('{{stream_url}}', _streamUrl).replaceFirst('{{message_channel}}', _jsMessageChannelName),
             mimeType: 'text/html',
             encoding: Encoding.getByName('utf-8')
         ).toString();
-        setState((){
-          started = true;
-        });
+        _loading.complete();
       });
     }
+    return _loading.future;
   }
 
   void createPlayer(data) {
-    videoPlayerController = VideoPlayerController.network("${ConnectionManager().httpWebHost}${data["url"]}");
-    videoPlayerController.initialize().then((_) {
+    _videoPlayerController = VideoPlayerController.network("${ConnectionManager().httpWebHost}${data["url"]}");
+    _videoPlayerController.initialize().then((_) {
       setState((){
-        started = true;
-        aspectRatio = videoPlayerController.value.aspectRatio;
+        _aspectRatio = _videoPlayerController.value.aspectRatio;
       });
+      _loading.complete();
       autoPlay();
       startMonitor();
     }).catchError((e) {
+      _loading.completeError(e);
       Logger.e("[Camera Player] Error player init. Retrying");
-      loadResources();
+      _loadResources();
     });
   }
 
   void autoPlay() {
-    if (!videoPlayerController.value.isPlaying) {
-      videoPlayerController.play();
+    if (!_videoPlayerController.value.isPlaying) {
+      _videoPlayerController.play();
     }
   }
 
   void startMonitor() {
-    monitorTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      if (videoPlayerController.value.hasError) {
+    _monitorTimer?.cancel();
+    _monitorTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      if (_videoPlayerController.value.hasError) {
+        timer.cancel();
         setState(() {
-          timer.cancel();
-          started = false;
+          _isLoaded = false;  
+        });
+      } else {
+        setState(() {
+          _playerInfo = '${_videoPlayerController.value.position}/${_videoPlayerController.value.duration}';
         });
       }
     });
   }
 
-  Widget buildLoading() {
-    return AspectRatio(
-      aspectRatio: aspectRatio,
-      child: Center(
+  Widget _buildScreen() {
+    Widget screenWidget;
+    if (!_isLoaded) {
+      screenWidget = Center(
+        child: CircularProgressIndicator()
+      );
+    } else if (_entity.supportStream) {
+      if (_videoPlayerController.value.initialized) {
+        screenWidget = VideoPlayer(_videoPlayerController);
+      } else {
+        screenWidget = Center(
           child: CircularProgressIndicator()
-        )
+        );
+      }
+    } else {
+      screenWidget = WebView(
+        initialUrl: _webViewHtml,
+        initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+        debuggingEnabled: Logger.isInDebugMode,
+        gestureNavigationEnabled: false,
+        javascriptMode: JavascriptMode.unrestricted,
+        javascriptChannels: {
+          JavascriptChannel(
+            name: _jsMessageChannelName,
+            onMessageReceived: ((message) {
+              setState((){
+                _aspectRatio = double.tryParse(message.message) ?? 1.33;
+              });
+            })
+          )
+        },
+        onWebViewCreated: (WebViewController controller) {
+          _webViewController = controller;
+        }
+      );
+    }
+    return AspectRatio(
+      aspectRatio: _aspectRatio,
+      child: screenWidget
     );
+  }
+
+  Widget _buildControls() {
+    if (widget.withControls) {
+      Widget playControl;
+      if (_entity.supportStream) {
+        playControl = Center(
+          child: IconButton(
+            icon: Icon((_videoPlayerController != null && _videoPlayerController.value.isPlaying) ? Icons.pause_circle_outline : Icons.play_circle_outline),
+            iconSize: 60,
+            color: Colors.amberAccent,
+            onPressed: (_videoPlayerController == null || _videoPlayerController.value.hasError || !_isLoaded) ? null :
+              () {
+                setState(() {
+                  if (_videoPlayerController != null && _videoPlayerController.value.isPlaying) {
+                    _videoPlayerController.pause();
+                  } else {
+                    _videoPlayerController.play();
+                  }
+                });
+              },
+          ),
+        );
+      } else {
+        playControl = Container();
+      }
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.refresh),
+            iconSize: 40,
+            color: Colors.amberAccent,
+            onPressed: _isLoaded ? () {
+              setState(() {
+                _isLoaded = false;  
+              });
+            } : null,
+          ),
+          Expanded(
+            child: playControl,
+          ),
+          IconButton(
+            icon: Icon(Icons.fullscreen),
+            iconSize: 40,
+            color: Colors.amberAccent,
+            onPressed: _isLoaded ? () {
+              setState(() {});
+            } : null,
+          )
+        ],
+      );
+    } else {
+      return Container();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!started) {
-      _entity = EntityModel
-          .of(context)
-          .entityWrapper
-          .entity;
-      loadResources();
-      return buildLoading();
-    } else if (_entity.supportStream) {
-      if (videoPlayerController.value.initialized) {
-        return AspectRatio(
-          aspectRatio: aspectRatio,
-          child: VideoPlayer(videoPlayerController),
-        );
-      } else {
-        return buildLoading();
-      }
-    } else {
-      return AspectRatio(
-        aspectRatio: aspectRatio,
-        child: WebView(
-          initialUrl: htmlView,
-          initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-          debuggingEnabled: Logger.isInDebugMode,
-          gestureNavigationEnabled: false,
-          javascriptMode: JavascriptMode.unrestricted,
-          javascriptChannels: {
-            JavascriptChannel(
-              name: messageChannelName,
-              onMessageReceived: ((message) {
-                setState((){
-                  aspectRatio = double.tryParse(message.message) ?? 1.33;
-                });
-              })
-            )
-          },
-          onWebViewCreated: (WebViewController controller) {
-            webViewController = controller;
-          },
-          onPageStarted: (url) {
-            /*rootBundle.loadString('assets/js/cameraImgViewHelper.js').then((js){
-              webViewController.evaluateJavascript(js.replaceFirst('entity_id_placeholder', _entity.entityId.replaceAll('.', '_')));
-            });*/
-          },
-        ),
-      );
-    }     
+    if (!_isLoaded && (_loading == null || _loading.isCompleted)) {
+      _loadResources().then((_) => setState((){ _isLoaded = true; }));
+    }
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          _buildScreen(),
+          _buildControls(),
+          Text(_playerInfo)
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
-    monitorTimer?.cancel();
-    videoPlayerController?.dispose();
+    _monitorTimer?.cancel();
+    _videoPlayerController?.dispose();
     super.dispose();
   }
 }

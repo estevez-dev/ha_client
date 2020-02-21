@@ -51,7 +51,6 @@ flutter:
   assets:
     - images/hassio-192x192.png
     - assets/js/externalAuth.js
-    - assets/js/cameraImgViewHelper.js
     - assets/html/cameraView.html
 
   fonts:
