@@ -196,6 +196,6 @@ void updateDeviceLocationIsolate() {
       print("[Background $backgroundTask] Not configured");
       completer.complete(true);
     }
-    return Future.value(true);
+    return completer.future;
   });
 }
