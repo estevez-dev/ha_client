@@ -14,14 +14,12 @@ class _CameraStreamViewState extends State<CameraStreamView> {
 
   CameraEntity _entity;
   String _streamUrl = "";
-  WebViewController _webViewController;
   VideoPlayerController _videoPlayerController;
   Timer _monitorTimer;
   bool _isLoaded = false;
   double _aspectRatio = 1.33;
   String _webViewHtml;
   String _jsMessageChannelName = 'unknown';
-  String _playerInfo = '';
   Completer _loading;
 
   @override
@@ -99,10 +97,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
         setState(() {
           _isLoaded = false;  
         });
-      } else {
-        setState(() {
-          _playerInfo = '${_videoPlayerController.value.position}/${_videoPlayerController.value.duration}';
-        });
       }
     });
   }
@@ -137,9 +131,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
               });
             })
           )
-        },
-        onWebViewCreated: (WebViewController controller) {
-          _webViewController = controller;
         }
       );
     }
@@ -216,8 +207,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           _buildScreen(),
-          _buildControls(),
-          Text(_playerInfo)
+          _buildControls()
         ],
       ),
     );
