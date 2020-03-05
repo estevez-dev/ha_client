@@ -148,12 +148,10 @@ class LocationManager {
 }
 
 void updateDeviceLocationIsolate() {
-  workManager.Workmanager.executeTask((backgroundTask, data) {
-    Completer completer = Completer();
+  workManager.Workmanager.executeTask((backgroundTask, data) async {
     print("[Background $backgroundTask] Started");
     Geolocator geolocator = Geolocator();
     var battery = Battery();
-    int batteryLevel = 1;
     String webhookId = data["webhookId"];
     String httpWebHost = data["httpWebHost"];
     if (webhookId != null && webhookId.isNotEmpty) {
@@ -165,37 +163,27 @@ void updateDeviceLocationIsolate() {
         "data": {
           "gps": [],
           "gps_accuracy": 0,
-          "battery": batteryLevel
+          "battery": 100
         }
       };
       print("[Background $backgroundTask] Getting battery level...");
-      battery.batteryLevel.then((val) => data["data"]["battery"] = val).whenComplete((){
-        print("[Background $backgroundTask] Battery level is ${data["data"]["battery"]}. Getting device location...");
-        geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways).then((location) {
-          if (location != null) {
-            print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
-            data["data"]["gps"] = [location.latitude, location.longitude];
-            data["data"]["gps_accuracy"] = location.accuracy;
-            print("[Background $backgroundTask] Sending data home.");
-            http.post(
-                url,
-                headers: headers,
-                body: json.encode(data)
-            );
-            completer.complete(true);
-          } else {
-            print("[Background $backgroundTask] Can't get device location. Location is null");
-            completer.complete(true);
-          }
-        }).catchError((e) {
-          print("[Background $backgroundTask] Error getting current location: ${e.toString()}");
-          completer.complete(true);
-        });
-      });
-    } else {
-      print("[Background $backgroundTask] Not configured");
-      completer.complete(true);
+      int batteryLevel = await battery.batteryLevel;
+      if (batteryLevel != null) {
+        data["data"]["battery"] = batteryLevel;
+      }
+      Position location = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways);
+      if (location != null && location.latitude != null) {
+        print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
+        data["data"]["gps"] = [location.latitude, location.longitude];
+        data["data"]["gps_accuracy"] = location.accuracy;
+        print("[Background $backgroundTask] Sending location data home.");
+        http.post(
+            url,
+            headers: headers,
+            body: json.encode(data)
+        );
+      }
     }
-    return completer.future;
+    return true;
   });
 }
