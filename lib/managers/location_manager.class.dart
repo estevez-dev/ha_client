@@ -223,7 +223,7 @@ void updateDeviceLocationIsolate() {
     print("[Background $backgroundTask] Writing log data...");
     try {
       var fileMode;
-      if (logFile.lengthSync() < 5000000) {
+      if (logFile.existsSync() && logFile.lengthSync() < 5000000) {
         fileMode = FileMode.append;
       } else {
         fileMode = FileMode.write;
