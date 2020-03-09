@@ -91,7 +91,7 @@ class LocationManager {
           },
           frequency: interval,
           initialDelay: Duration(minutes: delay),
-          existingWorkPolicy: workManager.ExistingWorkPolicy.replace,
+          existingWorkPolicy: workManager.ExistingWorkPolicy.keep,
           backoffPolicy: workManager.BackoffPolicy.linear,
           backoffPolicyDelay: interval,
           constraints: workManager.Constraints(
@@ -104,7 +104,7 @@ class LocationManager {
 
   _stopLocationService() async {
     Logger.d("Canceling previous schedule if any...");
-    await workManager.Workmanager.cancelByTag(backgroundTaskTag);
+    await workManager.Workmanager.cancelAll();
   }
 
   updateDeviceLocation() async {
@@ -196,36 +196,39 @@ void updateDeviceLocationIsolate() {
           logData += ' || Location: success, ${location.latitude} ${location.longitude} (${location.timestamp})';
           data["data"]["gps"] = [location.latitude, location.longitude];
           data["data"]["gps_accuracy"] = location.accuracy;
+          try {
+            http.Response response = await http.post(
+                url,
+                headers: headers,
+                body: json.encode(data)
+            );
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+              logData += ' || Post: success, ${response.statusCode}';
+            } else {
+              logData += ' || Post: error, ${response.statusCode}';
+            }
+          } catch(e) {
+            logData += ' || Post: error, $e';
+          }
         } else {
           logData += ' || Location: error, location is null';
         }
       } catch (e) {
-        //print("[Background $backgroundTask] Error getting location: $e. Setting fake one in the middle of the Black See");
-        data["data"]["gps"] = [43.373750, 34.026441];
-        data["data"]["gps_accuracy"] = 200;
         logData += ' || Location: error, $e';
       }
       //print("[Background $backgroundTask] Sending data home.");
-      try {
-        http.Response response = await http.post(
-            url,
-            headers: headers,
-            body: json.encode(data)
-        );
-        if (response.statusCode >= 200 && response.statusCode < 300) {
-          logData += ' || Post: success, ${response.statusCode}';
-        } else {
-          logData += ' || Post: error, ${response.statusCode}';
-        }
-      } catch(e) {
-        logData += ' || Post: error, $e';
-      }
     } else {
       logData += 'Not configured';
     }
     print("[Background $backgroundTask] Writing log data...");
     try {
-      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+      var fileMode;
+      if (logFile.lengthSync() < 5000000) {
+        fileMode = FileMode.append;
+      } else {
+        fileMode = FileMode.write;
+      }
+      await logFile.writeAsString('$logData\n', mode: fileMode);
     } catch (e) {
       print("[Background $backgroundTask] Error writing log: $e");
     }
