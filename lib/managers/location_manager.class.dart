@@ -154,6 +154,12 @@ void updateDeviceLocationIsolate() {
     var battery = Battery();
     String webhookId = data["webhookId"];
     String httpWebHost = data["httpWebHost"];
+    String logData = '==> ${DateTime.now()} [Background $backgroundTask]:';
+    print("[Background $backgroundTask] Getting path for log file...");
+    final logFileDirectory = await getExternalStorageDirectory();
+    print("[Background $backgroundTask] Opening log file...");
+    File logFile = File('${logFileDirectory.path}/ha-client-background-log.txt');
+    print("[Background $backgroundTask] Log file path: ${logFile.path}");
     if (webhookId != null && webhookId.isNotEmpty) {
       String url = "$httpWebHost/api/webhook/$webhookId";
       Map<String, String> headers = {};
@@ -166,24 +172,64 @@ void updateDeviceLocationIsolate() {
           "battery": 100
         }
       };
-      print("[Background $backgroundTask] Getting battery level...");
-      int batteryLevel = await battery.batteryLevel;
+      //print("[Background $backgroundTask] Getting battery level...");
+      int batteryLevel;
+      try {
+        batteryLevel = await battery.batteryLevel;
+        //print("[Background $backgroundTask] Got battery level: $batteryLevel");
+      } catch(e) {
+        //print("[Background $backgroundTask] Error getting battery level: $e. Setting zero");
+        batteryLevel = 0;
+        logData += 'Battery: error, $e';
+      }
       if (batteryLevel != null) {
         data["data"]["battery"] = batteryLevel;
+        logData += 'Battery: success, $batteryLevel';
+      } else {
+        logData += 'Battery: error, level is null';
       }
-      Position location = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways);
-      if (location != null && location.latitude != null) {
-        print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude}");
-        data["data"]["gps"] = [location.latitude, location.longitude];
-        data["data"]["gps_accuracy"] = location.accuracy;
-        print("[Background $backgroundTask] Sending location data home.");
-        http.post(
+      Position location;
+      try {
+        location = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways);
+        if (location != null && location.latitude != null) {
+          //print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude} (${location.timestamp})");
+          logData += ' || Location: success, ${location.latitude} ${location.longitude} (${location.timestamp})';
+          data["data"]["gps"] = [location.latitude, location.longitude];
+          data["data"]["gps_accuracy"] = location.accuracy;
+        } else {
+          logData += ' || Location: error, location is null';
+        }
+      } catch (e) {
+        //print("[Background $backgroundTask] Error getting location: $e. Setting fake one in the middle of the Black See");
+        data["data"]["gps"] = [43.373750, 34.026441];
+        data["data"]["gps_accuracy"] = 200;
+        logData += ' || Location: error, $e';
+      }
+      //print("[Background $backgroundTask] Sending data home.");
+      try {
+        http.Response response = await http.post(
             url,
             headers: headers,
             body: json.encode(data)
         );
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          logData += ' || Post: success, ${response.statusCode}';
+        } else {
+          logData += ' || Post: error, ${response.statusCode}';
+        }
+      } catch(e) {
+        logData += ' || Post: error, $e';
       }
+    } else {
+      logData += 'Not configured';
     }
+    print("[Background $backgroundTask] Writing log data...");
+    try {
+      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+    } catch (e) {
+      print("[Background $backgroundTask] Error writing log: $e");
+    }
+    print("[Background $backgroundTask] Finished.");
     return true;
   });
 }
