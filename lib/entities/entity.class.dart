@@ -221,7 +221,7 @@ class Entity {
 
   String getAttribute(String attributeName) {
     if (attributes != null) {
-      return attributes["$attributeName"];
+      return attributes["$attributeName"].toString();
     }
     return null;
   }

@@ -303,6 +303,7 @@ class HomeAssistant {
                       entity: e,
                       displayName: rawEntity["name"],
                       icon: rawEntity["icon"],
+                      stateFilter: rawEntity['state_filter'] ?? [],
                       uiAction: EntityUIAction(rawEntityData: rawEntity)
                   )
               );
@@ -333,6 +334,7 @@ class HomeAssistant {
                   entity: e,
                   icon: en["icon"],
                   displayName: en["name"],
+                  stateFilter: en['state_filter'] ?? [],
                   uiAction: EntityUIAction(rawEntityData: rawCard)
               );
             } else {

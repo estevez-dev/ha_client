@@ -8,13 +8,15 @@ class EntityWrapper {
   String entityPicture;
   EntityUIAction uiAction;
   Entity entity;
+  List stateFilter;
 
 
   EntityWrapper({
     this.entity,
     String icon,
     String displayName,
-    this.uiAction
+    this.uiAction,
+    this.stateFilter
   }) {
     if (entity.statelessType == StatelessEntityType.NONE || entity.statelessType == StatelessEntityType.CALL_SERVICE || entity.statelessType == StatelessEntityType.WEBLINK) {
       this.icon = icon ?? entity.icon;

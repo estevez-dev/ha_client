@@ -74,7 +74,7 @@ class HAView {
 
   Widget buildTab() {
     if (linkedEntity == null) {
-      if (iconName != null) {
+      if (iconName != null && iconName.isNotEmpty) {
         return
           Tab(
               icon:

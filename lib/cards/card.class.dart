@@ -50,10 +50,67 @@ class HACard {
       if (!ConnectionManager().useLovelace && entityWrapper.entity.isHidden) {
         return false;
       }
-      if (stateFilter.isNotEmpty) {
-        return stateFilter.contains(entityWrapper.entity.state);
+      List currentStateFilter;
+      if (entityWrapper.stateFilter != null && entityWrapper.stateFilter.isNotEmpty) {
+        currentStateFilter = entityWrapper.stateFilter;
+      } else {
+        currentStateFilter = stateFilter;
       }
-      return true;
+      bool showByFilter = currentStateFilter.isEmpty;
+      for (var allowedState in currentStateFilter) {
+        if (allowedState is String && allowedState == entityWrapper.entity.state) {
+          showByFilter = true;
+          break;
+        } else if (allowedState is Map) {
+          try {
+            var tmpVal = allowedState['attribute'] != null ? entityWrapper.entity.getAttribute(allowedState['attribute']) : entityWrapper.entity.state;
+            var valToCompareWith = allowedState['value'];
+            var valToCompare;
+            if (valToCompareWith is! String) {
+              valToCompare = double.tryParse(tmpVal);
+            } else {
+              valToCompare = tmpVal;
+            }
+            if (valToCompare != null) {
+              bool result;
+              switch (allowedState['operator']) {
+                case '<=': { result = valToCompare <= valToCompareWith;}
+                break;
+                
+                case '<': { result = valToCompare < valToCompareWith;}
+                break;
+
+                case '>=': { result = valToCompare >= valToCompareWith;}
+                break;
+
+                case '>': { result = valToCompare > valToCompareWith;}
+                break;
+
+                case '!=': { result = valToCompare != valToCompareWith;}
+                break;
+
+                case 'regex': {
+                  RegExp regExp = RegExp(valToCompareWith.toString());
+                  result = regExp.hasMatch(valToCompare.toString());
+                }
+                break;
+
+                default: {
+                    result = valToCompare == valToCompareWith;
+                  }
+              }
+              if (result) {
+                showByFilter = true;
+                break;
+              }  
+            }
+          } catch (e) {
+            Logger.e('Error filtering ${entityWrapper.entity.entityId} by $allowedState');
+            Logger.e('$e');
+          }
+        }
+      }
+      return showByFilter;
     }).toList();
   }
 
