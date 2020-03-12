@@ -3,8 +3,9 @@ part of '../../../main.dart';
 class CameraStreamView extends StatefulWidget {
 
   final bool withControls;
+  final CameraEntity entity;
 
-  CameraStreamView({Key key, this.withControls: true}) : super(key: key);
+  CameraStreamView({Key key, this.withControls: true, this.entity}) : super(key: key);
 
   @override
   _CameraStreamViewState createState() => _CameraStreamViewState();
@@ -34,7 +35,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
     }
     Logger.d("[Camera Player] Loading resources");
     _loading = Completer();
-    _entity = EntityModel
+    _entity = widget.entity ?? EntityModel
           .of(context)
           .entityWrapper
           .entity;
@@ -141,8 +142,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
   }
 
   Widget _buildControls() {
-    if (widget.withControls) {
-      Widget playControl;
+    Widget playControl;
       if (_entity.supportStream) {
         playControl = Center(
           child: IconButton(
@@ -187,14 +187,25 @@ class _CameraStreamViewState extends State<CameraStreamView> {
             iconSize: 40,
             color: Colors.amberAccent,
             onPressed: _isLoaded ? () {
-              setState(() {});
+              _videoPlayerController?.pause();
+              eventBus.fire(ShowEntityPageEvent());
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (conext) => FullScreenPage(
+                    child: CameraStreamView(
+                      withControls: false,
+                      entity: _entity,
+                    ),
+                  ),
+                  fullscreenDialog: true
+                )
+              ).then((_) {
+                eventBus.fire(ShowEntityPageEvent(entity: _entity));
+              });
             } : null,
           )
         ],
       );
-    } else {
-      return Container();
-    }
   }
 
   @override
@@ -202,15 +213,20 @@ class _CameraStreamViewState extends State<CameraStreamView> {
     if (!_isLoaded && (_loading == null || _loading.isCompleted)) {
       _loadResources().then((_) => setState((){ _isLoaded = true; }));
     }
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          _buildScreen(),
-          _buildControls()
-        ],
-      ),
-    );
+    if (widget.withControls) {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            _buildScreen(),
+            _buildControls()
+          ],
+        ),
+      );
+    } else {
+      return _buildScreen();
+    }
+    
   }
 
   @override
