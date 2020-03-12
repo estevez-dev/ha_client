@@ -66,7 +66,7 @@ class HACard {
             var tmpVal = allowedState['attribute'] != null ? entityWrapper.entity.getAttribute(allowedState['attribute']) : entityWrapper.entity.state;
             var valToCompareWith = allowedState['value'];
             var valToCompare;
-            if (valToCompareWith is! String) {
+            if (valToCompareWith is! String && tmpVal is String) {
               valToCompare = double.tryParse(tmpVal);
             } else {
               valToCompare = tmpVal;
