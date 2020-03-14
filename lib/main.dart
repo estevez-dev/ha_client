@@ -88,6 +88,7 @@ part 'entities/slider/widgets/slider_controls.dart';
 part 'entities/text/widgets/text_input_state.dart';
 part 'entities/select/widgets/select_state.dart';
 part 'entities/simple_state.widget.dart';
+part 'entities/entity_picture.widget.dart';
 part 'entities/timer/widgets/timer_state.dart';
 part 'entities/climate/widgets/climate_state.widget.dart';
 part 'entities/cover/widgets/cover_state.dart';
