@@ -51,6 +51,10 @@ class EntityUIAction {
   String holdNavigationPath;
   String holdService;
   Map<String, dynamic> holdServiceData;
+  String doubleTapAction = EntityUIAction.none;
+  String doubleTapNavigationPath;
+  String doubleTapService;
+  Map<String, dynamic> doubleTapServiceData;
 
   EntityUIAction({rawEntityData}) {
     if (rawEntityData != null) {
@@ -74,6 +78,17 @@ class EntityUIAction {
           holdNavigationPath = rawEntityData["hold_action"]["navigation_path"];
           holdService = rawEntityData["hold_action"]["service"];
           holdServiceData = rawEntityData["hold_action"]["service_data"];
+        }
+      }
+      if (rawEntityData["double_tap_action"] != null) {
+        if (rawEntityData["double_tap_action"] is String) {
+          doubleTapAction = rawEntityData["double_tap_action"];
+        } else {
+          doubleTapAction =
+              rawEntityData["double_tap_action"]["action"] ?? EntityUIAction.none;
+          doubleTapNavigationPath = rawEntityData["double_tap_action"]["navigation_path"];
+          doubleTapService = rawEntityData["double_tap_action"]["service"];
+          doubleTapServiceData = rawEntityData["double_tap_action"]["service_data"];
         }
       }
     }

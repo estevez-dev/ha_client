@@ -60,6 +60,7 @@ class GlanceCardEntityContainer extends StatelessWidget {
         ),
         onTap: () => entityWrapper.handleTap(),
         onLongPress: () => entityWrapper.handleHold(),
+        onDoubleTap: () => entityWrapper.handleDoubleTap(),
       ),
     );
   }

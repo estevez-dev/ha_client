@@ -21,6 +21,7 @@ class EntityButtonCardBody extends StatelessWidget {
     return InkWell(
       onTap: () => entityWrapper.handleTap(),
       onLongPress: () => entityWrapper.handleHold(),
+      onDoubleTap: () => entityWrapper.handleDoubleTap(),
       child: FractionallySizedBox(
         widthFactor: 1,
         child: Column(

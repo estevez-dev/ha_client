@@ -61,6 +61,11 @@ class DefaultEntityContainer extends StatelessWidget {
             entityModel.entityWrapper.handleTap();
           }
         },
+        onDoubleTap: () {
+          if (entityModel.handleTap) {
+            entityModel.entityWrapper.handleDoubleTap();
+          }
+        },
         child: result,
       );
     } else {

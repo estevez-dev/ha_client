@@ -37,6 +37,7 @@ class _LightCardBodyState extends State<LightCardBody> {
     return InkWell(
       onTap: () => entityWrapper.handleTap(),
       onLongPress: () => entityWrapper.handleHold(),
+      onDoubleTap: () => entityWrapper.handleDoubleTap(),
       child: AspectRatio(
           aspectRatio: 1.5,
           child: Stack(

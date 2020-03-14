@@ -115,4 +115,44 @@ class EntityWrapper {
       }
   }
 
+  void handleDoubleTap() {
+      switch (uiAction.doubleTapAction) {
+        case EntityUIAction.toggle: {
+          ConnectionManager().callService(domain: "homeassistant", service: "toggle", entityId: entity.entityId);
+          break;
+        }
+
+        case EntityUIAction.callService: {
+          if (uiAction.doubleTapService != null) {
+            ConnectionManager().callService(
+              domain: uiAction.doubleTapService.split(".")[0],
+              service: uiAction.doubleTapService.split(".")[1],
+              data: uiAction.doubleTapServiceData
+            );
+          }
+          break;
+        }
+
+        case EntityUIAction.moreInfo: {
+          eventBus.fire(
+              new ShowEntityPageEvent(entity: entity));
+          break;
+        }
+
+        case EntityUIAction.navigate: {
+          if (uiAction.doubleTapService != null && uiAction.doubleTapService.startsWith("/")) {
+            //TODO handle local urls
+            Logger.w("Local urls is not supported yet");
+          } else {
+            Launcher.launchURL(uiAction.doubleTapService);
+          }
+          break;
+        }
+
+        default: {
+          break;
+        }
+      }
+  }
+
 }
