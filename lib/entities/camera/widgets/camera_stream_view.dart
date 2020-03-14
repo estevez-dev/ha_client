@@ -105,14 +105,18 @@ class _CameraStreamViewState extends State<CameraStreamView> {
     Widget screenWidget;
     if (!_isLoaded) {
       screenWidget = Center(
-        child: EntityPicture()
+        child: EntityPicture(
+          fit: BoxFit.contain,
+        )
       );
     } else if (_entity.supportStream) {
       if (_videoPlayerController.value.initialized) {
         screenWidget = VideoPlayer(_videoPlayerController);
       } else {
         screenWidget = Center(
-          child: EntityPicture()
+          child: EntityPicture(
+            fit: BoxFit.contain,
+          )
         );
       }
     } else {

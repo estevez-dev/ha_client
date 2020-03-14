@@ -3,8 +3,9 @@ part of '../main.dart';
 class EntityPicture extends StatelessWidget {
 
   final EdgeInsetsGeometry padding;
+  final BoxFit fit;
   
-  const EntityPicture({Key key, this.padding: const EdgeInsets.all(0.0)}) : super(key: key);
+  const EntityPicture({Key key, this.padding: const EdgeInsets.all(0.0), this.fit: BoxFit.cover}) : super(key: key);
 
   int getDefaultIconByEntityId(String entityId, String deviceClass, String state) {
     String domain = entityId.split(".")[0];
@@ -47,6 +48,7 @@ class EntityPicture extends StatelessWidget {
     if (data.entityPicture != null) {
       return CachedNetworkImage(
         imageUrl: data.entityPicture,
+        fit: this.fit,
         errorWidget: (context, _, __) => iconPicture,
         placeholder: (context, _) => iconPicture,
       );
