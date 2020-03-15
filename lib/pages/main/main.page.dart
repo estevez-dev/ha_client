@@ -94,7 +94,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _showInfoBottomBar(progress: true,);
     _subscribe().then((_) {
       ConnectionManager().init(loadSettings: true, forceReconnect: true).then((__){
-        _fetchData();
+        _fetchData(true);
         LocationManager();
         StartupUserMessagesManager().checkMessagesToShow();
       }, onError: (e) {
@@ -107,18 +107,18 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _hideBottomBar();
     _showInfoBottomBar(progress: true,);
     ConnectionManager().init(loadSettings: false, forceReconnect: false).then((_){
-      _fetchData();
+      _fetchData(false);
     }, onError: (e) {
       _setErrorState(e);
     });
   }
 
-  _fetchData() async {
-    await HomeAssistant().fetchDataFromCache().then((_) {
-      if (_entityToShow != null) {
-        _entityToShow = HomeAssistant().entities.get(_entityToShow.entityId);
-      }  
-    });
+  _fetchData(bool useCache) async {
+    if (useCache) {
+      HomeAssistant().fetchDataFromCache().then((_) {
+        setState((){});  
+      });
+    }
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
       if (_entityToShow != null) {

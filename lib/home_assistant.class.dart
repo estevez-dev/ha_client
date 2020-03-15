@@ -12,7 +12,6 @@ class HomeAssistant {
   HomeAssistantUI ui;
   Map _instanceConfig = {};
   String _userName;
-  bool childMode;
   HSVColor savedColor;
   int savedPlayerPosition;
   String sendToPlayerId;
@@ -68,7 +67,7 @@ class HomeAssistant {
     futures.add(_getServices(null));
     Future.wait(futures).then((_) {
       if (isMobileAppEnabled) {
-        if (!childMode) _createUI();
+        _createUI();
         _fetchCompleter.complete();
         MobileAppIntegrationManager.checkAppRegistration();
       } else {
@@ -80,14 +79,11 @@ class HomeAssistant {
     return _fetchCompleter.future;
   }
 
-  Future fetchDataFromCache() async {
-    if (_fetchCompleter != null && !_fetchCompleter.isCompleted) {
-      Logger.w("Previous cached data fetch is not completed yet");
-      return _fetchCompleter.future;
-    }
-    _fetchCompleter = Completer();
+  Future<void> fetchDataFromCache() async {
+    Logger.d('Loading cached data');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('cached') != null && prefs.getBool('cached')) {
+    bool cached = prefs.getBool('cached');
+    if (cached != null && cached) {
       if (entities == null) entities = EntityCollection(ConnectionManager().httpWebHost);
       try {
         _getStates(prefs);
@@ -99,13 +95,12 @@ class HomeAssistant {
         _getPanels(prefs);
         _getServices(prefs);
         if (isMobileAppEnabled) {
-          if (!childMode) _createUI();
-        }
+          _createUI();
+        }  
       } catch (e) {
         Logger.d('Didnt get cached data: $e');  
       }
     }
-    _fetchCompleter.complete();
   }
 
   void saveCache() async {
@@ -230,7 +225,6 @@ class HomeAssistant {
   void _parseUserInfo(data) {
     _rawUserInfo = data;
     _userName = data["name"];
-    childMode = _userName.startsWith("[child]");
   }
 
   Future _getPanels(SharedPreferences sharedPrefs) async {
