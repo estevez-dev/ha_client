@@ -2,32 +2,29 @@ part of '../main.dart';
 
 class EntityWrapper {
 
-  String displayName;
-  String icon;
-  String unitOfMeasurement;
-  String entityPicture;
+  String overrideName;
+  final String overrideIcon;
   EntityUIAction uiAction;
   Entity entity;
-  List stateFilter;
+  String unitOfMeasurementOverride;
+  final List stateFilter;
 
+  String get icon => overrideIcon ?? entity.icon;
+  String get entityPicture => entity.entityPicture;
+  String get displayName => overrideName ?? entity.displayName;
+  String get unitOfMeasurement => unitOfMeasurementOverride ?? entity.unitOfMeasurement;
 
   EntityWrapper({
     this.entity,
-    String icon,
-    String displayName,
+    this.overrideIcon,
+    this.overrideName,
     this.uiAction,
     this.stateFilter
   }) {
     if (entity.statelessType == StatelessEntityType.NONE || entity.statelessType == StatelessEntityType.CALL_SERVICE || entity.statelessType == StatelessEntityType.WEBLINK) {
-      this.icon = icon ?? entity.icon;
-      if (icon == null) {
-        entityPicture = entity.entityPicture;
-      }
-      this.displayName = displayName ?? entity.displayName;
       if (uiAction == null) {
         uiAction = EntityUIAction();
       }
-      unitOfMeasurement = entity.unitOfMeasurement;
     }
   }
 

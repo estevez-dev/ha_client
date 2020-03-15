@@ -402,8 +402,8 @@ class HomeAssistant {
               card.entities.add(
                   EntityWrapper(
                       entity: e,
-                      displayName: rawEntity["name"],
-                      icon: rawEntity["icon"],
+                      overrideName: rawEntity["name"],
+                      overrideIcon: rawEntity["icon"],
                       stateFilter: rawEntity['state_filter'] ?? [],
                       uiAction: EntityUIAction(rawEntityData: rawEntity)
                   )
@@ -421,8 +421,8 @@ class HomeAssistant {
               Entity e = entities.get(en);
               card.linkedEntityWrapper = EntityWrapper(
                   entity: e,
-                  icon: rawCardInfo["icon"],
-                  displayName: rawCardInfo["name"],
+                  overrideIcon: rawCardInfo["icon"],
+                  overrideName: rawCardInfo["name"],
                   uiAction: EntityUIAction(rawEntityData: rawCard)
               );
             } else {
@@ -433,8 +433,8 @@ class HomeAssistant {
               Entity e = entities.get(en["entity"]);
               card.linkedEntityWrapper = EntityWrapper(
                   entity: e,
-                  icon: en["icon"],
-                  displayName: en["name"],
+                  overrideIcon: en["icon"],
+                  overrideName: en["name"],
                   stateFilter: en['state_filter'] ?? [],
                   uiAction: EntityUIAction(rawEntityData: rawCard)
               );

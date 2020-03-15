@@ -306,7 +306,7 @@ class CardWidget extends StatelessWidget {
   }
 
   Widget _buildEntityButtonCard(BuildContext context) {
-    card.linkedEntityWrapper.displayName = card.name?.toUpperCase() ??
+    card.linkedEntityWrapper.overrideName = card.name?.toUpperCase() ??
         card.linkedEntityWrapper.displayName.toUpperCase();
     return Card(
         child: EntityModel(
@@ -320,9 +320,9 @@ class CardWidget extends StatelessWidget {
   }
 
   Widget _buildGaugeCard(BuildContext context) {
-    card.linkedEntityWrapper.displayName = card.name ??
+    card.linkedEntityWrapper.overrideName = card.name ??
         card.linkedEntityWrapper.displayName;
-    card.linkedEntityWrapper.unitOfMeasurement = card.unit ??
+    card.linkedEntityWrapper.unitOfMeasurementOverride = card.unit ??
         card.linkedEntityWrapper.unitOfMeasurement;
     return Card(
         child: EntityModel(
@@ -338,7 +338,7 @@ class CardWidget extends StatelessWidget {
   }
 
   Widget _buildLightCard(BuildContext context) {
-    card.linkedEntityWrapper.displayName = card.name ??
+    card.linkedEntityWrapper.overrideName = card.name ??
         card.linkedEntityWrapper.displayName;
     return Card(
         child: EntityModel(
