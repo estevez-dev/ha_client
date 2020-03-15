@@ -172,13 +172,13 @@ void updateDeviceLocationIsolate() {
           "battery": 100
         }
       };
-      //print("[Background $backgroundTask] Getting battery level...");
+      print("[Background $backgroundTask] Getting battery level...");
       int batteryLevel;
       try {
         batteryLevel = await battery.batteryLevel;
-        //print("[Background $backgroundTask] Got battery level: $batteryLevel");
+        print("[Background $backgroundTask] Got battery level: $batteryLevel");
       } catch(e) {
-        //print("[Background $backgroundTask] Error getting battery level: $e. Setting zero");
+        print("[Background $backgroundTask] Error getting battery level: $e. Setting zero");
         batteryLevel = 0;
         logData += 'Battery: error, $e';
       }
@@ -192,7 +192,6 @@ void updateDeviceLocationIsolate() {
       try {
         location = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways);
         if (location != null && location.latitude != null) {
-          //print("[Background $backgroundTask] Got location: ${location.latitude} ${location.longitude} (${location.timestamp})");
           logData += ' || Location: success, ${location.latitude} ${location.longitude} (${location.timestamp})';
           data["data"]["gps"] = [location.latitude, location.longitude];
           data["data"]["gps_accuracy"] = location.accuracy;
@@ -214,9 +213,9 @@ void updateDeviceLocationIsolate() {
           logData += ' || Location: error, location is null';
         }
       } catch (e) {
+        print("[Background $backgroundTask] Location error: $e");
         logData += ' || Location: error, $e';
       }
-      //print("[Background $backgroundTask] Sending data home.");
     } else {
       logData += 'Not configured';
     }
