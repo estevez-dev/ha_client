@@ -114,6 +114,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   _fetchData() async {
+    await HomeAssistant().fetchDataFromCache().then((_) {
+      if (_entityToShow != null) {
+        _entityToShow = HomeAssistant().entities.get(_entityToShow.entityId);
+      }  
+    });
     await HomeAssistant().fetchData().then((_) {
       _hideBottomBar();
       if (_entityToShow != null) {
@@ -134,6 +139,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     Logger.d("$state");
     if (state == AppLifecycleState.resumed && ConnectionManager().settingsLoaded && !_preventAppRefresh) {
       _quickLoad();
+    } else if (state == AppLifecycleState.paused && ConnectionManager().settingsLoaded && !_preventAppRefresh) {
+      HomeAssistant().saveCache();
     }
   }
 

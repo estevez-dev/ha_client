@@ -17,10 +17,14 @@ class HomeAssistant {
   int savedPlayerPosition;
   String sendToPlayerId;
   String sendFromPlayerId;
+  Map services;
 
   String fcmToken;
 
   Map _rawLovelaceData;
+  var _rawStates;
+  var _rawUserInfo;
+  var _rawPanels;
 
   List<Panel> panels = [];
 
@@ -54,13 +58,14 @@ class HomeAssistant {
     if (entities == null) entities = EntityCollection(ConnectionManager().httpWebHost);
     _fetchCompleter = Completer();
     List<Future> futures = [];
-    futures.add(_getStates());
+    futures.add(_getStates(null));
     if (ConnectionManager().useLovelace) {
-      futures.add(_getLovelace());
+      futures.add(_getLovelace(null));
     }
-    futures.add(_getConfig());
-    futures.add(_getUserInfo());
-    futures.add(_getPanels());
+    futures.add(_getConfig(null));
+    futures.add(_getUserInfo(null));
+    futures.add(_getPanels(null));
+    futures.add(_getServices(null));
     Future.wait(futures).then((_) {
       if (isMobileAppEnabled) {
         if (!childMode) _createUI();
@@ -75,6 +80,52 @@ class HomeAssistant {
     return _fetchCompleter.future;
   }
 
+  Future fetchDataFromCache() async {
+    if (_fetchCompleter != null && !_fetchCompleter.isCompleted) {
+      Logger.w("Previous cached data fetch is not completed yet");
+      return _fetchCompleter.future;
+    }
+    _fetchCompleter = Completer();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('cached') != null && prefs.getBool('cached')) {
+      if (entities == null) entities = EntityCollection(ConnectionManager().httpWebHost);
+      try {
+        _getStates(prefs);
+        if (ConnectionManager().useLovelace) {
+          _getLovelace(prefs);
+        }
+        _getConfig(prefs);
+        _getUserInfo(prefs);
+        _getPanels(prefs);
+        _getServices(prefs);
+        if (isMobileAppEnabled) {
+          if (!childMode) _createUI();
+        }
+      } catch (e) {
+        Logger.d('Didnt get cached data: $e');  
+      }
+    }
+    _fetchCompleter.complete();
+  }
+
+  void saveCache() async {
+    Logger.d('Saving data to cache...');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      await prefs.setString('cached_states', json.encode(_rawStates));
+      await prefs.setString('cached_lovelace', json.encode(_rawLovelaceData));
+      await prefs.setString('cached_user', json.encode(_rawUserInfo));
+      await prefs.setString('cached_config', json.encode(_instanceConfig));
+      await prefs.setString('cached_panels', json.encode(_rawPanels));
+      await prefs.setString('cached_services', json.encode(services));
+      await prefs.setBool('cached', true);
+    } catch (e) {
+      await prefs.setBool('cached', false);
+      Logger.e('Error saving cache: $e');
+    }
+    Logger.d('Done saving cache');
+  }
+
   Future logout() async {
     Logger.d("Logging out...");
     await ConnectionManager().logout().then((_) {
@@ -84,64 +135,123 @@ class HomeAssistant {
     });
   }
 
-  Future _getConfig() async {
-    await ConnectionManager().sendSocketMessage(type: "get_config").then((data) {
-      _instanceConfig = Map.from(data);
-    }).catchError((e) {
-      throw HAError("Error getting config: ${e}");
-    });
-  }
-
-  Future _getStates() async {
-    await ConnectionManager().sendSocketMessage(type: "get_states").then(
-            (data) => entities.parse(data)
-    ).catchError((e) {
-      throw HAError("Error getting states: $e");
-    });
-  }
-
-  Future _getLovelace() {
-    Completer completer = Completer();
-
-    ConnectionManager().sendSocketMessage(type: "lovelace/config").then((data) {
-      _rawLovelaceData = data;
-      completer.complete();
-    }).catchError((e) {
-      if ("$e" == "config_not_found") {
-        ConnectionManager().useLovelace = false;
-        completer.complete();
-      } else {
-        completer.completeError(HAError("Error getting lovelace config: $e"));
+  Future _getConfig(SharedPreferences sharedPrefs) async {
+    if (sharedPrefs != null) {
+      try {
+        var data = json.decode(sharedPrefs.getString('cached_config'));
+        _parseConfig(data);
+      } catch (e) {
+        throw HAError("Error getting config: $e");
       }
-    });
-    return completer.future;
+    } else {
+      await ConnectionManager().sendSocketMessage(type: "get_config").then((data) => _parseConfig(data)).catchError((e) {
+        throw HAError("Error getting config: $e");
+      });
+    }
   }
 
-  Future getCameraStream(String entityId) {
-    Completer completer = Completer();
-
-    ConnectionManager().sendSocketMessage(type: "camera/stream", additionalData: {"entity_id": entityId}).then((data) {
-      completer.complete(data);
-    }).catchError((e) {
-      completer.completeError(e);
-    });
-    return completer.future;
+  void _parseConfig(data) {
+    _instanceConfig = Map.from(data);
   }
 
-  Future _getUserInfo() async {
+  Future _getStates(SharedPreferences sharedPrefs) async {
+    if (sharedPrefs != null) {
+      try {
+        var data = json.decode(sharedPrefs.getString('cached_states'));
+        _parseStates(data);
+      } catch (e) {
+        throw HAError("Error getting states: $e");
+      }
+    } else {
+      await ConnectionManager().sendSocketMessage(type: "get_states").then(
+              (data) => _parseStates(data)
+      ).catchError((e) {
+        throw HAError("Error getting states: $e");
+      });
+    }
+  }
+
+  void _parseStates(data) {
+    _rawStates = data;
+    entities.parse(data);
+  }
+
+  Future _getLovelace(SharedPreferences sharedPrefs) {
+    if (sharedPrefs != null) {
+      try {
+        var data = json.decode(sharedPrefs.getString('cached_lovelace'));
+        _rawLovelaceData = data;
+      } catch (e) {
+        ConnectionManager().useLovelace = false;
+      }
+      return Future.value();
+    } else {
+      Completer completer = Completer();
+      ConnectionManager().sendSocketMessage(type: "lovelace/config").then((data) {
+        _rawLovelaceData = data;
+        completer.complete();
+      }).catchError((e) {
+        if ("$e" == "config_not_found") {
+          ConnectionManager().useLovelace = false;
+          completer.complete();
+        } else {
+          completer.completeError(HAError("Error getting lovelace config: $e"));
+        }
+      });
+      return completer.future;
+    }
+  }
+
+  Future _getServices(SharedPreferences prefs) async {	
+    if (prefs != null) {
+      try {
+        var data = json.decode(prefs.getString('cached_services'));
+        _parseServices(data);
+      } catch (e) {
+        Logger.w("Can't get services: $e");  
+      }
+    }
+    await ConnectionManager().sendSocketMessage(type: "get_services").then((data) => _parseServices(data)).catchError((e) {	
+      Logger.w("Can't get services: $e");	
+    });	
+  }
+
+  void _parseServices(data) {
+    services = data;
+  }
+
+  Future _getUserInfo(SharedPreferences sharedPrefs) async {
     _userName = null;
-    await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) {
-        _userName = data["name"];
-        childMode = _userName.startsWith("[child]");
-    }).catchError((e) {
+    await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) => _parseUserInfo(data)).catchError((e) {
       Logger.w("Can't get user info: $e");
     });
   }
 
-  Future _getPanels() async {
+  void _parseUserInfo(data) {
+    _rawUserInfo = data;
+    _userName = data["name"];
+    childMode = _userName.startsWith("[child]");
+  }
+
+  Future _getPanels(SharedPreferences sharedPrefs) async {
     panels.clear();
-    await ConnectionManager().sendSocketMessage(type: "get_panels").then((data) {
-      data.forEach((k,v) {
+    if (sharedPrefs != null) {
+      try {
+        var data = json.decode(sharedPrefs.getString('cached_panels'));
+        _parsePanels(data);
+      } catch (e) {
+        throw HAError("Error getting panels list: $e");
+      }
+    } else {
+      await ConnectionManager().sendSocketMessage(type: "get_panels").then((data) => _parsePanels(data)).catchError((e) {
+        throw HAError("Error getting panels list: $e");
+      });
+    }
+  }
+
+  void _parsePanels(data) {
+    _rawPanels = data;
+    data.forEach((k,v) {
         String title = v['title'] == null ? "${k[0].toUpperCase()}${k.substring(1)}" : "${v['title'][0].toUpperCase()}${v['title'].substring(1)}";
         panels.add(Panel(
             id: k,
@@ -153,9 +263,17 @@ class HomeAssistant {
         )
         );
       });
+  }
+
+  Future getCameraStream(String entityId) {
+    Completer completer = Completer();
+
+    ConnectionManager().sendSocketMessage(type: "camera/stream", additionalData: {"entity_id": entityId}).then((data) {
+      completer.complete(data);
     }).catchError((e) {
-      throw HAError("Error getting panels list: $e");
+      completer.completeError(e);
     });
+    return completer.future;
   }
 
   void _handleEntityStateChange(Map eventData) {
