@@ -11,7 +11,6 @@ class HomeAssistant {
   EntityCollection entities;
   HomeAssistantUI ui;
   Map _instanceConfig = {};
-  Map services;
   String _userName;
   bool childMode;
   HSVColor savedColor;
@@ -60,7 +59,6 @@ class HomeAssistant {
       futures.add(_getLovelace());
     }
     futures.add(_getConfig());
-    futures.add(_getServices());
     futures.add(_getUserInfo());
     futures.add(_getPanels());
     Future.wait(futures).then((_) {
@@ -137,15 +135,6 @@ class HomeAssistant {
         childMode = _userName.startsWith("[child]");
     }).catchError((e) {
       Logger.w("Can't get user info: $e");
-    });
-  }
-
-  Future _getServices() async {
-    await ConnectionManager().sendSocketMessage(type: "get_services").then((data) {
-      Logger.d("Got ${data.length} services");
-      services = data;
-    }).catchError((e) {
-      Logger.w("Can't get services: $e");
     });
   }
 
