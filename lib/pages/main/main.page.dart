@@ -153,7 +153,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     if (_stateSubscription == null) {
       _stateSubscription = eventBus.on<StateChangedEvent>().listen((event) {
         if (event.needToRebuildUI) {
-          Logger.d("New entity. Need to rebuild UI");
+          Logger.d("Need to rebuild UI");
           _quickLoad();
         } else {
           setState(() {});

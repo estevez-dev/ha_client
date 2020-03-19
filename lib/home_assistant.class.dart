@@ -49,6 +49,7 @@ class HomeAssistant {
 
   HomeAssistant._internal() {
     ConnectionManager().onStateChangeCallback = _handleEntityStateChange;
+    ConnectionManager().onLovelaceUpdatedCallback = _handleLovelaceUpdate;
     DeviceInfoManager().loadDeviceInfo();
   }
 
@@ -294,6 +295,14 @@ class HomeAssistant {
       completer.completeError(e);
     });
     return completer.future;
+  }
+
+  void _handleLovelaceUpdate() {
+    if (_fetchCompleter != null && _fetchCompleter.isCompleted) {
+      eventBus.fire(new StateChangedEvent(
+          needToRebuildUI: true
+      ));
+    }
   }
 
   void _handleEntityStateChange(Map eventData) {

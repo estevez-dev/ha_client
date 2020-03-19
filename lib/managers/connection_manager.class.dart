@@ -28,6 +28,7 @@ class ConnectionManager {
   bool isConnected = false;
 
   var onStateChangeCallback;
+  var onLovelaceUpdatedCallback;
 
   IOWebSocketChannel _socket;
 
@@ -152,6 +153,10 @@ class ConnectionManager {
                   Logger.d("[Connection] Subscribing to events");
                   sendSocketMessage(
                     type: "subscribe_events",
+                    additionalData: {"event_type": "lovelace_updated"},
+                  );
+                  sendSocketMessage(
+                    type: "subscribe_events",
                     additionalData: {"event_type": "state_changed"},
                   ).whenComplete((){
                     _messageResolver["auth"]?.complete();
@@ -212,6 +217,17 @@ class ConnectionManager {
       }
       _messageResolver.remove("${data["id"]}");
     } else if (data["type"] == "event") {
+      if (data["event"] != null) {
+        if (data["event"]["event_type"] == "state_changed") {
+          Logger.d("[Received] <== ${data['type']}.${data["event"]["event_type"]}: ${data["event"]["data"]["entity_id"]}");
+          onStateChangeCallback(data["event"]["data"]);
+        } else if (data["event"]["event_type"] == "lovelace_updated") {
+          Logger.d("[Received] <== ${data['type']}.${data["event"]["event_type"]}: $data");
+          onLovelaceUpdatedCallback();
+        }  
+      }
+
+
       if ((data["event"] != null) && (data["event"]["event_type"] == "state_changed")) {
         Logger.d("[Received] <== ${data['type']}.${data["event"]["event_type"]}: ${data["event"]["data"]["entity_id"]}");
         onStateChangeCallback(data["event"]["data"]);
