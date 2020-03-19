@@ -90,13 +90,16 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     );
   }
 
-  void _fullLoad() async {
+  void _fullLoad() {
     _showInfoBottomBar(progress: true,);
     _subscribe().then((_) {
       ConnectionManager().init(loadSettings: true, forceReconnect: true).then((__){
-        _fetchData(true);
-        LocationManager();
-        StartupUserMessagesManager().checkMessagesToShow();
+        SharedPreferences.getInstance().then((prefs) {
+          HomeAssistant().lovelaceDashboardUrl = prefs.getString('lovelace_dashboard_url') ?? HomeAssistant.DEFAULT_DASHBOARD;
+          _fetchData(useCache: true);
+          LocationManager();
+          StartupUserMessagesManager().checkMessagesToShow();
+        });
       }, onError: (e) {
         _setErrorState(e);
       });
@@ -107,13 +110,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _hideBottomBar();
     _showInfoBottomBar(progress: true,);
     ConnectionManager().init(loadSettings: false, forceReconnect: false).then((_){
-      _fetchData(false);
+      _fetchData(useCache: false);
     }, onError: (e) {
       _setErrorState(e);
     });
   }
 
-  _fetchData(bool useCache) async {
+  _fetchData({useCache: false}) async {
     if (useCache) {
       HomeAssistant().fetchDataFromCache().then((_) {
         setState((){});  
@@ -758,7 +761,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                           context: context,
                           items: serviceMenuItems
                       ).then((String val) {
+                        HomeAssistant().lovelaceDashboardUrl = HomeAssistant.DEFAULT_DASHBOARD;
                         if (val == "reload") {
+                          
                           _quickLoad();
                         } else if (val == "logout") {
                           HomeAssistant().logout().then((_) {

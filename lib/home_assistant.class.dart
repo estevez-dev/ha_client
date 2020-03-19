@@ -2,6 +2,8 @@ part of 'main.dart';
 
 class HomeAssistant {
 
+  static const DEFAULT_DASHBOARD = 'lovelace';
+
   static final HomeAssistant _instance = HomeAssistant._internal();
 
   factory HomeAssistant() {
@@ -12,6 +14,7 @@ class HomeAssistant {
   HomeAssistantUI ui;
   Map _instanceConfig = {};
   String _userName;
+  String _lovelaceDashbordUrl;
   HSVColor savedColor;
   int savedPlayerPosition;
   String sendToPlayerId;
@@ -24,6 +27,8 @@ class HomeAssistant {
   var _rawStates;
   var _rawUserInfo;
   var _rawPanels;
+
+  set lovelaceDashboardUrl(String val) => _lovelaceDashbordUrl = val;
 
   List<Panel> panels = [];
 
@@ -182,7 +187,12 @@ class HomeAssistant {
       return Future.value();
     } else {
       Completer completer = Completer();
-      ConnectionManager().sendSocketMessage(type: "lovelace/config").then((data) {
+      ConnectionManager().sendSocketMessage(
+        type: 'lovelace/config',
+        additionalData: {
+            'url_path': _lovelaceDashbordUrl == HomeAssistant.DEFAULT_DASHBOARD ? null : _lovelaceDashbordUrl
+          }
+      ).then((data) {
         _rawLovelaceData = data;
         completer.complete();
       }).catchError((e) {
@@ -228,7 +238,6 @@ class HomeAssistant {
   }
 
   Future _getPanels(SharedPreferences sharedPrefs) async {
-    panels.clear();
     if (sharedPrefs != null) {
       try {
         var data = json.decode(sharedPrefs.getString('cached_panels'));
@@ -245,18 +254,35 @@ class HomeAssistant {
 
   void _parsePanels(data) {
     _rawPanels = data;
+    panels.clear();
+    List<Panel> dashboards = [];
     data.forEach((k,v) {
         String title = v['title'] == null ? "${k[0].toUpperCase()}${k.substring(1)}" : "${v['title'][0].toUpperCase()}${v['title'].substring(1)}";
-        panels.add(Panel(
-            id: k,
-            type: v["component_name"],
-            title: title,
-            urlPath: v["url_path"],
-            config: v["config"],
-            icon: v["icon"]
-        )
-        );
-      });
+        if (v['component_name'] != null && v['component_name'] == 'lovelace') {
+          dashboards.add(
+            Panel(
+              id: k,
+              componentName: v["component_name"],
+              title: title,
+              urlPath: v["url_path"],
+              config: v["config"],
+              icon: v["icon"] ?? 'mdi:view-dashboard'
+            )  
+          );
+        } else {
+          panels.add(
+            Panel(
+              id: k,
+              componentName: v["component_name"],
+              title: title,
+              urlPath: v["url_path"],
+              config: v["config"],
+              icon: v["icon"]
+            )
+          );
+        }
+    });
+    panels.insertAll(0, dashboards);
   }
 
   Future getCameraStream(String entityId) {
