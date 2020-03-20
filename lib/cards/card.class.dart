@@ -47,7 +47,7 @@ class HACard {
 
   List<EntityWrapper> getEntitiesToShow() {
     return entities.where((entityWrapper) {
-      if (!ConnectionManager().useLovelace && entityWrapper.entity.isHidden) {
+      if (HomeAssistant().autoUi && entityWrapper.entity.isHidden) {
         return false;
       }
       List currentStateFilter;

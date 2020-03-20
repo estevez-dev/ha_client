@@ -19,7 +19,6 @@ class ConnectionManager {
   String _tempToken;
   String oauthUrl;
   String webhookId;
-  bool useLovelace = true;
   bool settingsLoaded = false;
   bool get isAuthenticated => _token != null;
   StreamSubscription _socketSubscription;
@@ -41,8 +40,6 @@ class ConnectionManager {
     if (loadSettings) {
       Logger.d("Loading settings...");
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      Logger.d("..done");
-      useLovelace = prefs.getBool('use-lovelace') ?? true;
       _domain = prefs.getString('hassio-domain');
       _port = prefs.getString('hassio-port');
       webhookId = prefs.getString('app-webhook-id');

@@ -20,6 +20,7 @@ class HomeAssistant {
   String sendToPlayerId;
   String sendFromPlayerId;
   Map services;
+  bool autoUi = false;
 
   String fcmToken;
 
@@ -35,7 +36,7 @@ class HomeAssistant {
   Duration fetchTimeout = Duration(seconds: 30);
 
   String get locationName {
-    if (ConnectionManager().useLovelace) {
+    if (!autoUi) {
       return ui?.title ?? "";
     } else {
       return _instanceConfig["location_name"] ?? "";
@@ -64,7 +65,7 @@ class HomeAssistant {
     _fetchCompleter = Completer();
     List<Future> futures = [];
     futures.add(_getStates(null));
-    if (ConnectionManager().useLovelace) {
+    if (!autoUi) {
       futures.add(_getLovelace(null));
     }
     futures.add(_getConfig(null));
@@ -93,7 +94,7 @@ class HomeAssistant {
       if (entities == null) entities = EntityCollection(ConnectionManager().httpWebHost);
       try {
         _getStates(prefs);
-        if (ConnectionManager().useLovelace) {
+        if (!autoUi) {
           _getLovelace(prefs);
         }
         _getConfig(prefs);
@@ -183,7 +184,7 @@ class HomeAssistant {
         var data = json.decode(sharedPrefs.getString('cached_lovelace'));
         _rawLovelaceData = data;
       } catch (e) {
-        ConnectionManager().useLovelace = false;
+        autoUi = true;
       }
       return Future.value();
     } else {
@@ -198,7 +199,7 @@ class HomeAssistant {
         completer.complete();
       }).catchError((e) {
         if ("$e" == "config_not_found") {
-          ConnectionManager().useLovelace = false;
+          autoUi = true;
           completer.complete();
         } else {
           completer.completeError(HAError("Error getting lovelace config: $e"));
@@ -263,22 +264,22 @@ class HomeAssistant {
           dashboards.add(
             Panel(
               id: k,
-              componentName: v["component_name"],
+              componentName: v['component_name'],
               title: title,
-              urlPath: v["url_path"],
-              config: v["config"],
-              icon: v["icon"] ?? 'mdi:view-dashboard'
+              urlPath: v['url_path'],
+              config: v['config'],
+              icon: (v['icon'] == null || v['icon'] == 'hass:view-dashboard') ? 'mdi:view-dashboard' : v['icon']
             )  
           );
         } else {
           panels.add(
             Panel(
               id: k,
-              componentName: v["component_name"],
+              componentName: v['component_name'],
               title: title,
-              urlPath: v["url_path"],
-              config: v["config"],
-              icon: v["icon"]
+              urlPath: v['url_path'],
+              config: v['config'],
+              icon: v['icon']
             )
           );
         }
@@ -488,7 +489,7 @@ class HomeAssistant {
 
   void _createUI() {
     ui = HomeAssistantUI();
-    if ((ConnectionManager().useLovelace) && (_rawLovelaceData != null)) {
+    if (!autoUi && (_rawLovelaceData != null)) {
       Logger.d("Creating Lovelace UI");
       _parseLovelace();
     } else {

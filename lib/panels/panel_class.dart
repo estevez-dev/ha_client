@@ -36,6 +36,7 @@ class Panel {
       );
     } else if (componentName == 'lovelace') {
       HomeAssistant().lovelaceDashboardUrl = this.urlPath;
+      HomeAssistant().autoUi = false;
       SharedPreferences.getInstance().then((prefs) {
         prefs.setString('lovelace_dashboard_url', this.urlPath);
         eventBus.fire(ReloadUIEvent());
