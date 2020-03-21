@@ -18,7 +18,6 @@ tasks:
     flutter doctor --android-licenses
     flutter pub get
   command: |
-    flutter pub upgrade
     echo "Ready to go!"
     flutter doctor
 vscode:
