@@ -6,8 +6,24 @@ class HomeAssistantUI {
 
   bool get isEmpty => views == null || views.isEmpty;
 
-  HomeAssistantUI() {
+  HomeAssistantUI(rawLovelaceConfig) {
     views = [];
+    Logger.d("--Title: ${rawLovelaceConfig["title"]}");
+    title = rawLovelaceConfig["title"];
+    int viewCounter = 0;
+    Logger.d("--Views count: ${rawLovelaceConfig['views'].length}");
+    rawLovelaceConfig["views"].forEach((rawView){
+      Logger.d("----view id: ${rawView['id']}");
+      HAView view = HAView(
+          count: viewCounter,
+          rawData: rawView
+      );
+
+      views.add(
+        view
+      );
+      viewCounter += 1;
+    });
   }
 
   Widget build(BuildContext context, TabController tabController) {

@@ -12,6 +12,8 @@ class StateChangedEvent {
   });
 }
 
+class LovelaceChangedEvent {}
+
 class SettingsChangedEvent {
   bool reconnect;
 

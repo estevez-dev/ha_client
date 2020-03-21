@@ -56,27 +56,29 @@ class HomeAssistant {
 
   Completer _fetchCompleter;
 
-  Future fetchData() {
+  Future fetchData(bool uiOnly) {
     if (_fetchCompleter != null && !_fetchCompleter.isCompleted) {
       Logger.w("Previous data fetch is not completed yet");
       return _fetchCompleter.future;
     }
-    if (entities == null) entities = EntityCollection(ConnectionManager().httpWebHost);
     _fetchCompleter = Completer();
     List<Future> futures = [];
-    futures.add(_getStates(null));
+    if (!uiOnly) {
+      if (entities == null) entities = EntityCollection(ConnectionManager().httpWebHost);
+      futures.add(_getStates(null));
+      futures.add(_getConfig(null));
+      futures.add(_getUserInfo(null));
+      futures.add(_getPanels(null));
+      futures.add(_getServices(null));
+    }
     if (!autoUi) {
       futures.add(_getLovelace(null));
     }
-    futures.add(_getConfig(null));
-    futures.add(_getUserInfo(null));
-    futures.add(_getPanels(null));
-    futures.add(_getServices(null));
     Future.wait(futures).then((_) {
       if (isMobileAppEnabled) {
         _createUI();
         _fetchCompleter.complete();
-        MobileAppIntegrationManager.checkAppRegistration();
+        if (!uiOnly) MobileAppIntegrationManager.checkAppRegistration();
       } else {
         _fetchCompleter.completeError(HAError("Mobile app component not found", actions: [HAErrorAction.tryAgain(), HAErrorAction(type: HAErrorActionType.URL ,title: "Help",url: "http://ha-client.app/docs#mobile-app-integration")]));
       }
@@ -300,9 +302,7 @@ class HomeAssistant {
 
   void _handleLovelaceUpdate() {
     if (_fetchCompleter != null && _fetchCompleter.isCompleted) {
-      eventBus.fire(new StateChangedEvent(
-          needToRebuildUI: true
-      ));
+      eventBus.fire(new LovelaceChangedEvent());
     }
   }
 
@@ -317,214 +317,13 @@ class HomeAssistant {
     }
   }
 
-  void _parseLovelace() {
-      Logger.d("--Title: ${_rawLovelaceData["title"]}");
-      ui.title = _rawLovelaceData["title"];
-      int viewCounter = 0;
-      Logger.d("--Views count: ${_rawLovelaceData['views'].length}");
-      _rawLovelaceData["views"].forEach((rawView){
-        Logger.d("----view id: ${rawView['id']}");
-        HAView view = HAView(
-            count: viewCounter,
-            id: "${rawView['id']}",
-            name: rawView['title'],
-            iconName: rawView['icon'],
-            panel: rawView['panel'] ?? false,
-        );
-
-        if (rawView['badges'] != null && rawView['badges'] is List) {
-          rawView['badges'].forEach((entity) {
-            if (entity is String) {
-              if (entities.isExist(entity)) {
-                Entity e = entities.get(entity);
-                view.badges.add(e);
-              }
-            } else {
-              String eId = '${entity['entity']}';
-              if (entities.isExist(eId)) {
-                Entity e = entities.get(eId);
-                view.badges.add(e);
-              }
-            }
-          });
-        }
-
-        view.cards.addAll(_createLovelaceCards(rawView["cards"] ?? []));
-        ui.views.add(
-            view
-        );
-        viewCounter += 1;
-      });
-  }
-
-  List<HACard> _createLovelaceCards(List rawCards) {
-    List<HACard> result = [];
-    rawCards.forEach((rawCard){
-      try {
-        //bool isThereCardOptionsInside = rawCard["card"] != null;
-        var rawCardInfo =  rawCard["card"] ?? rawCard;
-        HACard card = HACard(
-            id: "card",
-            name: rawCardInfo["title"] ?? rawCardInfo["name"],
-            type: rawCardInfo['type'] ?? CardType.ENTITIES,
-            columnsCount: rawCardInfo['columns'] ?? 4,
-            showName: (rawCardInfo['show_name'] ?? rawCard['show_name']) ?? true,
-            showHeaderToggle: (rawCardInfo['show_header_toggle'] ?? rawCard['show_header_toggle']) ?? true, 
-            showState: (rawCardInfo['show_state'] ?? rawCard['show_state']) ?? true,
-            showEmpty: (rawCardInfo['show_empty'] ?? rawCard['show_empty']) ?? true,
-            stateFilter: (rawCard['state_filter'] ?? rawCardInfo['state_filter']) ?? [],
-            states: rawCardInfo['states'],
-            conditions: rawCard['conditions'] ?? [],
-            content: rawCardInfo['content'],
-            min: rawCardInfo['min'] ?? 0,
-            max: rawCardInfo['max'] ?? 100,
-            unit: rawCardInfo['unit'],
-            severity: rawCardInfo['severity']
-        );
-        if (rawCardInfo["cards"] != null) {
-          card.childCards = _createLovelaceCards(rawCardInfo["cards"]);
-        }
-        var rawEntities = rawCard["entities"] ?? rawCardInfo["entities"];
-        rawEntities?.forEach((rawEntity) {
-          if (rawEntity is String) {
-            if (entities.isExist(rawEntity)) {
-              card.entities.add(EntityWrapper(entity: entities.get(rawEntity)));
-            } else {
-              card.entities.add(EntityWrapper(entity: Entity.missed(rawEntity)));
-            }
-          } else {
-            if (rawEntity["type"] == "divider") {
-              card.entities.add(EntityWrapper(entity: Entity.divider()));
-            } else if (rawEntity["type"] == "section") {
-              card.entities.add(EntityWrapper(entity: Entity.section(rawEntity["label"] ?? "")));
-            } else if (rawEntity["type"] == "call-service") {
-              Map uiActionData = {
-                "tap_action": {
-                  "action": EntityUIAction.callService,
-                  "service": rawEntity["service"],
-                  "service_data": rawEntity["service_data"]
-                },
-                "hold_action": EntityUIAction.none
-              };
-              card.entities.add(EntityWrapper(
-                  entity: Entity.callService(
-                    icon: rawEntity["icon"],
-                    name: rawEntity["name"],
-                    service: rawEntity["service"],
-                    actionName: rawEntity["action_name"]
-                  ),
-                uiAction: EntityUIAction(rawEntityData: uiActionData)
-              )
-              );
-            } else if (rawEntity["type"] == "weblink") {
-              Map uiActionData = {
-                "tap_action": {
-                  "action": EntityUIAction.navigate,
-                  "service": rawEntity["url"]
-                },
-                "hold_action": EntityUIAction.none
-              };
-              card.entities.add(EntityWrapper(
-                  entity: Entity.weblink(
-                      icon: rawEntity["icon"],
-                      name: rawEntity["name"],
-                      url: rawEntity["url"]
-                  ),
-                  uiAction: EntityUIAction(rawEntityData: uiActionData)
-              )
-              );
-            } else if (entities.isExist(rawEntity["entity"])) {
-              Entity e = entities.get(rawEntity["entity"]);
-              card.entities.add(
-                  EntityWrapper(
-                      entity: e,
-                      overrideName: rawEntity["name"],
-                      overrideIcon: rawEntity["icon"],
-                      stateFilter: rawEntity['state_filter'] ?? [],
-                      uiAction: EntityUIAction(rawEntityData: rawEntity)
-                  )
-              );
-            } else {
-              card.entities.add(EntityWrapper(entity: Entity.missed(rawEntity["entity"])));
-            }
-          }
-        });
-        var rawSingleEntity = rawCard["entity"] ?? rawCardInfo["entity"];
-        if (rawSingleEntity != null) {
-          var en = rawSingleEntity;
-          if (en is String) {
-            if (entities.isExist(en)) {
-              Entity e = entities.get(en);
-              card.linkedEntityWrapper = EntityWrapper(
-                  entity: e,
-                  overrideIcon: rawCardInfo["icon"],
-                  overrideName: rawCardInfo["name"],
-                  uiAction: EntityUIAction(rawEntityData: rawCard)
-              );
-            } else {
-              card.linkedEntityWrapper = EntityWrapper(entity: Entity.missed(en));
-            }
-          } else {
-            if (entities.isExist(en["entity"])) {
-              Entity e = entities.get(en["entity"]);
-              card.linkedEntityWrapper = EntityWrapper(
-                  entity: e,
-                  overrideIcon: en["icon"],
-                  overrideName: en["name"],
-                  stateFilter: en['state_filter'] ?? [],
-                  uiAction: EntityUIAction(rawEntityData: rawCard)
-              );
-            } else {
-              card.linkedEntityWrapper = EntityWrapper(entity: Entity.missed(en["entity"]));
-            }
-          }
-        }
-        result.add(card);
-      } catch (e) {
-          Logger.e("There was an error parsing card: ${e.toString()}");
-      }
-    });
-    return result;
-  }
-
   void _createUI() {
-    ui = HomeAssistantUI();
     if (!autoUi && (_rawLovelaceData != null)) {
       Logger.d("Creating Lovelace UI");
-      _parseLovelace();
+      ui = HomeAssistantUI(_rawLovelaceData);
     } else {
-      Logger.d("Creating group-based UI");
-      int viewCounter = 0;
-      if (!entities.hasDefaultView) {
-        HAView view = HAView(
-            count: viewCounter,
-            id: "group.default_view",
-            name: "Home",
-            childEntities: entities.filterEntitiesForDefaultView()
-        );
-        ui.views.add(
-            view
-        );
-        viewCounter += 1;
-      }
-      entities.viewEntities.forEach((viewEntity) {
-        HAView view = HAView(
-            count: viewCounter,
-            id: viewEntity.entityId,
-            name: viewEntity.displayName,
-            childEntities: viewEntity.childEntities
-        );
-        view.linkedEntity = viewEntity;
-        ui.views.add(
-            view
-        );
-        viewCounter += 1;
-      });
+      Logger.e("No lovelace config!!!!");
     }
-  }
-
-  Widget buildViews(BuildContext context, TabController tabController) {
-    return ui.build(context, tabController);
   }
 }
 

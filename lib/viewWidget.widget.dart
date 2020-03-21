@@ -10,7 +10,7 @@ class ViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (this.view.panel) {
+    if (this.view.isPanel) {
       return FractionallySizedBox(
         widthFactor: 1,
         heightFactor: 1,

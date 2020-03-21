@@ -12,6 +12,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver, TickerProviderStateMixin {
 
   StreamSubscription _stateSubscription;
+  StreamSubscription _lovelaceSubscription;
   StreamSubscription _settingsSubscription;
   StreamSubscription _serviceCallSubscription;
   StreamSubscription _showEntityPageSubscription;
@@ -106,23 +107,23 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     });
   }
 
-  void _quickLoad() {
+  void _quickLoad({bool uiOnly: false}) {
     _hideBottomBar();
     _showInfoBottomBar(progress: true,);
     ConnectionManager().init(loadSettings: false, forceReconnect: false).then((_){
-      _fetchData(useCache: false);
+      _fetchData(useCache: false, uiOnly: uiOnly);
     }, onError: (e) {
       _setErrorState(e);
     });
   }
 
-  _fetchData({useCache: false}) async {
-    if (useCache) {
+  _fetchData({useCache: false, uiOnly: false}) async {
+    if (useCache && !uiOnly) {
       HomeAssistant().fetchDataFromCache().then((_) {
         setState((){});  
       });
     }
-    await HomeAssistant().fetchData().then((_) {
+    await HomeAssistant().fetchData(uiOnly).then((_) {
       _hideBottomBar();
       if (_entityToShow != null) {
         _entityToShow = HomeAssistant().entities.get(_entityToShow.entityId);
@@ -160,9 +161,14 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         }
       });
     }
+    if (_lovelaceSubscription == null) {
+      _lovelaceSubscription = eventBus.on<LovelaceChangedEvent>().listen((event) {
+        _quickLoad();
+      });
+    }
     if (_reloadUISubscription == null) {
       _reloadUISubscription = eventBus.on<ReloadUIEvent>().listen((event){
-        _quickLoad();
+        _quickLoad(uiOnly: true);
       });
     }
     if (_showPopupDialogSubscription == null) {
@@ -708,7 +714,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           direction: Axis.horizontal,
           children: <Widget>[
             Expanded(
-              child: HomeAssistant().buildViews(context, _viewsTabController),
+              child: HomeAssistant().ui.build(context, _viewsTabController),
             ),
             Container(
               width: Sizes.mainPageScreenSeparatorWidth,
@@ -723,7 +729,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       } else if (_entityToShow != null) {
         mainScrollBody = EntityPageLayout(entity: _entityToShow, showClose: true,);
       } else {
-        mainScrollBody = HomeAssistant().buildViews(context, _viewsTabController);
+        mainScrollBody = HomeAssistant().ui.build(context, _viewsTabController);
       }
     }
 
@@ -882,6 +888,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     //flutterWebviewPlugin.dispose();
     _viewsTabController?.dispose();
     _stateSubscription?.cancel();
+    _lovelaceSubscription?.cancel();
     _settingsSubscription?.cancel();
     _serviceCallSubscription?.cancel();
     _showPopupDialogSubscription?.cancel();
