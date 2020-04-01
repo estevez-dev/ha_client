@@ -317,10 +317,27 @@ class HomeAssistant {
     }
   }
 
+  bool isServiceExist(String service) {
+    return services != null &&
+      services.isNotEmpty &&
+      services.containsKey(service);
+  }
+
   void _createUI() {
     if (!autoUi && (_rawLovelaceData != null)) {
       Logger.d("Creating Lovelace UI");
       ui = HomeAssistantUI(_rawLovelaceData);
+      if (isServiceExist('zha_map')) {
+        panels.add(
+            Panel(
+              id: 'haclient_zha',
+              componentName: 'haclient_zha',
+              title: 'ZHA',
+              urlPath: '/haclient_zha',
+              icon: 'mdi:zigbee'
+            )
+          );
+      }
     } else {
       Logger.e("No lovelace config!!!!");
     }

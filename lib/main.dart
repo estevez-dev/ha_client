@@ -112,6 +112,7 @@ part 'pages/widgets/page_loading_error.dart';
 part 'pages/panel.page.dart';
 part 'pages/main/main.page.dart';
 part 'pages/integration_settings.page.dart';
+part 'pages/zha_page.dart';
 part 'home_assistant.class.dart';
 part 'pages/log.page.dart';
 part 'pages/entity.page.dart';
@@ -250,6 +251,7 @@ class _HAClientAppState extends State<HAClientApp> {
           ),
         ),
         "/whats-new": (context) => WhatsNewPage(),
+        "/haclient_zha": (context) => ZhaPage(),
         "/auth": (context) => new standaloneWebview.WebviewScaffold(
           url: "${ConnectionManager().oauthUrl}",
           appBar: new AppBar(

@@ -24,7 +24,7 @@ class Panel {
       icon = Panel.iconsByComponent[componentName];
     }
     isHidden = (componentName == 'kiosk' || componentName == 'states' || componentName == 'profile' || componentName == 'developer-tools');
-    isWebView = (componentName != 'config' && componentName != 'lovelace');
+    isWebView = (componentName != 'config' && componentName != 'lovelace' && !componentName.startsWith('haclient'));
   }
 
   void handleOpen(BuildContext context) {
@@ -34,6 +34,8 @@ class Panel {
             builder: (context) => PanelPage(title: "$title", panel: this),
           )
       );
+    } else if (componentName.startsWith('haclient')) {
+      Navigator.of(context).pushNamed(urlPath);
     } else if (componentName == 'lovelace') {
       HomeAssistant().lovelaceDashboardUrl = this.urlPath;
       HomeAssistant().autoUi = false;
