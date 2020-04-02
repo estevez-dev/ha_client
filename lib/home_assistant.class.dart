@@ -37,9 +37,9 @@ class HomeAssistant {
 
   String get locationName {
     if (!autoUi) {
-      return ui?.title ?? "";
+      return ui?.title ?? "Home";
     } else {
-      return _instanceConfig["location_name"] ?? "";
+      return _instanceConfig["location_name"] ?? "Home";
     }
   }
   String get userName => _userName ?? locationName;
@@ -202,6 +202,7 @@ class HomeAssistant {
       }).catchError((e) {
         if ("$e" == "config_not_found") {
           autoUi = true;
+          _rawLovelaceData = null;
           completer.complete();
         } else {
           completer.completeError(HAError("Error getting lovelace config: $e"));
@@ -324,22 +325,18 @@ class HomeAssistant {
   }
 
   void _createUI() {
-    if (!autoUi && (_rawLovelaceData != null)) {
-      Logger.d("Creating Lovelace UI");
-      ui = HomeAssistantUI(_rawLovelaceData);
-      if (isServiceExist('zha_map')) {
-        panels.add(
-            Panel(
-              id: 'haclient_zha',
-              componentName: 'haclient_zha',
-              title: 'ZHA',
-              urlPath: '/haclient_zha',
-              icon: 'mdi:zigbee'
-            )
-          );
-      }
-    } else {
-      Logger.e("No lovelace config!!!!");
+    Logger.d("Creating Lovelace UI");
+    ui = HomeAssistantUI(rawLovelaceConfig: _rawLovelaceData);
+    if (isServiceExist('zha_map')) {
+      panels.add(
+          Panel(
+            id: 'haclient_zha',
+            componentName: 'haclient_zha',
+            title: 'ZHA',
+            urlPath: '/haclient_zha',
+            icon: 'mdi:zigbee'
+          )
+        );
     }
   }
 }

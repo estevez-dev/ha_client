@@ -152,39 +152,12 @@ class EntityCollection {
     return _allEntities[entityId] != null;
   }
 
-  List<Entity> getByDomains({List<String> domains, List<String> stateFiler}) {
+  List<Entity> getByDomains({List<String> includeDomains: const [], List<String> excludeDomains: const [], List<String> stateFiler}) {
     return _allEntities.values.where((entity) {
-      return domains.contains(entity.domain) &&
-          ((stateFiler != null && stateFiler.contains(entity.state)) || stateFiler == null);
+      return
+        (excludeDomains.isEmpty || !excludeDomains.contains(entity.domain)) && 
+        (includeDomains.isEmpty || includeDomains.contains(entity.domain)) &&
+        ((stateFiler != null && stateFiler.contains(entity.state)) || stateFiler == null);
     }).toList();
-  }
-
-  List<Entity> filterEntitiesForDefaultView() {
-    List<Entity> result = [];
-    List<Entity> groups = [];
-    List<Entity> nonGroupEntities = [];
-    _allEntities.forEach((id, entity){
-      if (entity.isGroup && (entity.attributes['auto'] == null || (entity.attributes['auto'] && !entity.isHidden)) && (!entity.isView)) {
-        groups.add(entity);
-      }
-      if (!entity.isGroup) {
-        nonGroupEntities.add(entity);
-      }
-    });
-
-    nonGroupEntities.forEach((entity) {
-      bool foundInGroup = false;
-      groups.forEach((groupEntity) {
-        if (groupEntity.childEntityIds.contains(entity.entityId)) {
-          foundInGroup = true;
-        }
-      });
-      if (!foundInGroup) {
-        result.add(entity);
-      }
-    });
-    result.insertAll(0, groups);
-
-    return result;
   }
 }

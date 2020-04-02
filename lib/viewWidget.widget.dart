@@ -17,15 +17,21 @@ class ViewWidget extends StatelessWidget {
         child: _buildPanelChild(context),
       );
     } else {
+      Widget cardsContainer;
+      if (this.view.cards.isNotEmpty) {
+        cardsContainer = DynamicMultiColumnLayout(
+          minColumnWidth: Sizes.minViewColumnWidth,
+          children: this.view.cards.map((card) => card.build(context)).toList(),
+        );
+      } else {
+        cardsContainer = Container();
+      }
       return ListView(
           shrinkWrap: true,
           padding: EdgeInsets.all(0),
           children: <Widget>[
             _buildBadges(context),
-            DynamicMultiColumnLayout(
-              minColumnWidth: Sizes.minViewColumnWidth,
-              children: this.view.cards.map((card) => card.build(context)).toList(),
-            )
+            cardsContainer
           ]
       );
     }

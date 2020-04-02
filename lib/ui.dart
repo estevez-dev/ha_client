@@ -33,7 +33,22 @@ class HomeAssistantUI {
     Map result = {};
     result['title'] = 'Home';
     result['views'] = [
-      
+      {
+        'icon': 'mdi:home',
+        'badges': HomeAssistant().entities.getByDomains(
+            includeDomains: ['sensor', 'binary_sensor', 'device_tracker', 'person', 'sun']
+          ).map(
+            (en) => en.entityId
+          ).toList(),
+        'cards': [{
+          'type': 'entities',
+          'entities': HomeAssistant().entities.getByDomains(
+              excludeDomains: ['sensor','binary_sensor', 'device_tracker', 'person', 'sun']
+            ).map(
+              (en) => en.entityId
+            ).toList()
+        }]
+      }
     ];
     return result;
   }

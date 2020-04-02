@@ -636,7 +636,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     Widget mediaMenuIcon;
     int playersCount = 0;
     if (!empty && !HomeAssistant().entities.isEmpty) {
-      List<Entity> activePlayers = HomeAssistant().entities.getByDomains(domains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing, EntityState.idle]);
+      List<Entity> activePlayers = HomeAssistant().entities.getByDomains(includeDomains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing, EntityState.idle]);
       playersCount = activePlayers.length;
       mediaMenuItems.addAll(
           activePlayers.map((entity) => PopupMenuItem<String>(
