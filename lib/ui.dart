@@ -6,7 +6,10 @@ class HomeAssistantUI {
 
   bool get isEmpty => views == null || views.isEmpty;
 
-  HomeAssistantUI(rawLovelaceConfig) {
+  HomeAssistantUI({rawLovelaceConfig}) {
+    if (rawLovelaceConfig == null) {
+      rawLovelaceConfig = _generateLovelaceConfig();
+    }
     views = [];
     Logger.d("--Title: ${rawLovelaceConfig["title"]}");
     title = rawLovelaceConfig["title"];
@@ -24,6 +27,15 @@ class HomeAssistantUI {
       );
       viewCounter += 1;
     });
+  }
+
+  Map _generateLovelaceConfig() {
+    Map result = {};
+    result['title'] = 'Home';
+    result['views'] = [
+      
+    ];
+    return result;
   }
 
   Widget build(BuildContext context, TabController tabController) {
