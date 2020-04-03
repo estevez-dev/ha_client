@@ -149,17 +149,17 @@ class LocationManager {
 
 void updateDeviceLocationIsolate() {
   workManager.Workmanager.executeTask((backgroundTask, data) async {
-    print("[Background $backgroundTask] Started");
+    //print("[Background $backgroundTask] Started");
     Geolocator geolocator = Geolocator();
     var battery = Battery();
     String webhookId = data["webhookId"];
     String httpWebHost = data["httpWebHost"];
-    String logData = '==> ${DateTime.now()} [Background $backgroundTask]:';
-    print("[Background $backgroundTask] Getting path for log file...");
-    final logFileDirectory = await getExternalStorageDirectory();
-    print("[Background $backgroundTask] Opening log file...");
-    File logFile = File('${logFileDirectory.path}/ha-client-background-log.txt');
-    print("[Background $backgroundTask] Log file path: ${logFile.path}");
+    //String logData = '==> ${DateTime.now()} [Background $backgroundTask]:';
+    //print("[Background $backgroundTask] Getting path for log file...");
+    //final logFileDirectory = await getExternalStorageDirectory();
+    //print("[Background $backgroundTask] Opening log file...");
+    //File logFile = File('${logFileDirectory.path}/ha-client-background-log.txt');
+    //print("[Background $backgroundTask] Log file path: ${logFile.path}");
     if (webhookId != null && webhookId.isNotEmpty) {
       String url = "$httpWebHost/api/webhook/$webhookId";
       Map<String, String> headers = {};
@@ -172,27 +172,27 @@ void updateDeviceLocationIsolate() {
           "battery": 100
         }
       };
-      print("[Background $backgroundTask] Getting battery level...");
+      //print("[Background $backgroundTask] Getting battery level...");
       int batteryLevel;
       try {
         batteryLevel = await battery.batteryLevel;
-        print("[Background $backgroundTask] Got battery level: $batteryLevel");
+        //print("[Background $backgroundTask] Got battery level: $batteryLevel");
       } catch(e) {
-        print("[Background $backgroundTask] Error getting battery level: $e. Setting zero");
+        //print("[Background $backgroundTask] Error getting battery level: $e. Setting zero");
         batteryLevel = 0;
-        logData += 'Battery: error, $e';
+        //logData += 'Battery: error, $e';
       }
       if (batteryLevel != null) {
         data["data"]["battery"] = batteryLevel;
-        logData += 'Battery: success, $batteryLevel';
-      } else {
+        //logData += 'Battery: success, $batteryLevel';
+      }/* else {
         logData += 'Battery: error, level is null';
-      }
+      }*/
       Position location;
       try {
         location = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high, locationPermissionLevel: GeolocationPermission.locationAlways);
         if (location != null && location.latitude != null) {
-          logData += ' || Location: success, ${location.latitude} ${location.longitude} (${location.timestamp})';
+          //logData += ' || Location: success, ${location.latitude} ${location.longitude} (${location.timestamp})';
           data["data"]["gps"] = [location.latitude, location.longitude];
           data["data"]["gps_accuracy"] = location.accuracy;
           try {
@@ -201,26 +201,26 @@ void updateDeviceLocationIsolate() {
                 headers: headers,
                 body: json.encode(data)
             );
-            if (response.statusCode >= 200 && response.statusCode < 300) {
+            /*if (response.statusCode >= 200 && response.statusCode < 300) {
               logData += ' || Post: success, ${response.statusCode}';
             } else {
               logData += ' || Post: error, ${response.statusCode}';
-            }
+            }*/
           } catch(e) {
-            logData += ' || Post: error, $e';
+            //logData += ' || Post: error, $e';
           }
-        } else {
+        }/* else {
           logData += ' || Location: error, location is null';
-        }
+        }*/
       } catch (e) {
-        print("[Background $backgroundTask] Location error: $e");
-        logData += ' || Location: error, $e';
+        //print("[Background $backgroundTask] Location error: $e");
+        //logData += ' || Location: error, $e';
       }
-    } else {
+    }/* else {
       logData += 'Not configured';
-    }
-    print("[Background $backgroundTask] Writing log data...");
-    try {
+    }*/
+    //print("[Background $backgroundTask] Writing log data...");
+    /*try {
       var fileMode;
       if (logFile.existsSync() && logFile.lengthSync() < 5000000) {
         fileMode = FileMode.append;
@@ -231,7 +231,7 @@ void updateDeviceLocationIsolate() {
     } catch (e) {
       print("[Background $backgroundTask] Error writing log: $e");
     }
-    print("[Background $backgroundTask] Finished.");
+    print("[Background $backgroundTask] Finished.");*/
     return true;
   });
 }
