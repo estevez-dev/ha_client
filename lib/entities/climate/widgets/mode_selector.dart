@@ -3,7 +3,7 @@ part of '../../../main.dart';
 class ModeSelectorWidget extends StatelessWidget {
 
   final String caption;
-  final List<String> options;
+  final List options;
   final String value;
   final double captionFontSize;
   final double valueFontSize;
@@ -45,10 +45,10 @@ class ModeSelectorWidget extends StatelessWidget {
                       color: Colors.black,
                     ),
                     hint: Text("Select ${caption.toLowerCase()}"),
-                    items: options.map((String value) {
+                    items: options.map((value) {
                       return new DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
+                        value: '$value',
+                        child: Text('$value'),
                       );
                     }).toList(),
                     onChanged: (mode) => onChange(mode),
