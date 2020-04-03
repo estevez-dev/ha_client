@@ -163,7 +163,7 @@ Future<void> _reportError(dynamic error, dynamic stackTrace) async {
 }
 
 void main() async {
-  Crashlytics.instance.enableInDevMode = true;
+  Crashlytics.instance.enableInDevMode = false;
 
   FlutterError.onError = (FlutterErrorDetails details) {
     Logger.e(" Caut Flutter runtime error: ${details.exception}");
