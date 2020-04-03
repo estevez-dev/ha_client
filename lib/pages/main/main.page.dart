@@ -442,6 +442,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           Launcher.launchURL("https://spectrum.chat/ha-client");
         },
       ),
+      new ListTile(
+        title: Text("What's new?"),
+        onTap: () {
+          Navigator.of(context).pop();
+          Navigator.of(context).pushNamed('/whats-new');
+        }
+      ),
       new AboutListTile(
           aboutBoxChildren: <Widget>[
             GestureDetector(
