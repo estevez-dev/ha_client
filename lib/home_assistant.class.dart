@@ -191,11 +191,15 @@ class HomeAssistant {
       return Future.value();
     } else {
       Completer completer = Completer();
+      var additionalData;
+      if (_lovelaceDashbordUrl != HomeAssistant.DEFAULT_DASHBOARD) {
+        additionalData = {
+          'url_path': _lovelaceDashbordUrl
+        };
+      }
       ConnectionManager().sendSocketMessage(
         type: 'lovelace/config',
-        additionalData: {
-            'url_path': _lovelaceDashbordUrl == HomeAssistant.DEFAULT_DASHBOARD ? null : _lovelaceDashbordUrl
-          }
+        additionalData: additionalData
       ).then((data) {
         _rawLovelaceData = data;
         completer.complete();
