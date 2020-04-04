@@ -223,16 +223,6 @@ class ConnectionManager {
           onLovelaceUpdatedCallback();
         }  
       }
-
-
-      if ((data["event"] != null) && (data["event"]["event_type"] == "state_changed")) {
-        Logger.d("[Received] <== ${data['type']}.${data["event"]["event_type"]}: ${data["event"]["data"]["entity_id"]}");
-        onStateChangeCallback(data["event"]["data"]);
-      } else if (data["event"] != null) {
-        Logger.w("Unhandled event type: ${data["event"]["event_type"]}");
-      } else {
-        Logger.e("Event is null: $data");
-      }
     } else {
       Logger.d("[Received unhandled] <== ${data.toString()}");
     }
