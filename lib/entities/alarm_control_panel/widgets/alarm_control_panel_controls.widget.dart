@@ -249,7 +249,7 @@ class _AlarmControlPanelControlsWidgetWidgetState extends State<AlarmControlPane
           child: Text(
             "TRIGGER",
             style: Theme.of(context).textTheme.subhead.copyWith(
-              color: Colors.redAccent
+              color: Theme.of(context).errorColor
             )
           ),
           onPressed: () => _askToTrigger(entity),
