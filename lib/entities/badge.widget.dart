@@ -30,7 +30,7 @@ class BadgeWidget extends StatelessWidget {
           badgeIcon = EntityIcon(
             padding: EdgeInsets.all(0.0),
             size: iconSize,
-            color: Colors.black
+            color: Theme.of(context).textTheme.body1.color
           );
           break;
         }
@@ -40,7 +40,7 @@ class BadgeWidget extends StatelessWidget {
           badgeIcon = EntityIcon(
               padding: EdgeInsets.all(0.0),
               size: iconSize,
-              color: Colors.black
+              color: Theme.of(context).textTheme.body1.color
           );
           onBadgeTextValue = entityModel.entityWrapper.entity.displayState;
           break;
@@ -64,6 +64,9 @@ class BadgeWidget extends StatelessWidget {
               overflow: TextOverflow.fade,
               softWrap: false,
               textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.body1.copyWith(
+                fontSize: stateFontSize
+              )
             ),
           );
           break;
@@ -99,7 +102,7 @@ class BadgeWidget extends StatelessWidget {
               decoration: new BoxDecoration(
                 // Circle shape
                 shape: BoxShape.circle,
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 // The border you want
                 border: new Border.all(
                   width: 2.0,
