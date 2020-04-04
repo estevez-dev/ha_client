@@ -435,11 +435,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         },
       ),
       new ListTile(
-        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:forum")),
+        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:discord")),
         title: Text("Contacts/Discussion"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURL("https://spectrum.chat/ha-client");
+          Launcher.launchURL("https://discord.gg/nd6FZQ");
         },
       ),
       new ListTile(
