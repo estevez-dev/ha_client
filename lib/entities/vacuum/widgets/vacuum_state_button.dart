@@ -27,10 +27,7 @@ class VacuumStateButton extends StatelessWidget {
           text: "RETURN TO DOCK"
       );
     } else {
-      result = Text(entity.state.toUpperCase(), style: TextStyle(
-          fontSize: 16,
-          color: Colors.grey
-      ));
+      result = Text(entity.state.toUpperCase(), style: Theme.of(context).textTheme.subhead);
     }
     return Padding(
       padding: EdgeInsets.only(right: 15),

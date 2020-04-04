@@ -347,11 +347,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           accountName: Text(HomeAssistant().userName),
           accountEmail: Text(HomeAssistant().locationName ?? ""),
           currentAccountPicture: CircleAvatar(
+            backgroundColor: Theme.of(context).backgroundColor,
             child: Text(
               HomeAssistant().userAvatarText,
-              style: TextStyle(
-                  fontSize: 32.0
-              ),
+              style: Theme.of(context).textTheme.display1
             ),
           ),
         )
@@ -360,21 +359,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       HomeAssistant().panels.forEach((Panel panel) {
         if (!panel.isHidden) {
           menuItems.add(
-              new ListTile(
-                  leading: Icon(MaterialDesignIcons.getIconDataFromIconName(panel.icon)),
-                  title: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text("${panel.title}"),
-                      Container(width: 4.0,),
-                      panel.isWebView ? Text("webview", style: TextStyle(fontSize: 8.0, color: Colors.black45),) : Container(width: 1.0,)
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    panel.handleOpen(context);
-                  }
-              )
+              panel.getMenuItemWidget(context)
           );
         }
       });
@@ -458,9 +443,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
               },
               child: Text(
                 "ha-client.app",
-                style: TextStyle(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline
+                style: Theme.of(context).textTheme.body1.copyWith(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
                 ),
               ),
             ),
@@ -474,9 +459,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
               },
               child: Text(
                 "Terms and Conditions",
-                style: TextStyle(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline
+                style: Theme.of(context).textTheme.body1.copyWith(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
                 ),
               ),
             ),
@@ -490,9 +475,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
               },
               child: Text(
                 "Privacy Policy",
-                style: TextStyle(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline
+                style: Theme.of(context).textTheme.body1.copyWith(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
                 ),
               ),
             )
@@ -648,9 +633,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           activePlayers.map((entity) => PopupMenuItem<String>(
             child: Text(
                 "${entity.displayName}",
-              style: TextStyle(
+              style: Theme.of(context).textTheme.body1.copyWith(
                 color: EntityColor.stateColor(entity.state)
-              ),
+              )
             ),
             value: "${entity.entityId}",
           )).toList()
@@ -679,7 +664,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                 shape: BoxShape.circle,
               ),
               child: Center(
-                child: Text("$playersCount", style: TextStyle(fontSize: 12)),
+                child: Text(
+                  "$playersCount",
+                  style: Theme.of(context).textTheme.caption.copyWith(
+                    color: Colors.white
+                  )
+                ),
               ),
             ),
           )
@@ -697,7 +687,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   FlatButton(
-                    child: Text("Login with Home Assistant", style: TextStyle(fontSize: 16.0, color: Colors.white)),
+                    child: Text("Login with Home Assistant", style: Theme.of(context).textTheme.button),
                     color: Colors.blue,
                     onPressed: () => _fullLoad(),
                   )

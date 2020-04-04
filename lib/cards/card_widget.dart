@@ -198,9 +198,6 @@ class CardWidget extends StatelessWidget {
     body.add(CardHeader(
       name: card.name ?? "",
       subtitle: Text("${card.linkedEntityWrapper.entity.displayState}",
-        style: TextStyle(
-            color: Colors.grey
-        ),
       ),
       trailing: Row(
           mainAxisSize: MainAxisSize.min,

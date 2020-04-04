@@ -13,12 +13,6 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
   double _currentPosition = 0;
   int _savedPosition = 0;
 
-  final TextStyle _seekTextStyle = TextStyle(
-      fontSize: 20,
-      color: Colors.blue,
-      fontWeight: FontWeight.bold
-  );
-
   @override
   initState() {
     super.initState();
@@ -79,7 +73,13 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
               children: <Widget>[
                 Text("00:00"),
                 Expanded(
-                  child: Text("${Duration(seconds: _currentPosition.toInt()).toString().split(".")[0]}",textAlign: TextAlign.center, style: _seekTextStyle),
+                  child: Text(
+                    "${Duration(seconds: _currentPosition.toInt()).toString().split(".")[0]}",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.title.copyWith(
+                      color: Colors.blue
+                    )
+                  ),
                 ),
                 Text("${Duration(seconds: entity.durationSeconds).toString().split(".")[0]}")
               ],

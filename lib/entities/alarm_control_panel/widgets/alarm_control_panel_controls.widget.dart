@@ -248,7 +248,9 @@ class _AlarmControlPanelControlsWidgetWidgetState extends State<AlarmControlPane
         FlatButton(
           child: Text(
             "TRIGGER",
-            style: TextStyle(color: Colors.redAccent)
+            style: Theme.of(context).textTheme.subhead.copyWith(
+              color: Colors.redAccent
+            )
           ),
           onPressed: () => _askToTrigger(entity),
         )

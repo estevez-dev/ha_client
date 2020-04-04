@@ -135,7 +135,9 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
       if (_validationMessage.isNotEmpty) {
         children.add(Text(
           "$_validationMessage",
-          style: TextStyle(color: Colors.red)
+          style: Theme.of(context).textTheme.body1.copyWith(
+            color: Theme.of(context).errorColor
+          )
         ));
       }
       children.addAll(<Widget>[
@@ -193,9 +195,9 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
                 },
                 child: Text(
                   "How?",
-                  style: TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline
+                  style: Theme.of(context).textTheme.body1.copyWith(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline
                   ),
                 ),
               ),

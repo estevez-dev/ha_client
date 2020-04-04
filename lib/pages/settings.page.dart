@@ -138,10 +138,7 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
         children: <Widget>[
           Text(
               "Connection settings",
-              style: TextStyle(
-                color: Colors.black45,
-                fontSize: 20.0
-              ),
+              style: Theme.of(context).textTheme.headline,
           ),
           new Row(
             children: [
@@ -176,16 +173,13 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
           ),
           new Text(
             "Try ports 80 and 443 if default is not working and you don't know why.",
-            style: TextStyle(color: Colors.grey),
+            style: Theme.of(context).textTheme.caption,
           ),
           Padding(
             padding: EdgeInsets.only(top: 20.0),
             child: Text(
               "UI",
-              style: TextStyle(
-                  color: Colors.black45,
-                  fontSize: 20.0
-              ),
+              style: Theme.of(context).textTheme.headline,
             ),
           ),
           new Row(
@@ -203,15 +197,14 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
           ),
           Text(
             "Authentication settings",
-            style: TextStyle(
-                color: Colors.black45,
-                fontSize: 20.0
-            ),
+            style: Theme.of(context).textTheme.headline,
           ),
           Container(height: 10.0,),
           Text(
             "You can leave this field blank to make app generate new long-lived token automatically by asking you to login to your Home Assistant. Use this field only if you still want to use manually generated long-lived token. Leave it blank if you don't understand what we are talking about.",
-            style: TextStyle(color: Colors.redAccent),
+            style: Theme.of(context).textTheme.body1.copyWith(
+              color: Colors.redAccent
+            ),
           ),
           new TextField(
               decoration: InputDecoration(

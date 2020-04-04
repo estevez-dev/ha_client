@@ -23,7 +23,7 @@ class PageLoadingError extends StatelessWidget {
                     size: 48.0
                 )
             ),
-            Text(this.errorText, style: TextStyle(color: Colors.black45))
+            Text(this.errorText, style: Theme.of(context).textTheme.subtitle)
           ],
         )
       ],

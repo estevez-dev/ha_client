@@ -40,10 +40,7 @@ class ProductPurchase extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           "${product.title}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16.0
-                          ),
+                          style: Theme.of(context).textTheme.body2,
                         ),
                         Container(height: Sizes.rowPadding,),
                         Text(
@@ -53,7 +50,9 @@ class ProductPurchase extends StatelessWidget {
                           softWrap: true,
                         ),
                         Container(height: Sizes.rowPadding,),
-                        Text("${product.price} $period", style: TextStyle(color: priceColor)),
+                        Text("${product.price} $period", style: Theme.of(context).textTheme.body1.copyWith(
+                          color: priceColor
+                        )),
                       ],
                     )
                 ),
@@ -61,7 +60,7 @@ class ProductPurchase extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: RaisedButton(
-                  child: Text(this.purchased ? buttonTextInactive : buttonText, style: TextStyle(color: Colors.white)),
+                  child: Text(this.purchased ? buttonTextInactive : buttonText, style: Theme.of(context).textTheme.button),
                   color: Colors.blue,
                   onPressed: this.purchased ? null : () => this.onBuy(this.product),
                 ),

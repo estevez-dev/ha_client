@@ -29,7 +29,9 @@ class DefaultEntityContainer extends StatelessWidget {
           ),
           Text(
               "${entityModel.entityWrapper.entity.displayName}",
-            style: TextStyle(color: Colors.blue),
+            style: Theme.of(context).textTheme.body1.copyWith(
+              color: Colors.blue
+            ),
           )
         ],
       );

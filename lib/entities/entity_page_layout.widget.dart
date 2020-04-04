@@ -25,10 +25,8 @@ class EntityPageLayout extends StatelessWidget {
                       padding: EdgeInsets.only(left: 8),
                       child: Text(
                         entity.displayName,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 22
+                        style: Theme.of(context).textTheme.headline.copyWith(
+                          color: Colors.white
                         ),
                       ),
                     ),

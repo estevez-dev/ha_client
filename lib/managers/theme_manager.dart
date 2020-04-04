@@ -14,7 +14,7 @@ class HAClientTheme {
   HAClientTheme._internal();
 
   final ThemeData lightTheme = ThemeData.light().copyWith(
-    primaryColor: Colors.blue,
+    //primaryColor: Colors.blue,
     textTheme: ThemeData.light().textTheme.copyWith(
       display1: TextStyle(fontSize: 34, fontWeight: FontWeight.normal, color: Colors.black54),
       display2: TextStyle(fontSize: 34, fontWeight: FontWeight.normal, color: Colors.redAccent),
@@ -24,8 +24,14 @@ class HAClientTheme {
       body1: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: defaultFontColor),
       body2: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: defaultFontColor),
       subtitle: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black45),
-      caption: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.black26),
-      overline: TextStyle(fontSize: 10, fontWeight: FontWeight.normal, color: Colors.black26),
+      caption: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black45),
+      overline: TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.normal,
+        color: Colors.black26,
+        letterSpacing: 1,
+      ),
+      button: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
     )
   );
 

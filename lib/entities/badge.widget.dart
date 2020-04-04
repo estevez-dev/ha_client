@@ -64,7 +64,6 @@ class BadgeWidget extends StatelessWidget {
               overflow: TextOverflow.fade,
               softWrap: false,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: stateFontSize),
             ),
           );
           break;
@@ -77,7 +76,9 @@ class BadgeWidget extends StatelessWidget {
       onBadgeText = Container(
           padding: EdgeInsets.fromLTRB(6.0, 2.0, 6.0, 2.0),
           child: Text("$onBadgeTextValue",
-              style: TextStyle(fontSize: 12.0, color: Colors.white),
+              style: Theme.of(context).textTheme.overline.copyWith(
+                color: Colors.white
+              ),
               textAlign: TextAlign.center,
               softWrap: false,
               overflow: TextOverflow.fade),
@@ -131,7 +132,7 @@ class BadgeWidget extends StatelessWidget {
               child: Text(
                 "${entityModel.entityWrapper.displayName}",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12.0),
+                style: Theme.of(context).textTheme.caption,
                 softWrap: true,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,

@@ -28,7 +28,7 @@ class HistoryControlWidget extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.only(right: 10.0),
-                child: _buildStates(),
+                child: _buildStates(context),
               ),
             ),
             _buildTime(),
@@ -46,18 +46,16 @@ class HistoryControlWidget extends StatelessWidget {
     }
   }
 
-  Widget _buildStates() {
+  Widget _buildStates(BuildContext context) {
     List<Widget> children = [];
     for (int i = 0; i < selectedStates.length; i++) {
       children.add(
           Text(
             "${selectedStates[i] ?? '-'}",
             textAlign: TextAlign.right,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: EntityColor.historyStateColor(selectedStates[i], colorIndexes[i]),
-                fontSize: 22.0
-            ),
+            style: Theme.of(context).textTheme.title.copyWith(
+              color: EntityColor.historyStateColor(selectedStates[i], colorIndexes[i])
+            )
           )
       );
     }

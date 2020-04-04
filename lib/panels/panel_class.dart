@@ -56,7 +56,7 @@ class Panel {
           children: <Widget>[
             Text("${this.title}"),
             Container(width: 4.0,),
-            isWebView ? Text("webview", style: TextStyle(fontSize: 8.0, color: Colors.black45),) : Container(width: 1.0,)
+            isWebView ? Text("webview", style: Theme.of(context).textTheme.overline) : Container(width: 1.0,)
           ],
         ),
         onTap: () {

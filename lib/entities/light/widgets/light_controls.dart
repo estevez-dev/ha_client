@@ -183,7 +183,7 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
       }
       return UniversalSlider(
         title: "Color temperature",
-        leading: Text("Cold", style: TextStyle(color: Colors.lightBlue),),
+        leading: Text("Cold", style: Theme.of(context).textTheme.body1.copyWith(color: Colors.lightBlue)),
         value:  val,
         onChangeEnd: (value) => _setColorTemp(entity, value),
         max: entity.maxMireds,
@@ -194,7 +194,7 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
             _tmpColorTemp = value.round();
           });
         },
-        closing: Text("Warm", style: TextStyle(color: Colors.amberAccent),),
+        closing: Text("Warm", style: Theme.of(context).textTheme.body1.copyWith(color: Colors.amberAccent),),
       );
     } else {
       return Container(width: 0.0, height: 0.0);

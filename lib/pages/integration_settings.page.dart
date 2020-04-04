@@ -121,9 +121,8 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                   onTap: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.app/docs#location-tracking"),
                   child: Text(
                     "Please read documentation!",
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.subhead.copyWith(
                       color: Colors.blue,
-                      fontSize: 16,
                       decoration: TextDecoration.underline
                     )
                   ),
@@ -180,13 +179,13 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                     RaisedButton(
                         color: Colors.blue,
                         onPressed: () => updateRegistration(),
-                        child: Text("Check integration", style: TextStyle(color: Colors.white))
+                        child: Text("Check integration", style: Theme.of(context).textTheme.button)
                     ),
                     Container(width: 10.0,),
                     RaisedButton(
                         color: Colors.redAccent,
                         onPressed: () => resetRegistration(),
-                        child: Text("Reset integration", style: TextStyle(color: Colors.white))
+                        child: Text("Reset integration", style: Theme.of(context).textTheme.button)
                     )
                   ],
                 ),

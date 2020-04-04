@@ -19,7 +19,7 @@ class MediaPlayerWidget extends StatelessWidget {
               right: 0.0,
               child: Container(
                 color: Colors.black45,
-                child: _buildState(entity),
+                child: _buildState(entity, context),
               ),
             ),
             Positioned(
@@ -35,12 +35,9 @@ class MediaPlayerWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildState(MediaPlayerEntity entity) {
-    TextStyle style = TextStyle(
-        fontSize: 14.0,
-        color: Colors.white,
-        fontWeight: FontWeight.normal,
-        height: 1.2
+  Widget _buildState(MediaPlayerEntity entity, BuildContext context) {
+    TextStyle style = Theme.of(context).textTheme.body1.copyWith(
+      color: Colors.white
     );
     List<Widget> states = [];
     states.add(Text("${entity.displayName}", style: style));

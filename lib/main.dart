@@ -262,7 +262,9 @@ class _HAClientAppState extends State<HAClientApp> {
             title: new Text("Login with HA"),
             actions: <Widget>[
               FlatButton(
-                child: Text("Manual", style: TextStyle(color: Colors.white)),
+                child: Text("Manual", style: Theme.of(context).textTheme.button.copyWith(
+                  decoration: TextDecoration.underline
+                )),
                 onPressed: () {
                   eventBus.fire(ShowPageEvent(path: "/connection-settings", goBackFirst: true));
                 },

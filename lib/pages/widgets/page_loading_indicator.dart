@@ -14,7 +14,7 @@ class PageLoadingIndicator extends StatelessWidget {
                 padding: EdgeInsets.only(top: 40.0, bottom: 20.0),
                 child: CircularProgressIndicator()
             ),
-            Text("Loading...", style: TextStyle(color: Colors.black45))
+            Text("Loading...", style: Theme.of(context).textTheme.subtitle)
           ],
         )
       ],
