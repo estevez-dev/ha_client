@@ -108,10 +108,8 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
                             //textAlign: TextAlign.center,
                             expanded: false,
                             maxLines: 1,
-                            bold: true,
                             textAlign: TextAlign.center,
-                            padding: EdgeInsets.all(0.0),
-                            fontSize: fontSize,
+                            padding: EdgeInsets.all(0.0)
                             //padding: EdgeInsets.only(top: Sizes.rowPadding),
                           ),
                         );

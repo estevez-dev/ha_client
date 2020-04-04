@@ -64,9 +64,7 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
           Padding(
             padding: EdgeInsets.fromLTRB(
                 0.0, Sizes.rowPadding, 0.0, Sizes.rowPadding),
-            child: Text("Position", style: TextStyle(
-                fontSize: Sizes.stateFontSize
-            )),
+            child: Text("Position"),
           ),
           Slider(
             value: _tmpPosition,
@@ -118,9 +116,7 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
       controls.insert(0, Padding(
         padding: EdgeInsets.fromLTRB(
             0.0, Sizes.rowPadding, 0.0, Sizes.rowPadding),
-        child: Text("Tilt position", style: TextStyle(
-            fontSize: Sizes.stateFontSize
-        )),
+        child: Text("Tilt position"),
       ));
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,

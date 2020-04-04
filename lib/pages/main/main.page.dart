@@ -539,9 +539,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   void _showErrorBottomBar(HAError error) {
-    TextStyle textStyle = TextStyle(
-        color: Colors.blue,
-        fontSize: Sizes.nameFontSize
+    TextStyle textStyle = Theme.of(context).textTheme.subhead.copyWith(
+      color: Colors.blue
     );
     _bottomBarColor = Colors.red.shade100;
     List<Widget> actions = [];

@@ -16,7 +16,7 @@ class LinkToWebConfig extends StatelessWidget {
             title: Text("${this.name}",
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
-                style: new TextStyle(fontWeight: FontWeight.bold, fontSize: Sizes.largeFontSize)),
+                style: Theme.of(context).textTheme.headline),
             subtitle: Text("Tap to open web version"),
             onTap: () {
               Launcher.launchAuthenticatedWebView(context: context, url: this.url, title: this.name);

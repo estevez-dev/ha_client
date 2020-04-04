@@ -69,7 +69,7 @@ class GlanceCardEntityContainer extends StatelessWidget {
       textOverflow: TextOverflow.ellipsis,
       wordsWrap: wordsWrapInName,
       textAlign: TextAlign.center,
-      textStyle: Theme.of(context).textTheme.caption,
+      textStyle: Theme.of(context).textTheme.body1,
     );
   }
 

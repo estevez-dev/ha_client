@@ -6,7 +6,6 @@ class FlatServiceButton extends StatelessWidget {
   final String serviceName;
   final String entityId;
   final String text;
-  final double fontSize;
 
   FlatServiceButton({
     Key key,
@@ -14,7 +13,6 @@ class FlatServiceButton extends StatelessWidget {
     @required this.serviceName,
     @required this.entityId,
     @required this.text,
-    this.fontSize: Sizes.stateFontSize
   }) : super(key: key);
 
   void _setNewState() {
@@ -24,7 +22,7 @@ class FlatServiceButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: fontSize*2.5,
+        height: Theme.of(context).textTheme.subhead.fontSize*2.5,
         child: FlatButton(
           onPressed: (() {
             _setNewState();
@@ -32,8 +30,7 @@ class FlatServiceButton extends StatelessWidget {
           child: Text(
             text,
             textAlign: TextAlign.right,
-            style:
-            new TextStyle(fontSize: fontSize, color: Colors.blue),
+            style: Theme.of(context).textTheme.subhead,
           ),
         )
     );

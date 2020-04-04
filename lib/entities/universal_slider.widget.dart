@@ -40,10 +40,7 @@ class UniversalSlider extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(height: Sizes.rowPadding,),
-          Text(
-            "$title",
-            style: TextStyle(fontSize: Sizes.stateFontSize),
-          ),
+          Text("$title"),
           Container(height: Sizes.rowPadding,),
           Row(
             mainAxisSize: MainAxisSize.min,

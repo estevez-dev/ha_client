@@ -10,8 +10,7 @@ class LastUpdatedWidget extends StatelessWidget {
       child: Text(
         '${entityModel.entityWrapper.entity.lastUpdated}',
         textAlign: TextAlign.left,
-        style: TextStyle(
-            fontSize: Sizes.smallFontSize, color: Colors.black26),
+        style: Theme.of(context).textTheme.caption
       ),
     );
   }

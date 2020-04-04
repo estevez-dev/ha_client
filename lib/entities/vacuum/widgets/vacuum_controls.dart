@@ -10,7 +10,7 @@ class VacuumControls extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          _buildStatusAndBattery(entity),
+          _buildStatusAndBattery(entity, context),
           _buildCommands(entity),
           _buildFanSpeed(entity),
           _buildAdditionalInfo(entity)
@@ -19,12 +19,12 @@ class VacuumControls extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusAndBattery(VacuumEntity entity) {
+  Widget _buildStatusAndBattery(VacuumEntity entity, BuildContext context) {
     List<Widget> result = [];
     if (entity.supportStatus) {
       result.addAll(
           <Widget>[
-            Text("Status:", style: TextStyle(fontSize: Sizes.stateFontSize),),
+            Text("Status:"),
             Container(width: 6,),
             Expanded(
               //flex: 1,
@@ -33,10 +33,7 @@ class VacuumControls extends StatelessWidget {
                 maxLines: 1,
                 softWrap: true,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: Sizes.stateFontSize,
-                    fontWeight: FontWeight.bold
-                ),
+                style: Theme.of(context).textTheme.body2,
               ),
             ),
           ]
@@ -48,7 +45,7 @@ class VacuumControls extends StatelessWidget {
       result.addAll(<Widget>[
         Icon(MaterialDesignIcons.getIconDataFromIconName(iconName)),
         Container(width: 6,),
-        Text("$batteryLevel %", style: TextStyle(fontSize: Sizes.stateFontSize))
+        Text("$batteryLevel %")
       ]
       );
     }
@@ -172,7 +169,7 @@ class VacuumControls extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Vacuum cleaner commands:", style: TextStyle(fontSize: Sizes.stateFontSize)),
+          Text("Vacuum cleaner commands:"),
           Container(height: Sizes.rowPadding,),
           Row(
             mainAxisSize: MainAxisSize.max,

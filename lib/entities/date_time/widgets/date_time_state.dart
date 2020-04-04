@@ -9,10 +9,8 @@ class DateTimeStateWidget extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(0.0, 0.0, Sizes.rightWidgetPadding, 0.0),
         child: GestureDetector(
           child: Text("${entity.formattedState}",
-              textAlign: TextAlign.right,
-              style: new TextStyle(
-                fontSize: Sizes.stateFontSize,
-              )),
+              textAlign: TextAlign.right
+            ),
           onTap: () => _handleStateTap(context, entity),
         ));
   }

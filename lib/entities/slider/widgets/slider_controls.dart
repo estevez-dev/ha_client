@@ -62,8 +62,7 @@ class _SliderControlsWidgetState extends State<SliderControlsWidget> {
       children: <Widget>[
         Text(
           "$_newValue",
-          style: TextStyle(
-            fontSize: Sizes.largeFontSize,
+          style: Theme.of(context).textTheme.display1.copyWith(
             color: Colors.blue
           ),
         ),
