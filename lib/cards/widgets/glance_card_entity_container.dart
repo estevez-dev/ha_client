@@ -6,7 +6,6 @@ class GlanceCardEntityContainer extends StatelessWidget {
   final bool showState;
   final bool nameInTheBottom;
   final double iconSize;
-  final double nameFontSize;
   final bool wordsWrapInName;
 
   GlanceCardEntityContainer({
@@ -15,7 +14,6 @@ class GlanceCardEntityContainer extends StatelessWidget {
     @required this.showState,
     this.nameInTheBottom: false,
     this.iconSize: Sizes.iconSize,
-    this.nameFontSize: Sizes.smallFontSize,
     this.wordsWrapInName: false
   }) : super(key: key);
 
@@ -31,7 +29,7 @@ class GlanceCardEntityContainer extends StatelessWidget {
     List<Widget> result = [];
     if (!nameInTheBottom) {
       if (showName) {
-        result.add(_buildName());
+        result.add(_buildName(context));
       }
     } else {
       if (showState) {
@@ -49,7 +47,7 @@ class GlanceCardEntityContainer extends StatelessWidget {
         result.add(_buildState());
       }
     } else {
-      result.add(_buildName());
+      result.add(_buildName(context));
     }
 
     return Center(
@@ -65,13 +63,13 @@ class GlanceCardEntityContainer extends StatelessWidget {
     );
   }
 
-  Widget _buildName() {
+  Widget _buildName(BuildContext context) {
     return EntityName(
       padding: EdgeInsets.only(bottom: Sizes.rowPadding),
       textOverflow: TextOverflow.ellipsis,
       wordsWrap: wordsWrapInName,
       textAlign: TextAlign.center,
-      fontSize: nameFontSize,
+      textStyle: Theme.of(context).textTheme.caption,
     );
   }
 

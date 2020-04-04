@@ -48,8 +48,7 @@ class EntityButtonCardBody extends StatelessWidget {
         textOverflow: TextOverflow.ellipsis,
         maxLines: 3,
         wordsWrap: true,
-        textAlign: TextAlign.center,
-        fontSize: Sizes.nameFontSize,
+        textAlign: TextAlign.center
       );
     }
     return Container(width: 0, height: 0);

@@ -5,8 +5,6 @@ class ModeSelectorWidget extends StatelessWidget {
   final String caption;
   final List options;
   final String value;
-  final double captionFontSize;
-  final double valueFontSize;
   final onChange;
   final EdgeInsets padding;
 
@@ -16,8 +14,6 @@ class ModeSelectorWidget extends StatelessWidget {
     @required this.options,
     this.value,
     @required this.onChange,
-    this.captionFontSize,
-    this.valueFontSize,
     this.padding: const EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, 0.0),
   }) : super(key: key);
 
@@ -28,9 +24,7 @@ class ModeSelectorWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("$caption", style: TextStyle(
-              fontSize: captionFontSize ?? Sizes.stateFontSize
-          )),
+          Text("$caption", style: Theme.of(context).textTheme.body1),
           Row(
             children: <Widget>[
               Expanded(
@@ -40,10 +34,7 @@ class ModeSelectorWidget extends StatelessWidget {
                     value: value,
                     iconSize: 30.0,
                     isExpanded: true,
-                    style: TextStyle(
-                      fontSize: valueFontSize ?? Sizes.largeFontSize,
-                      color: Colors.black,
-                    ),
+                    style: Theme.of(context).textTheme.title,
                     hint: Text("Select ${caption.toLowerCase()}"),
                     items: options.map((value) {
                       return new DropdownMenuItem<String>(

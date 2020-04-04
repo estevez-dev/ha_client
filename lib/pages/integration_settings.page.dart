@@ -115,7 +115,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
         scrollDirection: Axis.vertical,
         padding: const EdgeInsets.all(20.0),
         children: <Widget>[
-                Text("Location tracking", style: TextStyle(fontSize: Sizes.largeFontSize-2)),
+                Text("Location tracking", style: Theme.of(context).textTheme.title),
                 Container(height: Sizes.rowPadding,),
                 InkWell(
                   onTap: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.app/docs#location-tracking"),
@@ -153,21 +153,24 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                     //Expanded(child: Container(),),
                     FlatButton(
                       padding: EdgeInsets.all(0.0),
-                      child: Text("-", style: TextStyle(fontSize: Sizes.largeFontSize)),
+                      child: Text("-", style: Theme.of(context).textTheme.title),
                       onPressed: () => decLocationInterval(),
                     ),
-                    Text("$_locationInterval", style: TextStyle(fontSize: Sizes.largeFontSize)),
+                    Text("$_locationInterval", style: Theme.of(context).textTheme.title),
                     FlatButton(
                       padding: EdgeInsets.all(0.0),
-                      child: Text("+", style: TextStyle(fontSize: Sizes.largeFontSize)),
+                      child: Text("+", style: Theme.of(context).textTheme.title),
                       onPressed: () => incLocationInterval(),
                     ),
                   ],
                 ),
                 Divider(),
-                Text("Integration status", style: TextStyle(fontSize: Sizes.largeFontSize-2)),
+                Text("Integration status", style: Theme.of(context).textTheme.title),
                 Container(height: Sizes.rowPadding,),
-                Text("${HomeAssistant().userName}'s ${DeviceInfoManager().model}, ${DeviceInfoManager().osName} ${DeviceInfoManager().osVersion}"),
+                Text(
+                  "${HomeAssistant().userName}'s ${DeviceInfoManager().model}, ${DeviceInfoManager().osName} ${DeviceInfoManager().osVersion}",
+                  style: Theme.of(context).textTheme.subtitle,
+                  ),
                 Container(height: 6.0,),
                 Text("Here you can manually check if HA Client integration with your Home Assistant works fine. As mobileApp integration in Home Assistant is still in development, this is not 100% correct check."),
                 //Divider(),

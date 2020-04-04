@@ -126,7 +126,9 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
                         return Padding(
                           padding: EdgeInsets.only(bottom: fontSize),
                           child: EntityName(
-                            fontSize: fontSize,
+                            textStyle: Theme.of(context).textTheme.body1.copyWith(
+                              fontSize: fontSize
+                            ),
                             maxLines: 1,
                             padding: EdgeInsets.all(0.0),
                             textAlign: TextAlign.center,

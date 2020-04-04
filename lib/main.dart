@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
-import 'dart:io';
+//import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:web_socket_channel/io.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart' as urlLauncher;
 import 'package:flutter/services.dart';
 import 'package:date_format/date_format.dart';
@@ -35,6 +35,7 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standalon
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:video_player/video_player.dart';
 
+import 'managers/theme_manager.dart';
 import 'utils/logger.dart';
 
 part 'const.dart';
@@ -226,9 +227,8 @@ class _HAClientAppState extends State<HAClientApp> {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: appName,
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: HAClientTheme().lightTheme,
+      darkTheme: HAClientTheme().darkTheme,
       initialRoute: "/",
       routes: {
         "/": (context) => MainPage(title: 'HA Client'),

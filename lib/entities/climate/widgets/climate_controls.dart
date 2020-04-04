@@ -204,20 +204,20 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           //_buildOnOffControl(entity),
-          _buildTemperatureControls(entity),
-          _buildTargetTemperatureControls(entity),
-          _buildHumidityControls(entity),
-          _buildOperationControl(entity),
-          _buildFanControl(entity),
-          _buildSwingControl(entity),
-          _buildPresetModeControl(entity),
-          _buildAuxHeatControl(entity)
+          _buildTemperatureControls(entity, context),
+          _buildTargetTemperatureControls(entity, context),
+          _buildHumidityControls(entity, context),
+          _buildOperationControl(entity, context),
+          _buildFanControl(entity, context),
+          _buildSwingControl(entity, context),
+          _buildPresetModeControl(entity, context),
+          _buildAuxHeatControl(entity, context)
         ],
       ),
     );
   }
 
-  Widget _buildPresetModeControl(ClimateEntity entity) {
+  Widget _buildPresetModeControl(ClimateEntity entity, BuildContext context) {
     if (entity.supportPresetMode) {
       return ModeSelectorWidget(
         options: entity.presetModes,
@@ -242,7 +242,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     }
   }*/
 
-  Widget _buildAuxHeatControl(ClimateEntity entity) {
+  Widget _buildAuxHeatControl(ClimateEntity entity, BuildContext context) {
     if (entity.supportAuxHeat ) {
       return ModeSwitchWidget(
           caption: "Aux heat",
@@ -254,7 +254,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     }
   }
 
-  Widget _buildOperationControl(ClimateEntity entity) {
+  Widget _buildOperationControl(ClimateEntity entity, BuildContext context) {
     if (entity.hvacModes != null) {
       return ModeSelectorWidget(
         onChange: (mode) => _setHVACMode(entity, mode),
@@ -267,7 +267,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     }
   }
 
-  Widget _buildFanControl(ClimateEntity entity) {
+  Widget _buildFanControl(ClimateEntity entity, BuildContext context) {
     if (entity.supportFanMode) {
       return ModeSelectorWidget(
         options: entity.fanModes,
@@ -280,7 +280,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     }
   }
 
-  Widget _buildSwingControl(ClimateEntity entity) {
+  Widget _buildSwingControl(ClimateEntity entity, BuildContext context) {
     if (entity.supportSwingMode) {
       return ModeSelectorWidget(
           onChange: (mode) => _setSwingMode(entity, mode),
@@ -293,17 +293,15 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     }
   }
 
-  Widget _buildTemperatureControls(ClimateEntity entity) {
+  Widget _buildTemperatureControls(ClimateEntity entity, BuildContext context) {
     if ((entity.supportTargetTemperature) && (entity.temperature != null)) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Target temperature", style: TextStyle(
-              fontSize: Sizes.stateFontSize
-          )),
+          Text("Target temperature", style: Theme.of(context).textTheme.body1),
           TemperatureControlWidget(
             value: _tmpTemperature,
-            fontColor: _temperaturePending ? Colors.red : Colors.black,
+            active: _temperaturePending,
             onDec: () => _temperatureDown(entity),
             onInc: () => _temperatureUp(entity),
           )
@@ -314,13 +312,13 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     }
   }
 
-  Widget _buildTargetTemperatureControls(ClimateEntity entity) {
+  Widget _buildTargetTemperatureControls(ClimateEntity entity, BuildContext context) {
     List<Widget> controls = [];
     if ((entity.supportTargetTemperatureRange) && (entity.targetLow != null)) {
       controls.addAll(<Widget>[
         TemperatureControlWidget(
           value: _tmpTargetLow,
-          fontColor: _temperaturePending ? Colors.red : Colors.black,
+          active: _temperaturePending,
           onDec: () => _targetLowDown(entity),
           onInc: () => _targetLowUp(entity),
         ),
@@ -333,7 +331,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       controls.add(
           TemperatureControlWidget(
             value: _tmpTargetHigh,
-            fontColor: _temperaturePending ? Colors.red : Colors.black,
+            active: _temperaturePending,
             onDec: () => _targetHighDown(entity),
             onInc: () => _targetHighUp(entity),
           )
@@ -343,9 +341,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Target temperature range", style: TextStyle(
-              fontSize: Sizes.stateFontSize
-          )),
+          Text("Target temperature range", style: Theme.of(context).textTheme.body1),
           Row(
             children: controls,
           )
@@ -356,13 +352,13 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
     }
   }
 
-  Widget _buildHumidityControls(ClimateEntity entity) {
+  Widget _buildHumidityControls(ClimateEntity entity, BuildContext context) {
     List<Widget> result = [];
     if (entity.supportTargetHumidity) {
       result.addAll(<Widget>[
         Text(
           "$_tmpTargetHumidity%",
-          style: TextStyle(fontSize: Sizes.largeFontSize),
+          style: Theme.of(context).textTheme.display1,
         ),
         Expanded(
           child: Slider(
@@ -387,9 +383,7 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
           Padding(
             padding: EdgeInsets.fromLTRB(
                 0.0, Sizes.rowPadding, 0.0, Sizes.rowPadding),
-            child: Text("Target humidity", style: TextStyle(
-                fontSize: Sizes.stateFontSize
-            )),
+            child: Text("Target humidity", style: Theme.of(context).textTheme.body1),
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,

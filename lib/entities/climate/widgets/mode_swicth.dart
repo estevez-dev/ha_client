@@ -4,7 +4,6 @@ class ModeSwitchWidget extends StatelessWidget {
 
   final String caption;
   final onChange;
-  final double captionFontSize;
   final bool value;
   final bool expanded;
   final EdgeInsets padding;
@@ -13,7 +12,6 @@ class ModeSwitchWidget extends StatelessWidget {
     Key key,
     @required this.caption,
     @required this.onChange,
-    this.captionFontSize,
     this.value,
     this.expanded: true,
     this.padding: const EdgeInsets.only(left: Sizes.leftWidgetPadding, right: Sizes.rightWidgetPadding)
@@ -25,7 +23,7 @@ class ModeSwitchWidget extends StatelessWidget {
       padding: this.padding,
       child: Row(
         children: <Widget>[
-          _buildCaption(),
+          _buildCaption(context),
           Switch(
             onChanged: (value) => onChange(value),
             value: value ?? false,
@@ -35,12 +33,10 @@ class ModeSwitchWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCaption() {
+  Widget _buildCaption(BuildContext context) {
     Widget captionWidget = Text(
       "$caption",
-      style: TextStyle(
-          fontSize: captionFontSize ?? Sizes.stateFontSize
-      ),
+      style: Theme.of(context).textTheme.body1,
     );
     if (expanded) {
       return Expanded(

@@ -33,23 +33,16 @@ class ClimateStateWidget extends StatelessWidget {
               children: <Widget>[
                 Text("$displayState",
                     textAlign: TextAlign.right,
-                    style: new TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: Sizes.stateFontSize,
-                    )),
+                    style: Theme.of(context).textTheme.body2),
                 Text(" $targetTemp",
                     textAlign: TextAlign.right,
-                    style: new TextStyle(
-                      fontSize: Sizes.stateFontSize,
-                    ))
+                    style: Theme.of(context).textTheme.body1)
               ],
             ),
             entity.currentTemperature != null ?
             Text("Currently: ${entity.currentTemperature}",
                 textAlign: TextAlign.right,
-                style: new TextStyle(
-                    fontSize: Sizes.stateFontSize,
-                    color: Colors.black45)
+                style: Theme.of(context).textTheme.subtitle
             ) :
             Container(height: 0.0,)
           ],

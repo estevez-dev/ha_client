@@ -2,8 +2,7 @@ part of '../../../main.dart';
 
 class TemperatureControlWidget extends StatelessWidget {
   final double value;
-  final double fontSize;
-  final Color fontColor;
+  final bool active;
   final onInc;
   final onDec;
 
@@ -12,8 +11,9 @@ class TemperatureControlWidget extends StatelessWidget {
         @required this.value,
         @required this.onInc,
         @required this.onDec,
-        this.fontSize,
-        this.fontColor})
+        //this.fontSize,
+        this.active: false
+      })
       : super(key: key);
 
   @override
@@ -23,10 +23,7 @@ class TemperatureControlWidget extends StatelessWidget {
       children: <Widget>[
         Text(
           "$value",
-          style: TextStyle(
-              fontSize: fontSize ?? 24.0,
-              color: fontColor ?? Colors.black
-          ),
+          style: active ? Theme.of(context).textTheme.display2 : Theme.of(context).textTheme.display1,
         ),
         Column(
           children: <Widget>[
