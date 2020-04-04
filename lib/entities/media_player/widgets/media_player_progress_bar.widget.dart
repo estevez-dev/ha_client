@@ -33,7 +33,7 @@ class _MediaPlayerProgressBarState extends State<MediaPlayerProgressBar> {
     return LinearProgressIndicator(
       value: progress,
       backgroundColor: Colors.black45,
-      valueColor: AlwaysStoppedAnimation<Color>(EntityColor.stateColor(EntityState.on)),
+      valueColor: AlwaysStoppedAnimation<Color>(HAClientTheme().stateColor(EntityState.on)),
     );
   }
 

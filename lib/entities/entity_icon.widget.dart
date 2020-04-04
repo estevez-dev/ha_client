@@ -67,7 +67,7 @@ class EntityIcon extends StatelessWidget {
       padding: padding,
       child: buildIcon(
           entityWrapper,
-          color ?? EntityColor.stateColor(entityWrapper.entity.state)
+          color ?? HAClientTheme().stateColor(entityWrapper.entity.state)
       ),
     );
   }

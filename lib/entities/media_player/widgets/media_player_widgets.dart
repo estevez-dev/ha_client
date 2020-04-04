@@ -94,7 +94,7 @@ class MediaPlayerWidget extends StatelessWidget {
           Icon(
             MaterialDesignIcons.getIconDataFromIconName("mdi:movie"),
             size: 150.0,
-            color: EntityColor.stateColor("$state"),
+            color: HAClientTheme().stateColor("$state"),
           )
         ],
       );

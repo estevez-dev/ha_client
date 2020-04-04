@@ -39,7 +39,7 @@ class EntityPicture extends StatelessWidget {
         child: Icon(
           IconData(iconCode, fontFamily: 'Material Design Icons'),
           size: Sizes.largeIconSize,
-          color: EntityColor.defaultStateColor,
+          color: HAClientTheme().defaultStateColor,
         )
       )
     );

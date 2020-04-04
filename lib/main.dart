@@ -35,7 +35,6 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standalon
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:video_player/video_player.dart';
 
-import 'managers/theme_manager.dart';
 import 'utils/logger.dart';
 
 part 'const.dart';
@@ -77,7 +76,6 @@ part 'entities/universal_slider.widget.dart';
 part 'entities/flat_service_button.widget.dart';
 part 'entities/light/widgets/light_color_picker.dart';
 part 'entities/camera/widgets/camera_stream_view.dart';
-part 'entities/entity_colors.class.dart';
 part 'plugins/history_chart/entity_history.dart';
 part 'plugins/history_chart/simple_state_history_chart.dart';
 part 'plugins/history_chart/numeric_state_history_chart.dart';
@@ -125,6 +123,7 @@ part 'managers/mobile_app_integration_manager.class.dart';
 part 'managers/connection_manager.class.dart';
 part 'managers/device_info_manager.class.dart';
 part 'managers/startup_user_messages_manager.class.dart';
+part 'managers/theme_manager.dart';
 part 'ui.dart';
 part 'view.class.dart';
 part 'cards/card.class.dart';

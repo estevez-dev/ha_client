@@ -7,8 +7,8 @@ class BadgeWidget extends StatelessWidget {
     double iconSize = 26.0;
     Widget badgeIcon;
     String onBadgeTextValue;
-    Color iconColor = EntityColor.badgeColors[entityModel.entityWrapper.entity.domain] ??
-        EntityColor.badgeColors["default"];
+    Color iconColor = HAClientTheme().badgeColors[entityModel.entityWrapper.entity.domain] ??
+        HAClientTheme().badgeColors["default"];
     switch (entityModel.entityWrapper.entity.domain) {
       case "sun":
         {
