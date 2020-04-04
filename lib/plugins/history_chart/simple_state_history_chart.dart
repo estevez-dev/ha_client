@@ -107,7 +107,8 @@ class _SimpleStateHistoryChartWidgetState extends State<SimpleStateHistoryChartW
       new charts.Series<EntityHistoryMoment, DateTime>(
         id: 'State',
         strokeWidthPxFn: (EntityHistoryMoment historyMoment, __) => (historyMoment.id == _selectedId) ? 6.0 : 3.0,
-        colorFn: (EntityHistoryMoment historyMoment, __) => HAClientTheme().chartHistoryStateColor(historyMoment.state, historyMoment.colorId),
+        colorFn: (EntityHistoryMoment historyMoment, __) =>
+          HAClientTheme().chartHistoryStateColor(historyMoment.state, historyMoment.colorId, context),
         domainFn: (EntityHistoryMoment historyMoment, _) => historyMoment.startTime,
         measureFn: (EntityHistoryMoment historyMoment, _) => 10,
         data: data,
@@ -115,7 +116,8 @@ class _SimpleStateHistoryChartWidgetState extends State<SimpleStateHistoryChartW
       new charts.Series<EntityHistoryMoment, DateTime>(
         id: 'State',
         radiusPxFn: (EntityHistoryMoment historyMoment, __) => (historyMoment.id == _selectedId) ? 5.0 : 3.0,
-        colorFn: (EntityHistoryMoment historyMoment, __) => HAClientTheme().chartHistoryStateColor(historyMoment.state, historyMoment.colorId),
+        colorFn: (EntityHistoryMoment historyMoment, __) =>
+          HAClientTheme().chartHistoryStateColor(historyMoment.state, historyMoment.colorId, context),
         domainFn: (EntityHistoryMoment historyMoment, _) => historyMoment.startTime,
         measureFn: (EntityHistoryMoment historyMoment, _) => 10,
         data: data,
@@ -123,7 +125,8 @@ class _SimpleStateHistoryChartWidgetState extends State<SimpleStateHistoryChartW
       new charts.Series<EntityHistoryMoment, DateTime>(
         id: 'State',
         radiusPxFn: (EntityHistoryMoment historyMoment, __) => (historyMoment.id == _selectedId) ? 5.0 : 3.0,
-        colorFn: (EntityHistoryMoment historyMoment, __) => HAClientTheme().chartHistoryStateColor(historyMoment.state, historyMoment.colorId),
+        colorFn: (EntityHistoryMoment historyMoment, __) =>
+          HAClientTheme().chartHistoryStateColor(historyMoment.state, historyMoment.colorId, context),
         domainFn: (EntityHistoryMoment historyMoment, _) => historyMoment.endTime ?? DateTime.now(),
         measureFn: (EntityHistoryMoment historyMoment, _) => 10,
         data: data,

@@ -54,7 +54,7 @@ class HistoryControlWidget extends StatelessWidget {
             "${selectedStates[i] ?? '-'}",
             textAlign: TextAlign.right,
             style: Theme.of(context).textTheme.title.copyWith(
-              color: HAClientTheme().historyStateColor(selectedStates[i], colorIndexes[i])
+              color: HAClientTheme().historyStateColor(selectedStates[i], colorIndexes[i], context)
             )
           )
       );

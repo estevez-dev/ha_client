@@ -22,7 +22,7 @@ class EntityPicture extends StatelessWidget {
     }
   }
 
-  Widget buildIcon(EntityWrapper data) {
+  Widget buildIcon(EntityWrapper data, BuildContext context) {
     if (data == null) {
       return null;
     }
@@ -39,7 +39,7 @@ class EntityPicture extends StatelessWidget {
         child: Icon(
           IconData(iconCode, fontFamily: 'Material Design Icons'),
           size: Sizes.largeIconSize,
-          color: HAClientTheme().defaultStateColor,
+          color: HAClientTheme().getOffStateColor(context),
         )
       )
     );
@@ -63,7 +63,8 @@ class EntityPicture extends StatelessWidget {
     return Padding(
       padding: padding,
       child: buildIcon(
-          entityWrapper
+          entityWrapper,
+          context
       ),
     );
   }

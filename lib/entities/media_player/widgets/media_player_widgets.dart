@@ -12,7 +12,7 @@ class MediaPlayerWidget extends StatelessWidget {
         Stack(
           alignment: AlignmentDirectional.topEnd,
           children: <Widget>[
-            _buildImage(entity),
+            _buildImage(entity, context),
             Positioned(
               bottom: 0.0,
               left: 0.0,
@@ -68,7 +68,7 @@ class MediaPlayerWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(MediaPlayerEntity entity) {
+  Widget _buildImage(MediaPlayerEntity entity, BuildContext context) {
     String state = entity.state;
     if (entity.entityPicture != null && state != EntityState.off && state != EntityState.unavailable && state != EntityState.idle) {
       return Container(
@@ -94,7 +94,7 @@ class MediaPlayerWidget extends StatelessWidget {
           Icon(
             MaterialDesignIcons.getIconDataFromIconName("mdi:movie"),
             size: 150.0,
-            color: HAClientTheme().stateColor("$state"),
+            color: HAClientTheme().getColorByEntityState("$state", context),
           )
         ],
       );

@@ -108,7 +108,8 @@ class _NumericStateHistoryChartWidgetState extends State<NumericStateHistoryChar
     return [
       new charts.Series<EntityHistoryMoment, DateTime>(
         id: 'State',
-        colorFn: (EntityHistoryMoment historyMoment, __) => HAClientTheme().chartHistoryStateColor(EntityState.on, -1),
+        colorFn: (EntityHistoryMoment historyMoment, __) =>
+          HAClientTheme().chartHistoryStateColor(EntityState.on, -1, context),
         domainFn: (EntityHistoryMoment historyMoment, _) => historyMoment.startTime,
         measureFn: (EntityHistoryMoment historyMoment, _) => historyMoment.value ?? historyMoment.previousValue,
         data: data,

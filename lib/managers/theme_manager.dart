@@ -20,36 +20,45 @@ class HAClientTheme {
     button: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
   );
 
-  static const _stateColors = {
-    EntityState.on: Colors.amber,
-    "auto": Colors.amber,
-    EntityState.active: Colors.amber,
-    EntityState.playing: Colors.amber,
-    EntityState.paused: Colors.amber,
-    "above_horizon": Colors.amber,
-    EntityState.home:  Colors.amber,
-    EntityState.open:  Colors.amber,
-    EntityState.cleaning:  Colors.amber,
-    EntityState.returning:  Colors.amber,
-    EntityState.off: defaultStateColor,
-    EntityState.closed: defaultStateColor,
-    "below_horizon": defaultStateColor,
-    "default": defaultStateColor,
-    EntityState.idle: defaultStateColor,
-    "heat": Colors.redAccent,
-    "cool": Colors.lightBlue,
-    EntityState.unavailable: Colors.black26,
-    EntityState.unknown: Colors.black26,
-    EntityState.alarm_disarmed: Colors.green,
-    EntityState.alarm_armed_away: Colors.redAccent,
-    EntityState.alarm_armed_custom_bypass: Colors.redAccent,
-    EntityState.alarm_armed_home: Colors.redAccent,
-    EntityState.alarm_armed_night: Colors.redAccent,
-    EntityState.alarm_triggered: Colors.redAccent,
-    EntityState.alarm_arming: Colors.amber,
-    EntityState.alarm_disarming: Colors.amber,
-    EntityState.alarm_pending: Colors.amber,
-  };
+  static const offEntityStates = [
+    EntityState.off,
+    EntityState.closed,
+    "below_horizon",
+    "default",
+    EntityState.idle,
+    EntityState.alarm_disarmed,
+  ];
+
+  static const onEntityStates = [
+    EntityState.on,
+    "auto",
+    EntityState.active,
+    EntityState.playing,
+    EntityState.paused,
+    "above_horizon",
+    EntityState.home,
+    EntityState.open,
+    EntityState.cleaning,
+    EntityState.returning,
+    "heat",
+    "cool",
+    EntityState.alarm_arming,
+    EntityState.alarm_disarming,
+    EntityState.alarm_pending,
+  ];
+
+  static const disabledEntityStates = [
+    EntityState.unavailable,
+    EntityState.unknown,
+  ];
+
+  static const alarmEntityStates = [
+    EntityState.alarm_armed_away,
+    EntityState.alarm_armed_custom_bypass,
+    EntityState.alarm_armed_home,
+    EntityState.alarm_armed_night,
+    EntityState.alarm_triggered,
+  ];
 
   static const defaultStateColor = Color.fromRGBO(68, 115, 158, 1.0);
 
@@ -114,12 +123,36 @@ class HAClientTheme {
     )
   );
 
-  Color stateColor(String state) {
-    return _stateColors[state] ?? _stateColors["default"];
+  Color getOnStateColor(BuildContext context) {
+    return Theme.of(context).colorScheme.secondary;
   }
 
-  charts.Color chartHistoryStateColor(String state, int id) {
-    Color c = _stateColors[state];
+  Color getOffStateColor(BuildContext context) {
+    return Theme.of(context).colorScheme.primaryVariant;
+  }
+
+  Color getDisabledStateColor(BuildContext context) {
+    return Theme.of(context).disabledColor;
+  }
+
+  Color getAlertStateColor(BuildContext context) {
+    return Theme.of(context).colorScheme.error;
+  }
+
+  Color getColorByEntityState(String state, BuildContext context) {
+    if (onEntityStates.contains(state)) {
+      return getOnStateColor(context);
+    } else if (disabledEntityStates.contains(state)) {
+      return getDisabledStateColor(context);
+    } else if (alarmEntityStates.contains(state)) {
+      return getAlertStateColor(context);
+    } else {
+      return getOffStateColor(context);
+    }
+  }
+
+  charts.Color chartHistoryStateColor(String state, int id, BuildContext context) {
+    Color c = getColorByEntityState(state, context);
     if (c != null) {
       return charts.Color(
           r: c.red,
@@ -133,8 +166,8 @@ class HAClientTheme {
     }
   }
 
-  Color historyStateColor(String state, int id) {
-    Color c = _stateColors[state];
+  Color historyStateColor(String state, int id, BuildContext context) {
+    Color c = getColorByEntityState(state, context);
     if (c != null) {
       return c;
     } else {
@@ -143,7 +176,7 @@ class HAClientTheme {
         charts.Color c1 = charts.MaterialPalette.getOrderedPalettes(10)[r.round()].shadeDefault;
         return Color.fromARGB(c1.a, c1.r, c1.g, c1.b);
       } else {
-        return _stateColors[EntityState.on];
+        return getOnStateColor(context);
       }
     }
   }

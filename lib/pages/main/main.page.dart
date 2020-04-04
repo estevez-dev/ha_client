@@ -634,7 +634,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             child: Text(
                 "${entity.displayName}",
               style: Theme.of(context).textTheme.body1.copyWith(
-                color: HAClientTheme().stateColor(entity.state)
+                color: HAClientTheme().getColorByEntityState(entity.state, context)
               )
             ),
             value: "${entity.entityId}",
@@ -822,9 +822,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         bottomBarChildren.add(
           CollectionScaleTransition(
             children: <Widget>[
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().stateColor(EntityState.on),),
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().stateColor(EntityState.unavailable),),
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().stateColor(EntityState.off),),
+              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getOnStateColor(context),),
+              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getDisabledStateColor(context),),
+              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getOffStateColor(context),),
             ],
           ),
         );

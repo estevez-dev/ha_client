@@ -156,7 +156,8 @@ class _CombinedHistoryChartWidgetState extends State<CombinedHistoryChartWidget>
       result.add(
         new charts.Series<EntityHistoryMoment, DateTime>(
           id: "value",
-          colorFn: (EntityHistoryMoment historyMoment, __) => HAClientTheme().chartHistoryStateColor("_", historyMoment.colorId),
+          colorFn: (EntityHistoryMoment historyMoment, __) => 
+            HAClientTheme().chartHistoryStateColor("_", historyMoment.colorId, context),
           radiusPxFn: (EntityHistoryMoment historyMoment, __) {
               if (historyMoment.hiddenDot) {
                 return 0.0;
@@ -179,7 +180,8 @@ class _CombinedHistoryChartWidgetState extends State<CombinedHistoryChartWidget>
         new charts.Series<EntityHistoryMoment, DateTime>(
           id: 'state',
           radiusPxFn: (EntityHistoryMoment historyMoment, __) => (historyMoment.id == _selectedId) ? 5.0 : 4.0,
-          colorFn: (EntityHistoryMoment historyMoment, __) => HAClientTheme().chartHistoryStateColor(historyMoment.state, historyMoment.colorId),
+          colorFn: (EntityHistoryMoment historyMoment, __) =>
+            HAClientTheme().chartHistoryStateColor(historyMoment.state, historyMoment.colorId, context),
           domainFn: (EntityHistoryMoment historyMoment, _) => historyMoment.startTime,
           domainLowerBoundFn: (EntityHistoryMoment historyMoment, _) => historyMoment.startTime,
           domainUpperBoundFn: (EntityHistoryMoment historyMoment, _) => historyMoment.endTime ?? DateTime.now(),
