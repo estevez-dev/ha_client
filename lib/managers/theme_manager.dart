@@ -107,20 +107,23 @@ class HAClientTheme {
     )
   );
 
-  final ThemeData darkTheme = ThemeData.dark().copyWith(
-    textTheme: ThemeData.light().textTheme.copyWith(
-      display1: textTheme.display1.copyWith(color: Colors.white70),
-      display2: textTheme.display2.copyWith(color: Colors.redAccent),
-      headline: textTheme.headline.copyWith(color: Colors.white),
-      title: textTheme.title.copyWith(color: Colors.white),
-      subhead: textTheme.subhead.copyWith(color: Colors.white70),
-      body1: textTheme.body1.copyWith(color: Colors.white),
-      body2: textTheme.body2.copyWith(color: Colors.white),
-      subtitle: textTheme.subtitle.copyWith(color: Colors.white70),
-      caption: textTheme.caption.copyWith(color: Colors.white70),
-      overline: textTheme.overline.copyWith(color: Colors.white54),
-      button: textTheme.button.copyWith(color: Colors.white),
-    )
+  final ThemeData darkTheme = ThemeData.from(
+    colorScheme: ColorScheme(
+      primary: Color.fromRGBO(112, 154, 193, 1),
+      primaryVariant: Color.fromRGBO(68, 115, 158, 1),
+      secondary: Color.fromRGBO(253, 216, 53, 1),
+      secondaryVariant: Color.fromRGBO(222, 181, 2, 1),
+      background: Color.fromRGBO(47, 49, 54, 1),
+      surface: Color.fromRGBO(54, 57, 63, 1),
+      error: Color.fromRGBO(183, 109, 109, 1),
+      onPrimary: Colors.white,
+      onSecondary: Colors.black87,
+      onBackground: Color.fromRGBO(220, 221, 222, 1),
+      onSurface: Colors.white,
+      onError: Colors.white,
+      brightness: Brightness.dark
+    ),
+    textTheme: textTheme
   );
 
   Color getOnStateColor(BuildContext context) {
