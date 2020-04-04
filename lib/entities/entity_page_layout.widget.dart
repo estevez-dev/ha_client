@@ -16,7 +16,7 @@ class EntityPageLayout extends StatelessWidget {
           children: <Widget>[
             showClose ?
             Container(
-              color: Colors.blue[300],
+              color: Theme.of(context).primaryColorLight,
               height: 40,
               child: Row(
                 children: <Widget>[

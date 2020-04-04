@@ -30,7 +30,6 @@ class HAClientTheme {
   HAClientTheme._internal();
 
   final ThemeData lightTheme = ThemeData.light().copyWith(
-    //primaryColor: Colors.blue,
     textTheme: ThemeData.light().textTheme.copyWith(
       display1: textTheme.display1.copyWith(color: Colors.black54),
       display2: textTheme.display2.copyWith(color: Colors.redAccent),
