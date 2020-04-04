@@ -14,7 +14,7 @@ class HAClientTheme {
   HAClientTheme._internal();
 
   final ThemeData lightTheme = ThemeData.light().copyWith(
-    primaryColor: Colors.lightBlue,
+    primaryColor: Colors.blue,
     textTheme: ThemeData.light().textTheme.copyWith(
       display1: TextStyle(fontSize: 34, fontWeight: FontWeight.normal, color: Colors.black54),
       display2: TextStyle(fontSize: 34, fontWeight: FontWeight.normal, color: Colors.redAccent),
