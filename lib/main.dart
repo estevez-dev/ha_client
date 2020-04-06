@@ -228,6 +228,7 @@ class _HAClientAppState extends State<HAClientApp> {
       title: appName,
       theme: HAClientTheme().lightTheme,
       darkTheme: HAClientTheme().darkTheme,
+      debugShowCheckedModeBanner: false,
       initialRoute: "/",
       routes: {
         "/": (context) => MainPage(title: 'HA Client'),
