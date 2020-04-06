@@ -28,9 +28,7 @@ class LockStateWidget extends StatelessWidget {
           onPressed: () => _unlock(entity),
           child: Text("UNLOCK",
               textAlign: TextAlign.right,
-              style: Theme.of(context).textTheme.subhead.copyWith(
-                color: Colors.blue
-              )
+              style: HAClientTheme().getActionTextStyle(context)
             ),
           )
         ),
@@ -40,9 +38,7 @@ class LockStateWidget extends StatelessWidget {
               onPressed: () => _lock(entity),
               child: Text("LOCK",
                 textAlign: TextAlign.right,
-                style: Theme.of(context).textTheme.subhead.copyWith(
-                  color: Colors.blue
-                ),
+                style: HAClientTheme().getActionTextStyle(context),
               ),
             )
         )
@@ -58,9 +54,7 @@ class LockStateWidget extends StatelessWidget {
             child: Text(
               entity.isLocked ? "UNLOCK" : "LOCK",
               textAlign: TextAlign.right,
-              style: Theme.of(context).textTheme.subhead.copyWith(
-                color: Colors.blue
-              ),
+              style: HAClientTheme().getActionTextStyle(context),
             ),
           )
       );

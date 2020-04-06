@@ -16,7 +16,7 @@ class EntityPageLayout extends StatelessWidget {
           children: <Widget>[
             showClose ?
             Container(
-              color: Theme.of(context).primaryColorLight,
+              color: Theme.of(context).primaryColor,
               height: 40,
               child: Row(
                 children: <Widget>[
@@ -25,16 +25,14 @@ class EntityPageLayout extends StatelessWidget {
                       padding: EdgeInsets.only(left: 8),
                       child: Text(
                         entity.displayName,
-                        style: Theme.of(context).textTheme.headline.copyWith(
-                          color: Colors.white
-                        ),
+                        style: Theme.of(context).primaryTextTheme.headline
                       ),
                     ),
                   ),
                   IconButton(
                     padding: EdgeInsets.all(0),
                     icon: Icon(Icons.close),
-                    color: Colors.white,
+                    color: Theme.of(context).primaryTextTheme.headline.color,
                     iconSize: 36.0,
                     onPressed: () {
                       eventBus.fire(ShowEntityPageEvent());

@@ -154,6 +154,30 @@ class HAClientTheme {
     }
   }
 
+  TextStyle getLinkTextStyle(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    return theme.textTheme.body1.copyWith(
+      color: Colors.blue,
+      decoration: TextDecoration.underline
+    );
+  }
+
+  TextStyle getActionTextStyle(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    return theme.textTheme.subhead.copyWith(
+      color: Colors.blue
+    );
+  }
+
+  Color getBadgeColor(String entityDomain) {
+    return badgeColors[entityDomain] ??
+        badgeColors["default"];
+  }
+
+  Color getOnBadgeTextColor() {
+    return Colors.white;
+  }
+
   charts.Color chartHistoryStateColor(String state, int id, BuildContext context) {
     Color c = getColorByEntityState(state, context);
     if (c != null) {

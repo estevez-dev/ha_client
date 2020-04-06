@@ -224,7 +224,7 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
                 },
               ),
               FlatButton(
-                color: savedColor?.toColor() ?? Colors.transparent,
+                color: savedColor?.toColor() ?? Theme.of(context).backgroundColor,
                 child: Text('Paste color'),
                 onPressed: savedColor == null ? null : () {
                   _setColor(entity, savedColor);

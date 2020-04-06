@@ -7,8 +7,7 @@ class BadgeWidget extends StatelessWidget {
     double iconSize = 26.0;
     Widget badgeIcon;
     String onBadgeTextValue;
-    Color iconColor = HAClientTheme.badgeColors[entityModel.entityWrapper.entity.domain] ??
-        HAClientTheme.badgeColors["default"];
+    Color iconColor = HAClientTheme().getBadgeColor(entityModel.entityWrapper.entity.domain);
     switch (entityModel.entityWrapper.entity.domain) {
       case "sun":
         {
@@ -80,7 +79,7 @@ class BadgeWidget extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(6.0, 2.0, 6.0, 2.0),
           child: Text("$onBadgeTextValue",
               style: Theme.of(context).textTheme.overline.copyWith(
-                color: Colors.white
+                color: HAClientTheme().getOnBadgeTextColor()
               ),
               textAlign: TextAlign.center,
               softWrap: false,

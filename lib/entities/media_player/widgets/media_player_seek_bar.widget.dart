@@ -47,8 +47,7 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
         buttons.add(
             RaisedButton(
               child: Text("Jump to ${Duration(seconds: _savedPosition).toString().split('.')[0]}"),
-              color: Colors.orange,
-              focusColor: Colors.white,
+              color: Theme.of(context).accentColor,
               onPressed: () {
                 ConnectionManager().callService(
                     domain: "media_player",
@@ -87,8 +86,7 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
             Container(height: 10,),
             Slider(
               min: 0,
-              activeColor: Colors.amber,
-              inactiveColor: Colors.black26,
+              activeColor: Theme.of(context).accentColor,
               max: entity.durationSeconds.toDouble(),
               value: _currentPosition,
               onChangeStart: (val) {

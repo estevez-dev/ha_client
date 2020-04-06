@@ -16,9 +16,10 @@ class EntityName extends StatelessWidget {
     final EntityWrapper entityWrapper = EntityModel.of(context).entityWrapper;
     TextStyle tStyle;
     if (textStyle == null) {
-      tStyle = Theme.of(context).textTheme.body1;
       if (entityWrapper.entity.statelessType == StatelessEntityType.WEBLINK) {
-        tStyle = tStyle.apply(color: Colors.blue, decoration: TextDecoration.underline);
+        tStyle = HAClientTheme().getLinkTextStyle(context);
+      } else {
+        tStyle = Theme.of(context).textTheme.body1;
       }
     }
     return Padding(

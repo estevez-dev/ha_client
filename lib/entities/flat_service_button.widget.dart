@@ -30,9 +30,7 @@ class FlatServiceButton extends StatelessWidget {
           child: Text(
             text,
             textAlign: TextAlign.right,
-            style: Theme.of(context).textTheme.subhead.copyWith(
-              color: Colors.blue
-            ),
+            style: HAClientTheme().getActionTextStyle(context),
           ),
         )
     );

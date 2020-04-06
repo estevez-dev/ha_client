@@ -151,7 +151,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
           child: IconButton(
             icon: Icon((_videoPlayerController != null && _videoPlayerController.value.isPlaying) ? Icons.pause_circle_outline : Icons.play_circle_outline),
             iconSize: 60,
-            color: Colors.amberAccent,
+            color: Theme.of(context).accentColor,
             onPressed: (_videoPlayerController == null || _videoPlayerController.value.hasError || !_isLoaded) ? null :
               () {
                 setState(() {
@@ -175,7 +175,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
           IconButton(
             icon: Icon(Icons.refresh),
             iconSize: 40,
-            color: Colors.amberAccent,
+            color: Theme.of(context).accentColor,
             onPressed: _isLoaded ? () {
               setState(() {
                 _isLoaded = false;  
@@ -188,7 +188,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
           IconButton(
             icon: Icon(Icons.fullscreen),
             iconSize: 40,
-            color: Colors.amberAccent,
+            color: Theme.of(context).accentColor,
             onPressed: _isLoaded ? () {
               _videoPlayerController?.pause();
               eventBus.fire(ShowEntityPageEvent());
