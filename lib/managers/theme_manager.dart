@@ -40,7 +40,6 @@ class HAClientTheme {
     EntityState.open,
     EntityState.cleaning,
     EntityState.returning,
-    "heat",
     "cool",
     EntityState.alarm_arming,
     EntityState.alarm_disarming,
@@ -58,6 +57,7 @@ class HAClientTheme {
     EntityState.alarm_armed_home,
     EntityState.alarm_armed_night,
     EntityState.alarm_triggered,
+    "heat",
   ];
 
   static const defaultStateColor = Color.fromRGBO(68, 115, 158, 1.0);
@@ -82,7 +82,7 @@ class HAClientTheme {
       primaryVariant: Color.fromRGBO(68, 115, 158, 1),
       secondary: Color.fromRGBO(253, 216, 53, 1),
       secondaryVariant: Color.fromRGBO(222, 181, 2, 1),
-      background: Colors.white,
+      background: Color.fromRGBO(250, 250, 250, 1),
       surface: Colors.white,
       error: Colors.red,
       onPrimary: Colors.white,

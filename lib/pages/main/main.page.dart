@@ -504,13 +504,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   bool _showBottomBar = false;
   String _bottomBarText;
   bool _bottomBarProgress;
-  Color _bottomBarColor;
+  bool _bottomBarErrorColor;
   Timer _bottomBarTimer;
 
   void _showInfoBottomBar({String message, bool progress: false, Duration duration}) {
     _bottomBarTimer?.cancel();
     _bottomBarAction = Container(height: 0.0, width: 0.0,);
-    _bottomBarColor = Colors.grey.shade50;
+    _bottomBarErrorColor = false;
     setState(() {
       _bottomBarText = message;
       _bottomBarProgress = progress;
@@ -524,10 +524,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   void _showErrorBottomBar(HAError error) {
-    TextStyle textStyle = Theme.of(context).textTheme.subhead.copyWith(
-      color: Colors.blue
+    TextStyle textStyle = Theme.of(context).textTheme.button.copyWith(
+      decoration: TextDecoration.underline
     );
-    _bottomBarColor = Colors.red.shade100;
+    _bottomBarErrorColor = true;
     List<Widget> actions = [];
     error.actions.forEach((HAErrorAction action) {
       switch (action.type) {
@@ -831,7 +831,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       }
       if (bottomBarChildren.isNotEmpty) {
         bottomBar = Container(
-          color: _bottomBarColor,
+          color: _bottomBarErrorColor ? Theme.of(context).errorColor : Theme.of(context).primaryColorLight,
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
