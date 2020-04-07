@@ -47,7 +47,7 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
         GaugeRange(
           startValue: rangesList[0].startFrom.toDouble(),
           endValue: rangesList[1].startFrom.toDouble(),
-          color: fixedValue < rangesList[1].startFrom ? rangesList[0].color : rangesList[0].color.withOpacity(0.3),
+          color: fixedValue < rangesList[1].startFrom ? rangesList[0].color : rangesList[0].color.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
           startWidth: 0.3
@@ -55,7 +55,7 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
         GaugeRange(
           startValue: rangesList[1].startFrom.toDouble(),
           endValue: rangesList[2].startFrom.toDouble(),
-          color: (fixedValue < rangesList[2].startFrom && fixedValue >= rangesList[1].startFrom) ? rangesList[1].color : rangesList[1].color.withOpacity(0.3),
+          color: (fixedValue < rangesList[2].startFrom && fixedValue >= rangesList[1].startFrom) ? rangesList[1].color : rangesList[1].color.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
           startWidth: 0.3
@@ -63,7 +63,7 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
         GaugeRange(
           startValue: rangesList[2].startFrom.toDouble(),
           endValue: widget.max.toDouble(),
-          color: fixedValue >= rangesList[2].startFrom ? rangesList[2].color : rangesList[2].color.withOpacity(0.3),
+          color: fixedValue >= rangesList[2].startFrom ? rangesList[2].color : rangesList[2].color.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
           startWidth: 0.3
