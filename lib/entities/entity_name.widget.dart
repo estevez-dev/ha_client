@@ -21,6 +21,8 @@ class EntityName extends StatelessWidget {
       } else {
         tStyle = Theme.of(context).textTheme.body1;
       }
+    } else {
+      tStyle = textStyle;
     }
     return Padding(
       padding: padding,

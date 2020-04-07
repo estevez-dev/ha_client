@@ -34,8 +34,11 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standaloneWebview;
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:video_player/video_player.dart';
+import 'package:syncfusion_flutter_core/core.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import 'utils/logger.dart';
+import 'managers/secrets_manager.class.dart';
 
 part 'const.dart';
 part 'utils/launcher.dart';
@@ -164,6 +167,7 @@ Future<void> _reportError(dynamic error, dynamic stackTrace) async {
 
 void main() async {
   Crashlytics.instance.enableInDevMode = false;
+  SyncfusionLicense.registerLicense(SecretsManager.SYNCFUSION_LICENSE_KEY); 
 
   FlutterError.onError = (FlutterErrorDetails details) {
     Logger.e(" Caut Flutter runtime error: ${details.exception}");

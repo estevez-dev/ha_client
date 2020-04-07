@@ -154,6 +154,18 @@ class HAClientTheme {
     }
   }
 
+  Color getGreenGaugeColor() {
+    return Colors.green;
+  }
+
+  Color getYellowGaugeColor() {
+    return Colors.yellow;
+  }
+
+  Color getRedGaugeColor() {
+    return Colors.red;
+  }
+
   TextStyle getLinkTextStyle(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return theme.textTheme.body1.copyWith(

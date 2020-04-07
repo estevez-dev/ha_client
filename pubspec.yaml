@@ -33,6 +33,8 @@ dependencies:
   battery: ^0.3.1+7
   firebase_crashlytics: ^0.1.3+3
   video_player: ^0.10.7
+  syncfusion_flutter_core: ^18.1.43
+  syncfusion_flutter_gauges: ^18.1.43
   
 
 dev_dependencies:

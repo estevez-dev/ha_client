@@ -7,9 +7,10 @@ class SimpleEntityState extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final int maxLines;
   final String customValue;
+  final TextStyle textStyle;
   //final bool bold;
 
-  const SimpleEntityState({Key key,/*this.bold: false,*/ this.maxLines: 10, this.expanded: true, this.textAlign: TextAlign.right, this.padding: const EdgeInsets.fromLTRB(0.0, 0.0, Sizes.rightWidgetPadding, 0.0), this.customValue}) : super(key: key);
+  const SimpleEntityState({Key key,/*this.bold: false,*/ this.maxLines: 10, this.expanded: true, this.textAlign: TextAlign.right, this.textStyle, this.padding: const EdgeInsets.fromLTRB(0.0, 0.0, Sizes.rightWidgetPadding, 0.0), this.customValue}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +22,15 @@ class SimpleEntityState extends StatelessWidget {
     } else {
       state = customValue;
     }
-    TextStyle textStyle;
-    if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.CALL_SERVICE) {
-      textStyle = Theme.of(context).textTheme.subhead.copyWith(
+    TextStyle tStyle;
+    if (textStyle != null) {
+      tStyle = textStyle;
+    } else if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.CALL_SERVICE) {
+      tStyle = Theme.of(context).textTheme.subhead.copyWith(
         color: Colors.blue
       );
     } else {
-      textStyle = Theme.of(context).textTheme.body1;
+      tStyle = Theme.of(context).textTheme.body1;
     }
     /*if (this.bold) {
       textStyle = textStyle.apply(fontWeightDelta: 100);
@@ -43,7 +46,7 @@ class SimpleEntityState extends StatelessWidget {
         maxLines: maxLines,
         overflow: TextOverflow.ellipsis,
         softWrap: true,
-        style: textStyle
+        style: tStyle
       )
     );
     if (expanded) {
