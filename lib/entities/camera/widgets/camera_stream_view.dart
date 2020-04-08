@@ -14,8 +14,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
 
   CameraEntity _entity;
   String _streamUrl = "";
-  VideoPlayerController _videoPlayerController;
-  Timer _monitorTimer;
   bool _isLoaded = false;
   double _aspectRatio = 1.33;
   String _webViewHtml;
@@ -41,11 +39,15 @@ class _CameraStreamViewState extends State<CameraStreamView> {
     if (_entity.supportStream) {
       HomeAssistant().getCameraStream(_entity.entityId)
         .then((data) {
-          if (_videoPlayerController != null) {
-            _videoPlayerController.dispose().then((_) => createPlayer(data));
-          } else {
-            createPlayer(data);
-          }
+          _jsMessageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
+            rootBundle.loadString('assets/html/cameraLiveView.html').then((file) {
+              _webViewHtml = Uri.dataFromString(
+                  file.replaceFirst('{{stream_url}}', '${ConnectionManager().httpWebHost}${data["url"]}').replaceFirst('{{message_channel}}', _jsMessageChannelName),
+                  mimeType: 'text/html',
+                  encoding: Encoding.getByName('utf-8')
+              ).toString();
+              _loading.complete();
+            });
         })
         .catchError((e) {
           _loading.completeError(e);
@@ -67,40 +69,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
     return _loading.future;
   }
 
-  void createPlayer(data) {
-    _videoPlayerController = VideoPlayerController.network("${ConnectionManager().httpWebHost}${data["url"]}");
-    _videoPlayerController.initialize().then((_) {
-      setState((){
-        _aspectRatio = _videoPlayerController.value.aspectRatio;
-      });
-      _loading.complete();
-      autoPlay();
-      startMonitor();
-    }).catchError((e) {
-      _loading.completeError(e);
-      Logger.e("[Camera Player] Error player init. Retrying");
-      _loadResources();
-    });
-  }
-
-  void autoPlay() {
-    if (!_videoPlayerController.value.isPlaying) {
-      _videoPlayerController.play();
-    }
-  }
-
-  void startMonitor() {
-    _monitorTimer?.cancel();
-    _monitorTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      if (_videoPlayerController.value.hasError) {
-        timer.cancel();
-        setState(() {
-          _isLoaded = false;  
-        });
-      }
-    });
-  }
-
   Widget _buildScreen() {
     Widget screenWidget;
     if (!_isLoaded) {
@@ -109,16 +77,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
           fit: BoxFit.contain,
         )
       );
-    } else if (_entity.supportStream) {
-      if (_videoPlayerController.value.initialized) {
-        screenWidget = VideoPlayer(_videoPlayerController);
-      } else {
-        screenWidget = Center(
-          child: EntityPicture(
-            fit: BoxFit.contain,
-          )
-        );
-      }
     } else {
       screenWidget = WebView(
         initialUrl: _webViewHtml,
@@ -130,6 +88,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
           JavascriptChannel(
             name: _jsMessageChannelName,
             onMessageReceived: ((message) {
+              Logger.d('[Camera Player] Message from page: $message');
               setState((){
                 _aspectRatio = double.tryParse(message.message) ?? 1.33;
               });
@@ -145,28 +104,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
   }
 
   Widget _buildControls() {
-    Widget playControl;
-      if (_entity.supportStream) {
-        playControl = Center(
-          child: IconButton(
-            icon: Icon((_videoPlayerController != null && _videoPlayerController.value.isPlaying) ? Icons.pause_circle_outline : Icons.play_circle_outline),
-            iconSize: 60,
-            color: Theme.of(context).accentColor,
-            onPressed: (_videoPlayerController == null || _videoPlayerController.value.hasError || !_isLoaded) ? null :
-              () {
-                setState(() {
-                  if (_videoPlayerController != null && _videoPlayerController.value.isPlaying) {
-                    _videoPlayerController.pause();
-                  } else {
-                    _videoPlayerController.play();
-                  }
-                });
-              },
-          ),
-        );
-      } else {
-        playControl = Container();
-      }
       return Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,14 +120,14 @@ class _CameraStreamViewState extends State<CameraStreamView> {
             } : null,
           ),
           Expanded(
-            child: playControl,
+            child: Container(),
           ),
           IconButton(
             icon: Icon(Icons.fullscreen),
             iconSize: 40,
             color: Theme.of(context).accentColor,
             onPressed: _isLoaded ? () {
-              _videoPlayerController?.pause();
+              //_videoPlayerController?.pause();
               eventBus.fire(ShowEntityPageEvent());
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -239,8 +176,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
 
   @override
   void dispose() {
-    _monitorTimer?.cancel();
-    _videoPlayerController?.dispose();
     super.dispose();
   }
 }
