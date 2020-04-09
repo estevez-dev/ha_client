@@ -34,7 +34,7 @@ import 'package:syncfusion_flutter_core/core.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import 'utils/logger.dart';
-import 'managers/secrets_manager.class.dart';
+import '.secrets.dart';
 
 part 'const.dart';
 part 'utils/launcher.dart';
@@ -163,7 +163,7 @@ Future<void> _reportError(dynamic error, dynamic stackTrace) async {
 
 void main() async {
   Crashlytics.instance.enableInDevMode = false;
-  SyncfusionLicense.registerLicense(SecretsManager.SYNCFUSION_LICENSE_KEY); 
+  SyncfusionLicense.registerLicense(secrets['syncfusion_license_key']); 
 
   FlutterError.onError = (FlutterErrorDetails details) {
     Logger.e(" Caut Flutter runtime error: ${details.exception}");

@@ -18,5 +18,5 @@ flutter_export_environment.sh
 .flutter-plugins-dependencies
 
 key.properties
-secrets_manager.class.dart
+.secrets.dart
 pubspec.lock

@@ -3,7 +3,7 @@ image:
 
 tasks:
 - before: |
-    export PATH=$FLUTTER_HOME/bin:$ANDROID_HOME/bin:$ANDROID_HOME/platform-tools:$PATH
+    export PATH=$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin:$ANDROID_HOME/bin:$ANDROID_HOME/platform-tools:$PATH
     mkdir -p /home/gitpod/.android
     touch /home/gitpod/.android/repositories.cfg
   init: |
