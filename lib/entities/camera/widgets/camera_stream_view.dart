@@ -127,7 +127,6 @@ class _CameraStreamViewState extends State<CameraStreamView> {
             iconSize: 40,
             color: Theme.of(context).accentColor,
             onPressed: _isLoaded ? () {
-              //_videoPlayerController?.pause();
               eventBus.fire(ShowEntityPageEvent());
               Navigator.of(context).push(
                 MaterialPageRoute(
