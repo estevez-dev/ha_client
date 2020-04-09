@@ -331,7 +331,7 @@ class HomeAssistant {
   void _createUI() {
     Logger.d("Creating Lovelace UI");
     ui = HomeAssistantUI(rawLovelaceConfig: _rawLovelaceData);
-    if (isServiceExist('zha_map')) {
+    /*if (isServiceExist('zha_map')) {
       panels.add(
           Panel(
             id: 'haclient_zha',
@@ -341,7 +341,7 @@ class HomeAssistant {
             icon: 'mdi:zigbee'
           )
         );
-    }
+    }*/
   }
 }
 
