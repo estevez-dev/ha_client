@@ -52,7 +52,7 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
       scrollDirection: Axis.vertical,
       padding: const EdgeInsets.all(20.0),
       children: <Widget>[
-          Text("Application scheme:", style: Theme.of(context).textTheme.body2),
+          Text("Application theme:", style: Theme.of(context).textTheme.body2),
           Container(height: Sizes.rowPadding),
           DropdownButton<AppTheme>(
             value: _currentTheme,

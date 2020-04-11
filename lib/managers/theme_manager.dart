@@ -84,19 +84,50 @@ class HAClientTheme {
         return darkTheme;
         break;
       case AppTheme.defaultTheme:
-        return lightTheme;
+        return defaultTheme;
         break;
       case AppTheme.haTheme:
-        return lightTheme;
+        return homeAssistantTheme;
         break;
       default:
-        return lightTheme;
+        return defaultTheme;
     }
   }
 
-  final ThemeData lightTheme = ThemeData.from(
+  final ThemeData defaultTheme = ThemeData.from(
     colorScheme: ColorScheme(
       primary: Color.fromRGBO(112, 154, 193, 1),
+      primaryVariant: Color.fromRGBO(68, 115, 158, 1),
+      secondary: Color.fromRGBO(253, 216, 53, 1),
+      secondaryVariant: Color.fromRGBO(222, 181, 2, 1),
+      background: Color.fromRGBO(250, 250, 250, 1),
+      surface: Colors.white,
+      error: Colors.red,
+      onPrimary: Colors.white,
+      onSecondary: Colors.black87,
+      onBackground: Colors.black87,
+      onSurface: Colors.black87,
+      onError: Colors.white,
+      brightness: Brightness.light
+    ),
+    textTheme: ThemeData.light().textTheme.copyWith(
+      display1: textTheme.display1.copyWith(color: Colors.black54),
+      display2: textTheme.display2.copyWith(color: Colors.redAccent),
+      headline: textTheme.headline.copyWith(color: Colors.black87),
+      title: textTheme.title.copyWith(color: Colors.black87),
+      subhead: textTheme.subhead.copyWith(color: Colors.black54),
+      body1: textTheme.body1.copyWith(color: Colors.black87),
+      body2: textTheme.body2.copyWith(color: Colors.black87),
+      subtitle: textTheme.subtitle.copyWith(color: Colors.black45),
+      caption: textTheme.caption.copyWith(color: Colors.black45),
+      overline: textTheme.overline.copyWith(color: Colors.black26),
+      button: textTheme.button.copyWith(color: Colors.white),
+    )
+  );
+
+  final ThemeData homeAssistantTheme = ThemeData.from(
+    colorScheme: ColorScheme(
+      primary: Color.fromRGBO(2, 165, 238, 1),
       primaryVariant: Color.fromRGBO(68, 115, 158, 1),
       secondary: Color.fromRGBO(253, 216, 53, 1),
       secondaryVariant: Color.fromRGBO(222, 181, 2, 1),

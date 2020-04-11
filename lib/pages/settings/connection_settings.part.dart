@@ -18,8 +18,6 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
   String _newSocketProtocol = "wss";
   String _longLivedToken = "";
   String _newLongLivedToken = "";
-  bool _useLovelace = true;
-  bool _newUseLovelace = true;
 
   String oauthUrl;
   bool useOAuth = false;
@@ -55,11 +53,6 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
       _hassioDomain = _newHassioDomain = prefs.getString("hassio-domain")?? "";
       _hassioPort = _newHassioPort = prefs.getString("hassio-port") ?? "";
       _socketProtocol = _newSocketProtocol = prefs.getString("hassio-protocol") ?? 'wss';
-      try {
-        _useLovelace = _newUseLovelace = prefs.getBool("use-lovelace") ?? true;
-      } catch (e) {
-        _useLovelace = _newUseLovelace = true;
-      }
     });
   }
 
@@ -68,7 +61,6 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
       (_newHassioPort != _hassioPort) ||
       (_newHassioDomain != _hassioDomain) ||
       (_newSocketProtocol != _socketProtocol) ||
-      (_newUseLovelace != _useLovelace) ||
       (_newLongLivedToken != _longLivedToken));
 
   }
@@ -103,7 +95,6 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
     prefs.setString("hassio-port", _newHassioPort);
     prefs.setString("hassio-protocol", _newSocketProtocol);
     prefs.setString("hassio-res-protocol", _newSocketProtocol == "wss" ? "https" : "http");
-    prefs.setBool("use-lovelace", _newUseLovelace);
   }
 
   @override
@@ -150,26 +141,6 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
         new Text(
           "Try ports 80 and 443 if default is not working and you don't know why.",
           style: Theme.of(context).textTheme.caption,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 20.0),
-          child: Text(
-            "UI",
-            style: Theme.of(context).textTheme.headline,
-          ),
-        ),
-        new Row(
-          children: [
-            Text("Use Lovelace UI"),
-            Switch(
-              value: _newUseLovelace,
-              onChanged: (value) {
-                setState(() {
-                  _newUseLovelace = value;
-                });
-              },
-            )
-          ],
         ),
         Text(
           "Authentication settings",

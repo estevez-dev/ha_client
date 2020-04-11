@@ -149,7 +149,7 @@ EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
-const appVersionNumber = "0.8.2";
+const appVersionNumber = "0.8.3";
 const appVersionAdd = "";
 const appVersion = "$appVersionNumber$appVersionAdd";
 
