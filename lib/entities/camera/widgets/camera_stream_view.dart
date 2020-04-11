@@ -50,23 +50,34 @@ class _CameraStreamViewState extends State<CameraStreamView> {
             });
         })
         .catchError((e) {
-          _loading.completeError(e);
-          Logger.e("[Camera Player] $e");
+          if (e == 'start_stream_failed') {
+            Logger.e("[Camera Player] Home Assistant failed starting stream. Forcing MJPEG: $e");
+            _loadMJPEG().then((_) {
+              _loading.complete();
+            });
+          } else {
+            _loading.completeError(e);
+            Logger.e("[Camera Player] Error loading stream: $e");
+          }
         });
     } else {
-      _streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
-          .entityId}?token=${_entity.attributes['access_token']}';
-      _jsMessageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
-      rootBundle.loadString('assets/html/cameraView.html').then((file) {
-        _webViewHtml = Uri.dataFromString(
-            file.replaceFirst('{{stream_url}}', _streamUrl).replaceFirst('{{message_channel}}', _jsMessageChannelName),
-            mimeType: 'text/html',
-            encoding: Encoding.getByName('utf-8')
-        ).toString();
+      _loadMJPEG().then((_) {
         _loading.complete();
       });
     }
     return _loading.future;
+  }
+
+  Future _loadMJPEG() async {
+    _streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
+        .entityId}?token=${_entity.attributes['access_token']}';
+    _jsMessageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
+    var file = await rootBundle.loadString('assets/html/cameraView.html');
+    _webViewHtml = Uri.dataFromString(
+        file.replaceFirst('{{stream_url}}', _streamUrl).replaceFirst('{{message_channel}}', _jsMessageChannelName),
+        mimeType: 'text/html',
+        encoding: Encoding.getByName('utf-8')
+    ).toString();
   }
 
   Widget _buildScreen() {
