@@ -28,6 +28,13 @@ class ReloadUIEvent {
   ReloadUIEvent();
 }
 
+class ChangeThemeEvent {
+
+  final AppTheme theme;
+
+  ChangeThemeEvent(this.theme);
+}
+
 class StartAuthEvent {
   String oauthUrl;
   bool showButton;

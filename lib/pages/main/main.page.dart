@@ -367,19 +367,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     menuItems.addAll([
       Divider(),
       ListTile(
-        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:server-network")),
-        title: Text("Connection settings"),
-        onTap: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pushNamed('/connection-settings');
-        },
-      ),
-      ListTile(
         leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:cellphone-settings-variant")),
-        title: Text("Integration settings"),
+        title: Text("App settings"),
         onTap: () {
           Navigator.of(context).pop();
-          Navigator.of(context).pushNamed('/integration-settings');
+          Navigator.of(context).pushNamed('/app-settings');
         },
       )
     ]);

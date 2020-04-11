@@ -1,4 +1,4 @@
-part of '../main.dart';
+part of '../../main.dart';
 
 class ConnectionSettingsPage extends StatefulWidget {
   ConnectionSettingsPage({Key key, this.title}) : super(key: key);
@@ -108,115 +108,109 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
-          Navigator.pop(context);
-        }),
-        title: new Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.check),
-            onPressed: (){
-              if (_checkConfigChanged()) {
-                Logger.d("Settings changed. Saving...");
-                _saveSettings().then((r) {
-                  Navigator.pop(context);
-                  eventBus.fire(SettingsChangedEvent(true));
+    return ListView(
+      scrollDirection: Axis.vertical,
+      padding: const EdgeInsets.all(20.0),
+      children: <Widget>[
+        Text(
+            "Connection settings",
+            style: Theme.of(context).textTheme.headline,
+        ),
+        new Row(
+          children: [
+            Text("Use ssl (HTTPS)"),
+            Switch(
+              value: (_newSocketProtocol == "wss"),
+              onChanged: (value) {
+                setState(() {
+                  _newSocketProtocol = value ? "wss" : "ws";
                 });
-              } else {
-                Logger.d("Settings was not changed");
-                Navigator.pop(context);
-              }
-            }
-          )
-        ],
-      ),
-      body: ListView(
-        scrollDirection: Axis.vertical,
-        padding: const EdgeInsets.all(20.0),
-        children: <Widget>[
-          Text(
-              "Connection settings",
-              style: Theme.of(context).textTheme.headline,
+              },
+            )
+          ],
+        ),
+        new TextField(
+          decoration: InputDecoration(
+            labelText: "Home Assistant domain or ip address"
           ),
-          new Row(
-            children: [
-              Text("Use ssl (HTTPS)"),
-              Switch(
-                value: (_newSocketProtocol == "wss"),
-                onChanged: (value) {
-                  setState(() {
-                    _newSocketProtocol = value ? "wss" : "ws";
-                  });
-                },
-              )
-            ],
+          controller: TextEditingController.fromValue(TextEditingValue(text: _newHassioDomain)),
+          onChanged: (value) {
+            _newHassioDomain = value;
+          }
+        ),
+        new TextField(
+          decoration: InputDecoration(
+            labelText: "Home Assistant port (default is 8123)"
           ),
-          new TextField(
-            decoration: InputDecoration(
-              labelText: "Home Assistant domain or ip address"
-            ),
-            controller: TextEditingController.fromValue(TextEditingValue(text: _newHassioDomain)),
-            onChanged: (value) {
-              _newHassioDomain = value;
-            }
-          ),
-          new TextField(
-            decoration: InputDecoration(
-              labelText: "Home Assistant port (default is 8123)"
-            ),
-            controller: TextEditingController.fromValue(TextEditingValue(text: _newHassioPort)),
-            onChanged: (value) {
-              _newHassioPort = value;
-            }
-          ),
-          new Text(
-            "Try ports 80 and 443 if default is not working and you don't know why.",
-            style: Theme.of(context).textTheme.caption,
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 20.0),
-            child: Text(
-              "UI",
-              style: Theme.of(context).textTheme.headline,
-            ),
-          ),
-          new Row(
-            children: [
-              Text("Use Lovelace UI"),
-              Switch(
-                value: _newUseLovelace,
-                onChanged: (value) {
-                  setState(() {
-                    _newUseLovelace = value;
-                  });
-                },
-              )
-            ],
-          ),
-          Text(
-            "Authentication settings",
+          controller: TextEditingController.fromValue(TextEditingValue(text: _newHassioPort)),
+          onChanged: (value) {
+            _newHassioPort = value;
+          }
+        ),
+        new Text(
+          "Try ports 80 and 443 if default is not working and you don't know why.",
+          style: Theme.of(context).textTheme.caption,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 20.0),
+          child: Text(
+            "UI",
             style: Theme.of(context).textTheme.headline,
           ),
-          Container(height: 10.0,),
-          Text(
-            "You can leave this field blank to make app generate new long-lived token automatically by asking you to login to your Home Assistant. Use this field only if you still want to use manually generated long-lived token. Leave it blank if you don't understand what we are talking about.",
-            style: Theme.of(context).textTheme.body1.copyWith(
-              color: Colors.redAccent
-            ),
-          ),
-          new TextField(
-              decoration: InputDecoration(
-                  labelText: "Long-lived token"
-              ),
-              controller: TextEditingController.fromValue(TextEditingValue(text: _newLongLivedToken)),
+        ),
+        new Row(
+          children: [
+            Text("Use Lovelace UI"),
+            Switch(
+              value: _newUseLovelace,
               onChanged: (value) {
-                _newLongLivedToken = value;
-              }
+                setState(() {
+                  _newUseLovelace = value;
+                });
+              },
+            )
+          ],
+        ),
+        Text(
+          "Authentication settings",
+          style: Theme.of(context).textTheme.headline,
+        ),
+        Container(height: 10.0,),
+        Text(
+          "You can leave this field blank to make app generate new long-lived token automatically by asking you to login to your Home Assistant. Use this field only if you still want to use manually generated long-lived token. Leave it blank if you don't understand what we are talking about.",
+          style: Theme.of(context).textTheme.body1.copyWith(
+            color: Colors.redAccent
           ),
-        ],
-      ),
+        ),
+        new TextField(
+            decoration: InputDecoration(
+                labelText: "Long-lived token"
+            ),
+            controller: TextEditingController.fromValue(TextEditingValue(text: _newLongLivedToken)),
+            onChanged: (value) {
+              _newLongLivedToken = value;
+            }
+        ),
+        Container(
+          height: Sizes.rowPadding,
+        ),
+        RaisedButton(
+          child: Text('Apply', style: Theme.of(context).textTheme.button),
+          color: Theme.of(context).primaryColorDark,
+          onPressed: () {
+            if (_checkConfigChanged()) {
+              Logger.d("Settings changed. Saving...");
+              _saveSettings().then((r) {
+                Navigator.pop(context);
+                eventBus.fire(SettingsChangedEvent(true));
+              });
+            } else {
+              Logger.d("Settings was not changed");
+              Navigator.pop(context);
+            }
+          },
+        )
+      ],
     );
   }
 

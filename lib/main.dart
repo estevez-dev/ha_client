@@ -102,14 +102,16 @@ part 'entities/alarm_control_panel/widgets/alarm_control_panel_controls.widget.d
 part 'entities/vacuum/vacuum_entity.class.dart';
 part 'entities/vacuum/widgets/vacuum_controls.dart';
 part 'entities/vacuum/widgets/vacuum_state_button.dart';
-part 'pages/settings.page.dart';
+part 'pages/settings/connection_settings.part.dart';
 part 'pages/purchase.page.dart';
 part 'pages/widgets/product_purchase.widget.dart';
 part 'pages/widgets/page_loading_indicator.dart';
 part 'pages/widgets/page_loading_error.dart';
 part 'pages/panel.page.dart';
 part 'pages/main/main.page.dart';
-part 'pages/integration_settings.page.dart';
+part 'pages/settings/integration_settings.part.dart';
+part 'pages/settings/app_settings.page.dart';
+part 'pages/settings/lookandfeel_settings.part.dart';
 part 'pages/zha_page.dart';
 part 'home_assistant.class.dart';
 part 'pages/log.page.dart';
@@ -173,8 +175,14 @@ void main() async {
     Crashlytics.instance.recordFlutterError(details);
   };
 
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  AppTheme theme = AppTheme.values[prefs.getInt('app-theme') ?? AppTheme.defaultTheme];
+
   runZoned(() {
-      runApp(new HAClientApp());
+      runApp(new HAClientApp(
+        theme: theme,
+      ));
   }, onError: (error, stack) {
     _reportError(error, stack);
   });
@@ -182,21 +190,33 @@ void main() async {
 
 class HAClientApp extends StatefulWidget {
 
+  final AppTheme theme;
+
+  const HAClientApp({Key key, this.theme: AppTheme.defaultTheme}) : super(key: key);
+
   @override
   _HAClientAppState createState() => new _HAClientAppState();
 
 }
 
 class _HAClientAppState extends State<HAClientApp> {
-  StreamSubscription<List<PurchaseDetails>> _subscription;
+  StreamSubscription<List<PurchaseDetails>> _purchaseUpdateSubscription;
+  StreamSubscription _themeChangeSubscription;
+  AppTheme _currentTheme = AppTheme.defaultTheme;
   
   @override
   void initState() {
     InAppPurchaseConnection.enablePendingPurchases();
     final Stream purchaseUpdates =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
-    _subscription = purchaseUpdates.listen((purchases) {
+    _purchaseUpdateSubscription = purchaseUpdates.listen((purchases) {
       _handlePurchaseUpdates(purchases);
+    });
+    _currentTheme = widget.theme;
+    _themeChangeSubscription = eventBus.on<ChangeThemeEvent>().listen((event){
+      setState(() {
+        _currentTheme = event.theme;
+      });
     });
     workManager.Workmanager.initialize(
       updateDeviceLocationIsolate,
@@ -226,14 +246,15 @@ class _HAClientAppState extends State<HAClientApp> {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: appName,
-      theme: HAClientTheme().lightTheme,
+      theme: HAClientTheme().getThemeData(_currentTheme),
       darkTheme: HAClientTheme().darkTheme,
       debugShowCheckedModeBanner: false,
       initialRoute: "/",
       routes: {
         "/": (context) => MainPage(title: 'HA Client'),
-        "/connection-settings": (context) => ConnectionSettingsPage(title: "Settings"),
-        "/integration-settings": (context) => IntegrationSettingsPage(title: "Integration settings"),
+        "/app-settings": (context) => AppSettingsPage(),
+        "/connection-settings": (context) => AppSettingsPage(showSection: AppSettingsSection.connectionSettings),
+        "/integration-settings": (context) => AppSettingsPage(showSection: AppSettingsSection.integrationSettings),
         "/putchase": (context) => PurchasePage(title: "Support app development"),
         "/play-media": (context) => PlayMediaPage(
           mediaUrl: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['url'] : ''}",
@@ -278,7 +299,8 @@ class _HAClientAppState extends State<HAClientApp> {
 
   @override
   void dispose() {
-    _subscription.cancel();
+    _purchaseUpdateSubscription.cancel();
+    _themeChangeSubscription.cancel();
     super.dispose();
   }
 }

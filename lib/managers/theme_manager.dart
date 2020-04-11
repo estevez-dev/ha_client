@@ -1,10 +1,8 @@
 part of '../main.dart';
 
-class HAClientTheme {
+enum AppTheme {darkTheme, defaultTheme, haTheme}
 
-  static const DEFAULT = 0;
-  static const DARK = 1;
-  static const HOMEASSISTANT = 2;
+class HAClientTheme {
 
   static const TextTheme textTheme = TextTheme(
     display1: TextStyle(fontSize: 34, fontWeight: FontWeight.normal),
@@ -79,6 +77,22 @@ class HAClientTheme {
   }
 
   HAClientTheme._internal();
+
+  ThemeData getThemeData(AppTheme theme) {
+    switch (theme) {
+      case AppTheme.darkTheme:
+        return darkTheme;
+        break;
+      case AppTheme.defaultTheme:
+        return lightTheme;
+        break;
+      case AppTheme.haTheme:
+        return lightTheme;
+        break;
+      default:
+        return lightTheme;
+    }
+  }
 
   final ThemeData lightTheme = ThemeData.from(
     colorScheme: ColorScheme(
