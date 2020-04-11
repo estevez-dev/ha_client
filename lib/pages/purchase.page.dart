@@ -62,7 +62,7 @@ class _PurchasePageState extends State<PurchasePage> {
     }
   }
 
-  Widget _buildProducts() {
+  List<Widget> _buildProducts() {
     List<Widget> productWidgets = [];
     for (ProductDetails product in _products) {
       productWidgets.add(
@@ -72,10 +72,7 @@ class _PurchasePageState extends State<PurchasePage> {
           purchased: _purchases.any((purchase) { return purchase.productID == product.id;}),)
       );
     }
-    return ListView(
-        scrollDirection: Axis.vertical,
-        children: productWidgets
-      );
+    return productWidgets;
   }
 
   void _buyProduct(ProductDetails product) {
@@ -87,12 +84,28 @@ class _PurchasePageState extends State<PurchasePage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget body;
+    List<Widget> body;
     if (!_loaded) {
-      body = _error.isEmpty ? PageLoadingIndicator() : PageLoadingError(errorText: _error);
+      body = [_error.isEmpty ? PageLoadingIndicator() : PageLoadingError(errorText: _error)];
     } else {
       body = _buildProducts();
     }
+    body.add(
+      Card(
+        child: Container(
+          height: 80,
+          child: InkWell(
+            child: Image.network('https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif'),
+            onTap: () {
+              Launcher.launchURLInCustomTab(
+                context: context,
+                url: 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ARWGETZD2D83Q&source=url'
+              );
+            },
+          )
+        ),
+      )
+    );
     return new Scaffold(
       appBar: new AppBar(
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
@@ -100,7 +113,10 @@ class _PurchasePageState extends State<PurchasePage> {
         }),
         title: new Text(widget.title),
       ),
-      body: body,
+      body: ListView(
+        scrollDirection: Axis.vertical,
+        children: body
+      ),
     );
   }
   
