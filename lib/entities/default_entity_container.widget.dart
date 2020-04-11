@@ -25,9 +25,9 @@ class DefaultEntityContainer extends StatelessWidget {
           Divider(),
           Text(
               "${entityModel.entityWrapper.entity.displayName}",
-            style: Theme.of(context).textTheme.body1.copyWith(
-              color: Theme.of(context).primaryColor
-            ),
+            style: HAClientTheme().getLinkTextStyle(context).copyWith(
+              decoration: TextDecoration.none
+            )
           )
         ],
       );

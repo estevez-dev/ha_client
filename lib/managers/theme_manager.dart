@@ -2,6 +2,10 @@ part of '../main.dart';
 
 class HAClientTheme {
 
+  static const DEFAULT = 0;
+  static const DARK = 1;
+  static const HOMEASSISTANT = 2;
+
   static const TextTheme textTheme = TextTheme(
     display1: TextStyle(fontSize: 34, fontWeight: FontWeight.normal),
     display2: TextStyle(fontSize: 34, fontWeight: FontWeight.normal),
