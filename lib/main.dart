@@ -168,7 +168,7 @@ void main() async {
   SyncfusionLicense.registerLicense(secrets['syncfusion_license_key']); 
 
   FlutterError.onError = (FlutterErrorDetails details) {
-    Logger.e(" Caut Flutter runtime error: ${details.exception}");
+    Logger.e("Caut Flutter runtime error: ${details.exception}");
     if (Logger.isInDebugMode) {
       FlutterError.dumpErrorToConsole(details);
     }
@@ -177,7 +177,7 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  AppTheme theme = AppTheme.values[prefs.getInt('app-theme') ?? AppTheme.defaultTheme];
+  AppTheme theme = AppTheme.values[prefs.getInt('app-theme') ?? AppTheme.defaultTheme.index];
 
   runZoned(() {
       runApp(new HAClientApp(
