@@ -28,6 +28,7 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
     }
     
     List<GaugeRange> ranges;
+    Color currentColor;
     if (widget.severity != null && widget.severity["green"] is int && widget.severity["red"] is int && widget.severity["yellow"] is int) {
       List<RangeContainer> rangesList = <RangeContainer>[
         RangeContainer(widget.severity["green"], HAClientTheme().getGreenGaugeColor()),
@@ -43,11 +44,20 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
         }
         return 0;
       });
+
+      if (fixedValue < rangesList[1].startFrom) {
+        currentColor = rangesList[0].color;
+      } else if (fixedValue < rangesList[2].startFrom && fixedValue >= rangesList[1].startFrom) {
+        currentColor = rangesList[1].color;
+      } else {
+        currentColor = rangesList[2].color;
+      }
+
       ranges = [
         GaugeRange(
           startValue: rangesList[0].startFrom.toDouble(),
           endValue: rangesList[1].startFrom.toDouble(),
-          color: fixedValue < rangesList[1].startFrom ? rangesList[0].color : rangesList[0].color.withOpacity(0.1),
+          color: rangesList[0].color.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
           startWidth: 0.3
@@ -55,7 +65,7 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
         GaugeRange(
           startValue: rangesList[1].startFrom.toDouble(),
           endValue: rangesList[2].startFrom.toDouble(),
-          color: (fixedValue < rangesList[2].startFrom && fixedValue >= rangesList[1].startFrom) ? rangesList[1].color : rangesList[1].color.withOpacity(0.1),
+          color: rangesList[1].color.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
           startWidth: 0.3
@@ -63,7 +73,7 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
         GaugeRange(
           startValue: rangesList[2].startFrom.toDouble(),
           endValue: widget.max.toDouble(),
-          color: fixedValue >= rangesList[2].startFrom ? rangesList[2].color : rangesList[2].color.withOpacity(0.1),
+          color: rangesList[2].color.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
           startWidth: 0.3
@@ -71,14 +81,15 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
       ];
     }
     if (ranges == null) {
+      currentColor = Theme.of(context).primaryColorDark;
       ranges = <GaugeRange>[
         GaugeRange(
           startValue: widget.min.toDouble(),
           endValue: widget.max.toDouble(),
-          color: Theme.of(context).primaryColorDark,
+          color: Theme.of(context).primaryColorDark.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
-          startWidth: 0.3
+          startWidth: 0.3,
         )
       ];
     }
@@ -107,9 +118,15 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
                   maximum: widget.max.toDouble(),
                   minimum: widget.min.toDouble(),
                   showLabels: false,
+                  useRangeColorForAxis: true,
                   showTicks: false,
                   canScaleToFit: true,
                   ranges: ranges,
+                  axisLineStyle: AxisLineStyle(
+                    thickness: 0.3,
+                    thicknessUnit: GaugeSizeUnit.factor,
+                    color: Colors.transparent
+                  ),
                   annotations: <GaugeAnnotation>[
                     GaugeAnnotation(
                       angle: -90,
@@ -135,27 +152,16 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
                       ),
                     )
                   ],
-                  axisLineStyle: AxisLineStyle(
-                    thickness: 0.3,
-                    thicknessUnit: GaugeSizeUnit.factor
-                  ),
                   startAngle: 180,
                   endAngle: 0,
                   pointers: <GaugePointer>[
-                    NeedlePointer(
+                    RangePointer(
                       value: fixedValue,
-                      lengthUnit: GaugeSizeUnit.factor,
-                      needleLength: 0.9,
-                      needleColor: Theme.of(context).accentColor,
+                      sizeUnit: GaugeSizeUnit.factor,
+                      width: 0.3,
+                      color: currentColor,
                       enableAnimation: true,
-                      needleStartWidth: 1,
                       animationType: AnimationType.bounceOut,
-                      needleEndWidth: 3,
-                      knobStyle: KnobStyle(
-                        sizeUnit: GaugeSizeUnit.factor,
-                        color: Theme.of(context).buttonColor,
-                        knobRadius: 0.1
-                      )
                     )
                   ]
                 )
