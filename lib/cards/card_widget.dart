@@ -82,20 +82,15 @@ class CardWidget extends StatelessWidget {
       case CardType.HORIZONTAL_STACK: {
         if (card.childCards.isNotEmpty) {
           List<Widget> children = [];
-          card.childCards.forEach((card) {
-            if (card.getEntitiesToShow().isNotEmpty || card.showEmpty) {
-              children.add(
-                  Flexible(
-                    fit: FlexFit.tight,
-                    child: card.build(context),
-                  )
-              );
-            }
-          });
+          children = card.childCards.map((childCard) => Flexible(
+              fit: FlexFit.tight,
+              child: childCard.build(context),
+            )
+          ).toList();
           return Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: children,
           );
         }
@@ -104,12 +99,7 @@ class CardWidget extends StatelessWidget {
 
       case CardType.VERTICAL_STACK: {
         if (card.childCards.isNotEmpty) {
-          List<Widget> children = [];
-          card.childCards.forEach((card) {
-            children.add(
-                card.build(context)
-            );
-          });
+          List<Widget> children = card.childCards.map((childCard) => childCard.build(context)).toList();
           return Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
