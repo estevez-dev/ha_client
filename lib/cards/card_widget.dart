@@ -59,6 +59,10 @@ class CardWidget extends StatelessWidget {
         return _buildEntityButtonCard(context);
       }
 
+      case CardType.BUTTON: {
+        return _buildEntityButtonCard(context);
+      }
+
       case CardType.GAUGE: {
         return _buildGaugeCard(context);
       }

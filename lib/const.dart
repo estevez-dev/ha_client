@@ -113,6 +113,7 @@ class CardType {
   static const IFRAME = "iframe";
   static const GAUGE = "gauge";
   static const ENTITY_BUTTON = "entity-button";
+  static const BUTTON = "button";
   static const CONDITIONAL = "conditional";
   static const ALARM_PANEL = "alarm-panel";
   static const MARKDOWN = "markdown";
