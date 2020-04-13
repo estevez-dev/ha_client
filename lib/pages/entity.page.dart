@@ -13,8 +13,6 @@ class _EntityViewPageState extends State<EntityViewPage> {
   StreamSubscription _refreshDataSubscription;
   StreamSubscription _stateSubscription;
   Entity entity;
-  Entity forwardToMainPage;
-  bool _popScheduled = false;
 
   @override
   void initState() {
@@ -35,16 +33,6 @@ class _EntityViewPageState extends State<EntityViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget body;
-    if (MediaQuery.of(context).size.width >= Sizes.tabletMinWidth) {
-      if (!_popScheduled) {
-        _popScheduled = true;
-        _popAfterBuild();
-      }
-      body = PageLoadingIndicator();
-    } else {
-      body = EntityPageLayout(entity: entity);
-    }
     return new Scaffold(
       appBar: new AppBar(
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
@@ -52,21 +40,14 @@ class _EntityViewPageState extends State<EntityViewPage> {
         }),
         title: new Text("${entity.displayName}"),
       ),
-      body: body,
+      body: EntityPageLayout(entity: entity),
     );
-  }
-
-  _popAfterBuild() async {
-    forwardToMainPage = entity;
-    await Future.delayed(Duration(milliseconds: 300));
-    Navigator.of(context).pop();
   }
 
   @override
   void dispose(){
     if (_stateSubscription != null) _stateSubscription.cancel();
     if (_refreshDataSubscription != null) _refreshDataSubscription.cancel();
-    eventBus.fire(ShowEntityPageEvent(entity: forwardToMainPage));
     super.dispose();
   }
 }

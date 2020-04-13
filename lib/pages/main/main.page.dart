@@ -25,7 +25,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   int _previousViewCount;
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
-  Entity _entityToShow;
 
   @override
   void initState() {
@@ -125,9 +124,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     }
     await HomeAssistant().fetchData(uiOnly).then((_) {
       _hideBottomBar();
-      if (_entityToShow != null) {
-        _entityToShow = HomeAssistant().entities.get(_entityToShow.entityId);
-      }
     }).catchError((e) {
       if (e is HAError) {
         _setErrorState(e);
@@ -302,12 +298,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   void _showEntityPage(String entityId) {
-    setState(() {
-      _entityToShow = HomeAssistant().entities?.get(entityId);
-      if (_entityToShow != null) {
-        _mainScrollController?.jumpTo(0);
-      }
-    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EntityViewPage(entityId: entityId),
+      )
+    );
     /*if (_entityToShow!= null && MediaQuery.of(context).size.width < Sizes.tabletMinWidth) {
       Navigator.push(
           context,
@@ -591,7 +587,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final ScrollController _mainScrollController = ScrollController();
 
   Widget _buildScaffoldBody(bool empty) {
     List<PopupMenuItem<String>> serviceMenuItems = [];
@@ -697,28 +692,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         );
       }
     } else {
-      if (_entityToShow != null && MediaQuery.of(context).size.width >= Sizes.tabletMinWidth) {
-        mainScrollBody = Flex(
-          direction: Axis.horizontal,
-          children: <Widget>[
-            Expanded(
-              child: HomeAssistant().ui.build(context, _viewsTabController),
-            ),
-            Container(
-              width: Sizes.mainPageScreenSeparatorWidth,
-              color: Colors.blue,
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints.tightFor(width: Sizes.entityPageMaxWidth),
-              child: EntityPageLayout(entity: _entityToShow, showClose: true,),
-            )
-          ],
-        );
-      } else if (_entityToShow != null) {
-        mainScrollBody = EntityPageLayout(entity: _entityToShow, showClose: true,);
-      } else {
-        mainScrollBody = HomeAssistant().ui.build(context, _viewsTabController);
-      }
+      mainScrollBody = HomeAssistant().ui.build(context, _viewsTabController);
     }
 
     return NestedScrollView(
@@ -774,7 +748,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                   _scaffoldKey.currentState.openDrawer();
                 },
               ),
-              bottom: (empty || _entityToShow != null) ? null : TabBar(
+              bottom: empty ? null : TabBar(
                 controller: _viewsTabController,
                 tabs: buildUIViewTabs(),
                 isScrollable: true,
@@ -784,7 +758,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           ];
         },
         body: mainScrollBody,
-        controller: _mainScrollController,
     );
   }
 
@@ -849,22 +822,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             body: _buildScaffoldBody(true)
         );
       } else {
-        return WillPopScope(
-          child: Scaffold(
-            key: _scaffoldKey,
-            drawer: _buildAppDrawer(),
-            primary: false,
-            bottomNavigationBar: bottomBar,
-            body: _buildScaffoldBody(false)
-          ),
-          onWillPop: () {
-            if (_entityToShow != null) {
-              eventBus.fire(ShowEntityPageEvent());
-              return Future.value(false);
-            } else {
-              return Future.value(true);
-            }
-          },
+        return Scaffold(
+          key: _scaffoldKey,
+          drawer: _buildAppDrawer(),
+          primary: false,
+          bottomNavigationBar: bottomBar,
+          body: _buildScaffoldBody(false)
         );
       }
   }
