@@ -48,7 +48,7 @@ class HAView {
             type: rawCardInfo['type'] ?? CardType.ENTITIES,
             columnsCount: rawCardInfo['columns'] ?? 4,
             showName: (rawCardInfo['show_name'] ?? rawCard['show_name']) ?? true,
-            showHeaderToggle: (rawCardInfo['show_header_toggle'] ?? rawCard['show_header_toggle']) ?? true, 
+            showHeaderToggle: (rawCardInfo['show_header_toggle'] ?? rawCard['show_header_toggle']) ?? false, 
             showState: (rawCardInfo['show_state'] ?? rawCard['show_state']) ?? true,
             showEmpty: (rawCardInfo['show_empty'] ?? rawCard['show_empty']) ?? true,
             stateFilter: (rawCard['state_filter'] ?? rawCardInfo['state_filter']) ?? [],
