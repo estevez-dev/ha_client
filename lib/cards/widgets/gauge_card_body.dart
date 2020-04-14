@@ -1,6 +1,6 @@
 part of '../../main.dart';
 
-class GaugeCardBody extends StatefulWidget {
+class GaugeCardBody extends StatelessWidget {
 
   final int min;
   final int max;
@@ -9,31 +9,25 @@ class GaugeCardBody extends StatefulWidget {
   GaugeCardBody({Key key, this.min, this.max, this.severity}) : super(key: key);
 
   @override
-  _GaugeCardBodyState createState() => _GaugeCardBodyState();
-}
-
-class _GaugeCardBodyState extends State<GaugeCardBody> {
-
-  @override
   Widget build(BuildContext context) {
     EntityWrapper entityWrapper = EntityModel.of(context).entityWrapper;
     double fixedValue;
     double value = entityWrapper.entity.doubleState;
-    if (value > widget.max) {
-      fixedValue = widget.max.toDouble();
-    } else if (value < widget.min) {
-      fixedValue = widget.min.toDouble();
+    if (value > max) {
+      fixedValue = max.toDouble();
+    } else if (value < min) {
+      fixedValue = min.toDouble();
     } else {
       fixedValue = value;
     }
     
     List<GaugeRange> ranges;
     Color currentColor;
-    if (widget.severity != null && widget.severity["green"] is int && widget.severity["red"] is int && widget.severity["yellow"] is int) {
+    if (severity != null && severity["green"] is int && severity["red"] is int && severity["yellow"] is int) {
       List<RangeContainer> rangesList = <RangeContainer>[
-        RangeContainer(widget.severity["green"], HAClientTheme().getGreenGaugeColor()),
-        RangeContainer(widget.severity["red"], HAClientTheme().getRedGaugeColor()),
-        RangeContainer(widget.severity["yellow"], HAClientTheme().getYellowGaugeColor())
+        RangeContainer(severity["green"], HAClientTheme().getGreenGaugeColor()),
+        RangeContainer(severity["red"], HAClientTheme().getRedGaugeColor()),
+        RangeContainer(severity["yellow"], HAClientTheme().getYellowGaugeColor())
       ];
       rangesList.sort((current, next) {
         if (current.startFrom > next.startFrom) {
@@ -72,7 +66,7 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
         ),
         GaugeRange(
           startValue: rangesList[2].startFrom.toDouble(),
-          endValue: widget.max.toDouble(),
+          endValue: max.toDouble(),
           color: rangesList[2].color.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
@@ -84,8 +78,8 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
       currentColor = Theme.of(context).primaryColorDark;
       ranges = <GaugeRange>[
         GaugeRange(
-          startValue: widget.min.toDouble(),
-          endValue: widget.max.toDouble(),
+          startValue: min.toDouble(),
+          endValue: max.toDouble(),
           color: Theme.of(context).primaryColorDark.withOpacity(0.1),
           sizeUnit: GaugeSizeUnit.factor,
           endWidth: 0.3,
@@ -115,8 +109,8 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
             return SfRadialGauge(
               axes: <RadialAxis>[
                 RadialAxis(
-                  maximum: widget.max.toDouble(),
-                  minimum: widget.min.toDouble(),
+                  maximum: max.toDouble(),
+                  minimum: min.toDouble(),
                   showLabels: false,
                   useRangeColorForAxis: true,
                   showTicks: false,
@@ -172,6 +166,7 @@ class _GaugeCardBodyState extends State<GaugeCardBody> {
       ),
     );
   }
+  
 }
 
 class RangeContainer {
