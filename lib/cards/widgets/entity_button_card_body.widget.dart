@@ -25,6 +25,7 @@ class EntityButtonCardBody extends StatelessWidget {
       child: FractionallySizedBox(
         widthFactor: 1,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
