@@ -12,35 +12,45 @@ class EntityViewPage extends StatefulWidget {
 class _EntityViewPageState extends State<EntityViewPage> {
   StreamSubscription _refreshDataSubscription;
   StreamSubscription _stateSubscription;
-  Entity entity;
+  Entity _entity;
 
   @override
   void initState() {
     super.initState();
     _stateSubscription = eventBus.on<StateChangedEvent>().listen((event) {
       if (event.entityId == widget.entityId) {
-        entity = HomeAssistant().entities.get(widget.entityId);
         Logger.d("[Entity page] State change event handled: ${event.entityId}");
-        setState(() {});
+        setState(() {
+          _getEntity();
+        });
       }
     });
     _refreshDataSubscription = eventBus.on<RefreshDataFinishedEvent>().listen((event) {
-      entity = HomeAssistant().entities.get(widget.entityId);
-      setState(() {});
+      Logger.d("[Entity page] Refresh data event handled");
+      setState(() {
+        _getEntity();
+      });
     });
-    entity = HomeAssistant().entities.get(widget.entityId);
+    _getEntity();
+  }
+
+  _getEntity() {
+    _entity = HomeAssistant().entities.get(widget.entityId);
   }
 
   @override
   Widget build(BuildContext context) {
+    String entityNameToDisplay = '${(_entity?.displayName ?? widget.entityId) ?? ''}';
     return new Scaffold(
       appBar: new AppBar(
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
           Navigator.pop(context);
         }),
-        title: new Text("${entity.displayName}"),
+        title: new Text(entityNameToDisplay),
       ),
-      body: EntityPageLayout(entity: entity),
+      body: _entity == null ? PageLoadingError(
+        errorText: 'Entity is not available $entityNameToDisplay',
+      ) : EntityPageLayout(entity: _entity),
     );
   }
 
