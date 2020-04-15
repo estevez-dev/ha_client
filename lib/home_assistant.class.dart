@@ -46,7 +46,6 @@ class HomeAssistant {
   String get userAvatarText => userName.length > 0 ? userName[0] : "";
   bool get isNoEntities => entities == null || entities.isEmpty;
   bool get isNoViews => ui == null || ui.isEmpty;
-  bool get isMobileAppEnabled => _instanceConfig["components"] != null && (_instanceConfig["components"] as List).contains("mobile_app");
 
   HomeAssistant._internal() {
     ConnectionManager().onStateChangeCallback = _handleEntityStateChange;
@@ -75,7 +74,7 @@ class HomeAssistant {
       futures.add(_getLovelace(null));
     }
     Future.wait(futures).then((_) {
-      if (isMobileAppEnabled) {
+      if (isComponentEnabled('mobile_app')) {
         _createUI();
         _fetchCompleter.complete();
         if (!uiOnly) MobileAppIntegrationManager.checkAppRegistration();
@@ -103,7 +102,7 @@ class HomeAssistant {
         _getUserInfo(prefs);
         _getPanels(prefs);
         _getServices(prefs);
-        if (isMobileAppEnabled) {
+        if (isComponentEnabled('mobile_app')) {
           _createUI();
         }  
       } catch (e) {
@@ -156,6 +155,7 @@ class HomeAssistant {
 
   void _parseConfig(data) {
     _instanceConfig = Map.from(data);
+    Logger.d('stream: ${_instanceConfig['components'].contains('stream')}');
   }
 
   Future _getStates(SharedPreferences sharedPrefs) async {
@@ -303,6 +303,10 @@ class HomeAssistant {
       completer.completeError(e);
     });
     return completer.future;
+  }
+
+  bool isComponentEnabled(String name) {
+    return _instanceConfig["components"] != null && (_instanceConfig["components"] as List).contains("$name");
   }
 
   void _handleLovelaceUpdate() {

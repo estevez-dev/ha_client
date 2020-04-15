@@ -36,7 +36,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
           .of(context)
           .entityWrapper
           .entity;
-    if (_entity.supportStream) {
+    if (_entity.supportStream && HomeAssistant().isComponentEnabled('stream')) {
       HomeAssistant().getCameraStream(_entity.entityId)
         .then((data) {
           _jsMessageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
