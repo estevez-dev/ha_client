@@ -184,13 +184,7 @@ class _BottomInfoBarState extends State<BottomInfoBar> {
       }
       if (widget.controller.bottomBarProgress) {
         bottomBarChildren.add(
-          CollectionScaleTransition(
-            children: <Widget>[
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getOnStateColor(context),),
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getDisabledStateColor(context),),
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getOffStateColor(context),),
-            ],
-          ),
+          LinearProgressIndicator(),
         );
       }
       if (bottomBarChildren.isNotEmpty) {
@@ -210,6 +204,8 @@ class _BottomInfoBarState extends State<BottomInfoBar> {
             ],
           ),
         );
+      } else {
+        bottomBar = Container(height: 0,);
       }
       return bottomBar;
     }
