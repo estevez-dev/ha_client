@@ -20,6 +20,7 @@ class ConnectionManager {
   String oauthUrl;
   String webhookId;
   bool settingsLoaded = false;
+  int appIntegrationVersion;
   bool get isAuthenticated => _token != null;
   StreamSubscription _socketSubscription;
   Duration connectTimeout = Duration(seconds: 15);
@@ -43,6 +44,7 @@ class ConnectionManager {
       _domain = prefs.getString('hassio-domain');
       _port = prefs.getString('hassio-port');
       webhookId = prefs.getString('app-webhook-id');
+      appIntegrationVersion = prefs.getInt('app-integration-version') ?? 0;
       displayHostname = "$_domain:$_port";
       _webSocketAPIEndpoint =
       "${prefs.getString('hassio-protocol')}://$_domain:$_port/api/websocket";
