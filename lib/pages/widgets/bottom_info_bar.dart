@@ -110,8 +110,7 @@ class _BottomInfoBarState extends State<BottomInfoBar> {
             actions.add(FlatButton(
               child: Text("${action.title}", style: textStyle),
               onPressed: () {
-                Logger.d('FULL_RELOAD action');
-                EventBus().fire(FullReloadEvent());
+                eventBus.fire(FullReloadEvent());
               },
             ));
             break;
@@ -121,7 +120,7 @@ class _BottomInfoBarState extends State<BottomInfoBar> {
             actions.add(FlatButton(
               child: Text("${action.title}", style: textStyle),
               onPressed: () {
-                EventBus().fire(ReloadUIEvent());
+                eventBus.fire(ReloadUIEvent());
               },
             ));
             break;
@@ -131,7 +130,7 @@ class _BottomInfoBarState extends State<BottomInfoBar> {
             actions.add(FlatButton(
               child: Text("${action.title}", style: textStyle),
               onPressed: () {
-                ConnectionManager().logout().then((_) => EventBus().fire(FullReloadEvent()));
+                ConnectionManager().logout().then((_) => eventBus.fire(FullReloadEvent()));
               },
             ));
             break;
