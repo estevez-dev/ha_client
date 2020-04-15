@@ -21,7 +21,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   StreamSubscription _showPopupDialogSubscription;
   StreamSubscription _showPopupMessageSubscription;
   StreamSubscription _reloadUISubscription;
+  StreamSubscription _fullReloadSubscription;
   StreamSubscription _showPageSubscription;
+  BottomInfoBarController _bottomInfoBarController;
   int _previousViewCount;
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
@@ -45,6 +47,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           return Future.value();
         }
     );
+
+    _bottomInfoBarController = BottomInfoBarController();
 
     _firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
 
@@ -91,7 +95,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   void _fullLoad() {
-    _showInfoBottomBar(progress: true,);
+    _bottomInfoBarController.showInfoBottomBar(progress: true,);
     _subscribe().then((_) {
       ConnectionManager().init(loadSettings: true, forceReconnect: true).then((__){
         SharedPreferences.getInstance().then((prefs) {
@@ -107,8 +111,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   void _quickLoad({bool uiOnly: false}) {
-    _hideBottomBar();
-    _showInfoBottomBar(progress: true,);
+    _bottomInfoBarController.hideBottomBar();
+    _bottomInfoBarController.showInfoBottomBar(progress: true,);
     ConnectionManager().init(loadSettings: false, forceReconnect: false).then((_){
       _fetchData(useCache: false, uiOnly: uiOnly);
     }, onError: (e) {
@@ -123,7 +127,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       });
     }
     await HomeAssistant().fetchData(uiOnly).then((_) {
-      _hideBottomBar();
+      _bottomInfoBarController.hideBottomBar();
     }).catchError((e) {
       if (e is HAError) {
         _setErrorState(e);
@@ -165,6 +169,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     if (_reloadUISubscription == null) {
       _reloadUISubscription = eventBus.on<ReloadUIEvent>().listen((event){
         _quickLoad(uiOnly: true);
+      });
+    }
+    if (_fullReloadSubscription == null) {
+      _fullReloadSubscription = eventBus.on<FullReloadEvent>().listen((event){
+        _fullLoad();
       });
     }
     if (_showPopupDialogSubscription == null) {
@@ -213,7 +222,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 
     if (_showErrorSubscription == null) {
       _showErrorSubscription = eventBus.on<ShowErrorEvent>().listen((event){
-        _showErrorBottomBar(event.error);
+        _bottomInfoBarController.showErrorBottomBar(event.error);
       });
     }
 
@@ -245,11 +254,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 
   _setErrorState(HAError e) {
     if (e == null) {
-      _showErrorBottomBar(
+      _bottomInfoBarController.showErrorBottomBar(
           HAError("Unknown error")
       );
     } else {
-      _showErrorBottomBar(e);
+      _bottomInfoBarController.showErrorBottomBar(e);
     }
   }
 
@@ -291,7 +300,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   void _notifyServiceCalled(String domain, String service, entityId) {
-    _showInfoBottomBar(
+    _bottomInfoBarController.showInfoBottomBar(
         message: "Calling $domain.$service",
         duration: Duration(seconds: 4)
     );
@@ -481,111 +490,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     );
   }
 
-  void _hideBottomBar() {
-    //_scaffoldKey?.currentState?.hideCurrentSnackBar();
-    setState(() {
-      _showBottomBar = false;
-    });
-  }
-
-  Widget _bottomBarAction;
-  bool _showBottomBar = false;
-  String _bottomBarText;
-  bool _bottomBarProgress;
-  bool _bottomBarErrorColor;
-  Timer _bottomBarTimer;
-
-  void _showInfoBottomBar({String message, bool progress: false, Duration duration}) {
-    _bottomBarTimer?.cancel();
-    _bottomBarAction = Container(height: 0.0, width: 0.0,);
-    _bottomBarErrorColor = false;
-    setState(() {
-      _bottomBarText = message;
-      _bottomBarProgress = progress;
-      _showBottomBar = true;
-    });
-    if (duration != null) {
-      _bottomBarTimer = Timer(duration, () {
-        _hideBottomBar();
-      });
-    }
-  }
-
-  void _showErrorBottomBar(HAError error) {
-    TextStyle textStyle = Theme.of(context).textTheme.button.copyWith(
-      decoration: TextDecoration.underline
-    );
-    _bottomBarErrorColor = true;
-    List<Widget> actions = [];
-    error.actions.forEach((HAErrorAction action) {
-      switch (action.type) {
-        case HAErrorActionType.FULL_RELOAD: {
-          actions.add(FlatButton(
-            child: Text("${action.title}", style: textStyle),
-            onPressed: () {
-              _fullLoad();
-            },
-          ));
-          break;
-        }
-
-        case HAErrorActionType.QUICK_RELOAD: {
-          actions.add(FlatButton(
-            child: Text("${action.title}", style: textStyle),
-            onPressed: () {
-              _quickLoad();
-            },
-          ));
-          break;
-        }
-
-        case HAErrorActionType.RELOGIN: {
-          actions.add(FlatButton(
-            child: Text("${action.title}", style: textStyle),
-            onPressed: () {
-              ConnectionManager().logout().then((_) => _fullLoad());
-            },
-          ));
-          break;
-        }
-
-        case HAErrorActionType.URL: {
-          actions.add(FlatButton(
-            child: Text("${action.title}", style: textStyle),
-            onPressed: () {
-              Launcher.launchURLInCustomTab(context: context, url: "${action.url}");
-            },
-          ));
-          break;
-        }
-
-        case HAErrorActionType.OPEN_CONNECTION_SETTINGS: {
-          actions.add(FlatButton(
-            child: Text("${action.title}", style: textStyle),
-            onPressed: () {
-              Navigator.pushNamed(context, '/connection-settings');
-            },
-          ));
-          break;
-        }
-      }
-    });
-    if (actions.isNotEmpty) {
-      _bottomBarAction = Row(
-        mainAxisSize: MainAxisSize.min,
-        children: actions,
-        mainAxisAlignment: MainAxisAlignment.end,
-      );
-    } else {
-      _bottomBarAction = Container(height: 0.0, width: 0.0,);
-    }
-    setState(() {
-      _bottomBarProgress = false;
-      _bottomBarText = "${error.message}";
-      _showBottomBar = true;
-    });
-  }
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Widget _buildScaffoldBody(bool empty) {
@@ -765,60 +669,14 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 
   @override
   Widget build(BuildContext context) {
-    Widget bottomBar;
-    if (_showBottomBar) {
-      List<Widget> bottomBarChildren = [];
-      if (_bottomBarText != null) {
-        bottomBarChildren.add(
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                  Sizes.leftWidgetPadding, Sizes.rowPadding, 0.0,
-                  Sizes.rowPadding),
-              child: Text(
-                "$_bottomBarText",
-                textAlign: TextAlign.left,
-                softWrap: true,
-              ),
-            )
-
-        );
-      }
-      if (_bottomBarProgress) {
-        bottomBarChildren.add(
-          CollectionScaleTransition(
-            children: <Widget>[
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getOnStateColor(context),),
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getDisabledStateColor(context),),
-              Icon(Icons.stop, size: 10.0, color: HAClientTheme().getOffStateColor(context),),
-            ],
-          ),
-        );
-      }
-      if (bottomBarChildren.isNotEmpty) {
-        bottomBar = Container(
-          color: _bottomBarErrorColor ? Theme.of(context).errorColor : Theme.of(context).primaryColorLight,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: _bottomBarProgress ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: bottomBarChildren,
-                ),
-              ),
-              _bottomBarAction
-            ],
-          ),
-        );
-      }
-    }
     if (HomeAssistant().isNoViews) {
         return Scaffold(
             key: _scaffoldKey,
             primary: false,
             drawer: _buildAppDrawer(),
-            bottomNavigationBar: bottomBar,
+            bottomNavigationBar: BottomInfoBar(
+              controller: _bottomInfoBarController,
+            ),
             body: _buildScaffoldBody(true)
         );
       } else {
@@ -826,7 +684,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           key: _scaffoldKey,
           drawer: _buildAppDrawer(),
           primary: false,
-          bottomNavigationBar: bottomBar,
+          bottomNavigationBar: BottomInfoBar(
+            controller: _bottomInfoBarController,
+          ),
           body: _buildScaffoldBody(false)
         );
       }
@@ -848,9 +708,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _showErrorSubscription?.cancel();
     _startAuthSubscription?.cancel();
     _showPageSubscription?.cancel();
+    _fullReloadSubscription?.cancel();
     _reloadUISubscription?.cancel();
-    //TODO disconnect
-    //widget.homeAssistant?.disconnect();
     super.dispose();
   }
 }

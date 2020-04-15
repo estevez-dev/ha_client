@@ -25,7 +25,13 @@ class RefreshDataFinishedEvent {
 }
 
 class ReloadUIEvent {
+  //TODO uiOnly bool
+
   ReloadUIEvent();
+}
+
+class FullReloadEvent {
+  FullReloadEvent();
 }
 
 class ChangeThemeEvent {
