@@ -111,7 +111,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   void _quickLoad({bool uiOnly: false}) {
-    _bottomInfoBarController.hideBottomBar();
     _bottomInfoBarController.showInfoBottomBar(progress: true,);
     ConnectionManager().init(loadSettings: false, forceReconnect: false).then((_){
       _fetchData(useCache: false, uiOnly: uiOnly);
@@ -127,7 +126,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       });
     }
     await HomeAssistant().fetchData(uiOnly).then((_) {
-      _bottomInfoBarController.hideBottomBar();
+      setState((){
+        _bottomInfoBarController.hideBottomBar();
+      });
+      HomeAssistant().saveCache();
     }).catchError((e) {
       if (e is HAError) {
         _setErrorState(e);
@@ -144,7 +146,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     if (state == AppLifecycleState.resumed && ConnectionManager().settingsLoaded && !_preventAppRefresh) {
       _quickLoad();
     } else if (state == AppLifecycleState.paused && ConnectionManager().settingsLoaded && !_preventAppRefresh) {
-      HomeAssistant().saveCache();
+      //HomeAssistant().saveCache();
     }
   }
 

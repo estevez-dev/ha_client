@@ -88,11 +88,11 @@ class CardWidget extends StatelessWidget {
             )
           ).toList();
           return Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: children,
-          );
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+            );
         }
         return Container(height: 0.0, width: 0.0,);
       }

@@ -61,13 +61,7 @@ class HomeAssistantUI {
   }
 
   List<Widget> _buildViews(BuildContext context) {
-    List<Widget> result = [];
-    views.forEach((view) {
-      result.add(
-        view.build(context)
-      );
-    });
-    return result;
+    return views.map((view) => view.build(context)).toList();
   }
 
   void clear() {
