@@ -48,7 +48,7 @@ class CardWidget extends StatelessWidget {
       }
 
       case CardType.GLANCE: {
-        return _buildGlanceCard(context);
+        return GlanceCard(card: card);
       }
 
       case CardType.MEDIA_CONTROL: {
@@ -56,15 +56,15 @@ class CardWidget extends StatelessWidget {
       }
 
       case CardType.ENTITY_BUTTON: {
-        return _buildEntityButtonCard(context);
+        return EntityButtonCard(card: card);
       }
 
       case CardType.BUTTON: {
-        return _buildEntityButtonCard(context);
+        return EntityButtonCard(card: card);
       }
 
       case CardType.GAUGE: {
-        return _buildGaugeCard(context);
+        return GaugeCard(card: card);
       }
 
 /*      case CardType.LIGHT: {
@@ -167,9 +167,13 @@ class CardWidget extends StatelessWidget {
           );
       })  
     );
-    return LovelaceCard(
+    return CardWrapper(
         child: Padding(
-          padding: EdgeInsets.only(right: Sizes.rightWidgetPadding, left: Sizes.leftWidgetPadding),
+          padding: EdgeInsets.only(
+            right: Sizes.rightWidgetPadding,
+            left: Sizes.leftWidgetPadding,
+            bottom: Sizes.rowPadding,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -186,7 +190,7 @@ class CardWidget extends StatelessWidget {
     List<Widget> body = [];
     body.add(CardHeader(name: card.name));
     body.add(MarkdownBody(data: card.content));
-    return LovelaceCard(
+    return CardWrapper(
         child: Padding(
           padding: EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, Sizes.rowPadding),
           child: new Column(mainAxisSize: MainAxisSize.min, children: body),
@@ -226,7 +230,7 @@ class CardWidget extends StatelessWidget {
           states: card.states,
         )
     );
-    return LovelaceCard(
+    return CardWrapper(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             handleTap: null,
@@ -239,117 +243,12 @@ class CardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildGlanceCard(BuildContext context) {
-    List<EntityWrapper> entitiesToShow = card.getEntitiesToShow();
-    if (entitiesToShow.isEmpty && !card.showEmpty) {
-      return Container(height: 0.0, width: 0.0,);
-    }
-    int length = entitiesToShow.length;
-    int columnsCount = length >= card.columnsCount ? card.columnsCount : entitiesToShow.length;
-    int rowsCount = (length / columnsCount).round();
-    List<TableRow> rows = [];
-    for (int i = 0; i < rowsCount; i++) {
-      int start = i*columnsCount;
-      int end = start + math.min(columnsCount, length - start);
-      List<Widget> rowChildren = [];
-      rowChildren.addAll(entitiesToShow.sublist(
-          start, end
-        ).map(
-          (EntityWrapper entity){
-            return EntityModel(
-                entityWrapper: entity,
-                child: GlanceCardEntityContainer(
-                  showName: card.showName,
-                  showState: card.showState,
-                ),
-                handleTap: true
-            );
-          }
-        ).toList()
-      );
-      while (rowChildren.length < columnsCount) {
-        rowChildren.add(
-          Container()
-        );
-      }
-      rows.add(
-        TableRow(
-          children: rowChildren
-        )
-      );
-    }
-    return LovelaceCard(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          CardHeader(name: card.name),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: Sizes.rowPadding),
-            child: Table(
-              children: rows
-            )
-          )
-        ],
-      )
-    );
-  }
-
   Widget _buildMediaControlsCard(BuildContext context) {
-    return LovelaceCard(
+    return CardWrapper(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             handleTap: null,
             child: MediaPlayerWidget()
-        )
-    );
-  }
-
-  Widget _buildEntityButtonCard(BuildContext context) {
-    card.linkedEntityWrapper.overrideName = card.name?.toUpperCase() ??
-        card.linkedEntityWrapper.displayName.toUpperCase();
-    return LovelaceCard(
-        child: EntityModel(
-            entityWrapper: card.linkedEntityWrapper,
-            child: EntityButtonCardBody(
-              depth: card.depth,
-              showName: card.showName,
-            ),
-            handleTap: true
-        )
-    );
-  }
-
-  Widget _buildGaugeCard(BuildContext context) {
-    card.linkedEntityWrapper.overrideName = card.name ??
-        card.linkedEntityWrapper.displayName;
-    card.linkedEntityWrapper.unitOfMeasurementOverride = card.unit ??
-        card.linkedEntityWrapper.unitOfMeasurement;
-    return LovelaceCard(
-        child: EntityModel(
-            entityWrapper: card.linkedEntityWrapper,
-            child: GaugeCardBody(
-              min: card.min,
-              max: card.max,
-              depth: card.depth,
-              severity: card.severity,
-            ),
-            handleTap: true
-        )
-    );
-  }
-
-  Widget _buildLightCard(BuildContext context) {
-    card.linkedEntityWrapper.overrideName = card.name ??
-        card.linkedEntityWrapper.displayName;
-    return LovelaceCard(
-        child: EntityModel(
-            entityWrapper: card.linkedEntityWrapper,
-            child: LightCardBody(
-              min: card.min,
-              max: card.max,
-              severity: card.severity,
-            ),
-            handleTap: true
         )
     );
   }
@@ -382,7 +281,7 @@ class CardWidget extends StatelessWidget {
       ]);
     }
     body.addAll(result);
-    return LovelaceCard(
+    return CardWrapper(
         child: new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

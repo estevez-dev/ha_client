@@ -21,7 +21,7 @@ class CardHeader extends StatelessWidget {
             style: Theme.of(context).textTheme.headline),
       );
     } else {
-      result = new Container(width: 0.0, height: 0.0);
+      result = new Container(width: 0.0, height: Sizes.rowPadding);
     }
     return result;
   }
