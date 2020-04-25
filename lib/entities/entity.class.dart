@@ -1,13 +1,6 @@
 part of '../main.dart';
 
-class StatelessEntityType {
-  static const NONE = 0;
-  static const MISSED = 1;
-  static const DIVIDER = 2;
-  static const SECTION = 3;
-  static const CALL_SERVICE = 4;
-  static const WEBLINK = 5;
-}
+enum StatelessEntityType {none, missed, ghost, divider, section, callService, webLink}
 
 class Entity {
 
@@ -77,7 +70,7 @@ class Entity {
   String state;
   String displayState;
   DateTime lastUpdatedTimestamp;
-  int statelessType = 0;
+  StatelessEntityType statelessType = StatelessEntityType.none;
 
   List<Entity> childEntities = [];
   String deviceClass;
@@ -120,30 +113,35 @@ class Entity {
   }
 
   Entity.missed(String entityId) {
-    statelessType = StatelessEntityType.MISSED;
+    statelessType = StatelessEntityType.missed;
     attributes = {"hidden": false};
     this.entityId = entityId;
   }
 
   Entity.divider() {
-    statelessType = StatelessEntityType.DIVIDER;
+    statelessType = StatelessEntityType.divider;
     attributes = {"hidden": false};
   }
 
   Entity.section(String label) {
-    statelessType = StatelessEntityType.SECTION;
+    statelessType = StatelessEntityType.section;
     attributes = {"hidden": false, "friendly_name": "$label"};
   }
 
+  Entity.ghost(String name, String icon) {
+    statelessType = StatelessEntityType.ghost;
+    attributes = {"icon": icon, "hidden": false, "friendly_name": name};
+  }
+
   Entity.callService({String icon, String name, String service, String actionName}) {
-    statelessType = StatelessEntityType.CALL_SERVICE;
+    statelessType = StatelessEntityType.callService;
     entityId = service;
     displayState = actionName?.toUpperCase() ?? "RUN";
     attributes = {"hidden": false, "friendly_name": "$name", "icon": "$icon"};
   }
 
   Entity.weblink({String url, String name, String icon}) {
-    statelessType = StatelessEntityType.WEBLINK;
+    statelessType = StatelessEntityType.webLink;
     entityId = "custom.custom";
     attributes = {"hidden": false, "friendly_name": "${name ?? url}", "icon": "${icon ?? 'mdi:link'}"};
   }

@@ -21,7 +21,7 @@ class EntityWrapper {
     this.uiAction,
     this.stateFilter
   }) {
-    if (entity.statelessType == StatelessEntityType.NONE || entity.statelessType == StatelessEntityType.CALL_SERVICE || entity.statelessType == StatelessEntityType.WEBLINK) {
+    if (entity.statelessType == StatelessEntityType.ghost || entity.statelessType == StatelessEntityType.none || entity.statelessType == StatelessEntityType.callService || entity.statelessType == StatelessEntityType.webLink) {
       if (uiAction == null) {
         uiAction = EntityUIAction();
       }

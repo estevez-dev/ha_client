@@ -59,10 +59,9 @@ class GlanceCard extends StatelessWidget {
   }
 
   Widget _buildEntityContainer(BuildContext context, EntityWrapper entityWrapper) {
-    if (entityWrapper.entity.statelessType == StatelessEntityType.MISSED) {
+    if (entityWrapper.entity.statelessType == StatelessEntityType.missed) {
       return MissedEntityWidget();
-    }
-    if (entityWrapper.entity.statelessType > StatelessEntityType.MISSED) {
+    } else if (entityWrapper.entity.statelessType != StatelessEntityType.none) {
       return Container(width: 0.0, height: 0.0,);
     }
     List<Widget> result = [];

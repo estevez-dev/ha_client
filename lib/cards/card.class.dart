@@ -22,6 +22,7 @@ class HACard {
   int max;
   int depth;
   Map severity;
+  EntityUIAction action;
 
   HACard({
     this.name,
@@ -117,5 +118,4 @@ class HACard {
       return showByFilter;
     }).toList();
   }
-
 }

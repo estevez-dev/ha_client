@@ -14,7 +14,6 @@ class BottomInfoBarController {
   List<HAErrorAction> actions = [];
 
   void hideBottomBar() {
-    //_scaffoldKey?.currentState?.hideCurrentSnackBar();
     _bottomBarTimer?.cancel();
     if (hide == null) {
       initialState = false;
@@ -32,7 +31,6 @@ class BottomInfoBarController {
     if (show == null) {
       initialState = true;
     } else {
-      Logger.d("Calling  show() - ${bottomBarProgress}");
       show();
     }
     if (duration != null) {
@@ -78,7 +76,6 @@ class _BottomInfoBarState extends State<BottomInfoBar> {
   void initState() {
     _show = widget.controller.initialState;
     widget.controller.show = () {
-      Logger.d('Set state in show() - ${widget.controller.bottomBarProgress}');
       setState(() {
         _show = true;
       });

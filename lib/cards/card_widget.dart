@@ -15,7 +15,7 @@ class LovelaceCard extends StatelessWidget {
       if (card.linkedEntityWrapper.entity.isHidden) {
         return Container(width: 0.0, height: 0.0,);
       }
-      if (card.linkedEntityWrapper.entity.statelessType == StatelessEntityType.MISSED) {
+      if (card.linkedEntityWrapper.entity.statelessType == StatelessEntityType.missed) {
         return EntityModel(
           entityWrapper: card.linkedEntityWrapper,
           child: MissedEntityWidget(),

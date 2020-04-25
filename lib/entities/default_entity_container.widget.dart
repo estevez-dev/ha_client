@@ -11,13 +11,13 @@ class DefaultEntityContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EntityModel entityModel = EntityModel.of(context);
-    if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.MISSED) {
+    if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.missed) {
       return MissedEntityWidget();
     }
-    if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.DIVIDER) {
+    if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.divider) {
       return Divider();
     }
-    if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.SECTION) {
+    if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.section) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

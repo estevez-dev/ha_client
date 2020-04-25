@@ -16,7 +16,7 @@ class EntityName extends StatelessWidget {
     final EntityWrapper entityWrapper = EntityModel.of(context).entityWrapper;
     TextStyle tStyle;
     if (textStyle == null) {
-      if (entityWrapper.entity.statelessType == StatelessEntityType.WEBLINK) {
+      if (entityWrapper.entity.statelessType == StatelessEntityType.webLink) {
         tStyle = HAClientTheme().getLinkTextStyle(context);
       } else {
         tStyle = Theme.of(context).textTheme.body1;

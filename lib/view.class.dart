@@ -66,72 +66,73 @@ class HAView {
           card.childCards = _createLovelaceCards(rawCardInfo["cards"], depth + 1);
         }
         var rawEntities = rawCard["entities"] ?? rawCardInfo["entities"];
-        rawEntities?.forEach((rawEntity) {
-          if (rawEntity is String) {
-            if (HomeAssistant().entities.isExist(rawEntity)) {
-              card.entities.add(EntityWrapper(entity: HomeAssistant().entities.get(rawEntity)));
+        var rawSingleEntity = rawCard["entity"] ?? rawCardInfo["entity"];
+        if (rawEntities != null) {
+          rawEntities.forEach((rawEntity) {
+            if (rawEntity is String) {
+              if (HomeAssistant().entities.isExist(rawEntity)) {
+                card.entities.add(EntityWrapper(entity: HomeAssistant().entities.get(rawEntity)));
+              } else {
+                card.entities.add(EntityWrapper(entity: Entity.missed(rawEntity)));
+              }
             } else {
-              card.entities.add(EntityWrapper(entity: Entity.missed(rawEntity)));
-            }
-          } else {
-            if (rawEntity["type"] == "divider") {
-              card.entities.add(EntityWrapper(entity: Entity.divider()));
-            } else if (rawEntity["type"] == "section") {
-              card.entities.add(EntityWrapper(entity: Entity.section(rawEntity["label"] ?? "")));
-            } else if (rawEntity["type"] == "call-service") {
-              Map uiActionData = {
-                "tap_action": {
-                  "action": EntityUIAction.callService,
-                  "service": rawEntity["service"],
-                  "service_data": rawEntity["service_data"]
-                },
-                "hold_action": EntityUIAction.none
-              };
-              card.entities.add(EntityWrapper(
+              if (rawEntity["type"] == "divider") {
+                card.entities.add(EntityWrapper(entity: Entity.divider()));
+              } else if (rawEntity["type"] == "section") {
+                card.entities.add(EntityWrapper(entity: Entity.section(rawEntity["label"] ?? "")));
+              } else if (rawEntity["type"] == "call-service") {
+                Map uiActionData = {
+                  "tap_action": {
+                    "action": EntityUIAction.callService,
+                    "service": rawEntity["service"],
+                    "service_data": rawEntity["service_data"]
+                  },
+                  "hold_action": EntityUIAction.none
+                };
+                card.entities.add(EntityWrapper(
                   entity: Entity.callService(
                     icon: rawEntity["icon"],
                     name: rawEntity["name"],
                     service: rawEntity["service"],
                     actionName: rawEntity["action_name"]
                   ),
-                uiAction: EntityUIAction(rawEntityData: uiActionData)
-              )
-              );
-            } else if (rawEntity["type"] == "weblink") {
-              Map uiActionData = {
-                "tap_action": {
-                  "action": EntityUIAction.navigate,
-                  "service": rawEntity["url"]
-                },
-                "hold_action": EntityUIAction.none
-              };
-              card.entities.add(EntityWrapper(
-                  entity: Entity.weblink(
-                      icon: rawEntity["icon"],
-                      name: rawEntity["name"],
-                      url: rawEntity["url"]
-                  ),
                   uiAction: EntityUIAction(rawEntityData: uiActionData)
-              )
-              );
-            } else if (HomeAssistant().entities.isExist(rawEntity["entity"])) {
-              Entity e = HomeAssistant().entities.get(rawEntity["entity"]);
-              card.entities.add(
-                  EntityWrapper(
-                      entity: e,
-                      overrideName: rawEntity["name"],
-                      overrideIcon: rawEntity["icon"],
-                      stateFilter: rawEntity['state_filter'] ?? [],
-                      uiAction: EntityUIAction(rawEntityData: rawEntity)
-                  )
-              );
-            } else {
-              card.entities.add(EntityWrapper(entity: Entity.missed(rawEntity["entity"])));
+                )
+                );
+              } else if (rawEntity["type"] == "weblink") {
+                Map uiActionData = {
+                  "tap_action": {
+                    "action": EntityUIAction.navigate,
+                    "service": rawEntity["url"]
+                  },
+                  "hold_action": EntityUIAction.none
+                };
+                card.entities.add(EntityWrapper(
+                    entity: Entity.weblink(
+                        icon: rawEntity["icon"],
+                        name: rawEntity["name"],
+                        url: rawEntity["url"]
+                    ),
+                    uiAction: EntityUIAction(rawEntityData: uiActionData)
+                )
+                );
+              } else if (HomeAssistant().entities.isExist(rawEntity["entity"])) {
+                Entity e = HomeAssistant().entities.get(rawEntity["entity"]);
+                card.entities.add(
+                    EntityWrapper(
+                        entity: e,
+                        overrideName: rawEntity["name"],
+                        overrideIcon: rawEntity["icon"],
+                        stateFilter: rawEntity['state_filter'] ?? [],
+                        uiAction: EntityUIAction(rawEntityData: rawEntity)
+                    )
+                );
+              } else {
+                card.entities.add(EntityWrapper(entity: Entity.missed(rawEntity["entity"])));
+              }
             }
-          }
-        });
-        var rawSingleEntity = rawCard["entity"] ?? rawCardInfo["entity"];
-        if (rawSingleEntity != null) {
+          });
+        } else if (rawSingleEntity != null) {
           var en = rawSingleEntity;
           if (en is String) {
             if (HomeAssistant().entities.isExist(en)) {
@@ -159,6 +160,16 @@ class HAView {
               card.linkedEntityWrapper = EntityWrapper(entity: Entity.missed(en["entity"]));
             }
           }
+        } else {
+          card.linkedEntityWrapper = EntityWrapper(
+            entity: Entity.ghost(
+              card.name,
+              card.icon,
+            ),
+            uiAction: EntityUIAction(
+              rawEntityData: rawCardInfo
+            )
+          );
         }
         result.add(card);
       } catch (e) {
