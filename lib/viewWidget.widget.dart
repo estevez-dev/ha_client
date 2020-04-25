@@ -21,16 +21,11 @@ class ViewWidget extends StatelessWidget {
       if (this.view.cards.isNotEmpty) {
         cardsContainer = DynamicMultiColumnLayout(
           minColumnWidth: Sizes.minViewColumnWidth,
-          children: this.view.cards.map((card) => card.build(context)).toList(),
+          children: this.view.cards.map((card) => LovelaceCard(card: card)).toList(),
         );
       } else {
         cardsContainer = Container();
       }
-      return ListView(
-          shrinkWrap: false,
-          padding: EdgeInsets.all(0),
-          children: this.view.cards.map((card) => card.build(context)).toList()
-      );
       return ListView(
           shrinkWrap: true,
           padding: EdgeInsets.all(0),
@@ -44,7 +39,7 @@ class ViewWidget extends StatelessWidget {
 
   Widget _buildPanelChild(BuildContext context) {
     if (this.view.cards != null && this.view.cards.isNotEmpty) {
-      return this.view.cards[0].build(context);
+      return LovelaceCard(card: this.view.cards[0]);
     } else {
       return Container(width: 0, height: 0);
     }

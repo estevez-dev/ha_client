@@ -27,7 +27,7 @@ class _TimerStateState extends State<TimerState> {
             try {
               int passed = DateTime
                   .now()
-                  .difference(entity._lastUpdated)
+                  .difference(entity.lastUpdatedTimestamp)
                   .inSeconds;
               remaining = Duration(seconds: entity.duration.inSeconds - passed);
             } catch (e) {

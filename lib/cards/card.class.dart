@@ -116,10 +116,4 @@ class HACard {
     }).toList();
   }
 
-  Widget build(BuildContext context) {
-    return CardWidget(
-      card: this,
-    );
-  }
-
 }

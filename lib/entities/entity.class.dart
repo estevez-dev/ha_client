@@ -76,7 +76,7 @@ class Entity {
   String entityPicture;
   String state;
   String displayState;
-  DateTime _lastUpdated;
+  DateTime lastUpdatedTimestamp;
   int statelessType = 0;
 
   List<Entity> childEntities = [];
@@ -144,7 +144,7 @@ class Entity {
 
   Entity.weblink({String url, String name, String icon}) {
     statelessType = StatelessEntityType.WEBLINK;
-    entityId = "custom.custom"; //TODO wtf??
+    entityId = "custom.custom";
     attributes = {"hidden": false, "friendly_name": "${name ?? url}", "icon": "${icon ?? 'mdi:link'}"};
   }
 
@@ -155,7 +155,7 @@ class Entity {
     deviceClass = attributes["device_class"];
     state = rawData["state"] is bool ? (rawData["state"] ? EntityState.on : EntityState.off) : rawData["state"];
     displayState = Entity.StateByDeviceClass["$deviceClass.$state"] ?? (state.toLowerCase() == 'unknown' ? '-' : state);
-    _lastUpdated = DateTime.tryParse(rawData["last_updated"]);
+    lastUpdatedTimestamp = DateTime.tryParse(rawData["last_updated"]);
     entityPicture = _getEntityPictureUrl(webHost);
   }
 
@@ -227,11 +227,11 @@ class Entity {
   }
 
   String _getLastUpdatedFormatted() {
-    if (_lastUpdated == null) {
+    if (lastUpdatedTimestamp == null) {
       return "-";
     } else {
       DateTime now = DateTime.now();
-      Duration d = now.difference(_lastUpdated);
+      Duration d = now.difference(lastUpdatedTimestamp);
       String text;
       int v;
       if (d.inDays == 0) {

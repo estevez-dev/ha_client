@@ -5,8 +5,9 @@ class CardHeader extends StatelessWidget {
   final String name;
   final Widget trailing;
   final Widget subtitle;
+  final double emptyPadding;
 
-  const CardHeader({Key key, this.name, this.trailing, this.subtitle}) : super(key: key);
+  const CardHeader({Key key, this.name, this.emptyPadding: 0, this.trailing, this.subtitle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class CardHeader extends StatelessWidget {
             style: Theme.of(context).textTheme.headline),
       );
     } else {
-      result = new Container(width: 0.0, height: Sizes.rowPadding);
+      result = new Container(width: 0.0, height: emptyPadding);
     }
     return result;
   }

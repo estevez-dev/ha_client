@@ -12,11 +12,11 @@ class EntityModel extends InheritedWidget {
   final bool handleTap;
 
   static EntityModel of(BuildContext context) {
-    return context.inheritFromWidgetOfExactType(EntityModel);
+    return context.dependOnInheritedWidgetOfExactType<EntityModel>();
   }
 
   @override
-  bool updateShouldNotify(InheritedWidget oldWidget) {
-    return true;
+  bool updateShouldNotify(EntityModel oldWidget) {
+    return entityWrapper.entity.lastUpdatedTimestamp != oldWidget.entityWrapper.entity.lastUpdatedTimestamp;
   }
 }
