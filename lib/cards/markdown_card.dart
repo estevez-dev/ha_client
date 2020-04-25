@@ -9,6 +9,8 @@ class MarkdownCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (card.content == null) {
       return Container(height: 0.0, width: 0.0,);
+    } else if (card.content == '***') {
+      return Container(height: Sizes.rowPadding, width: 0.0,);
     }
     return CardWrapper(
         child: Padding(
