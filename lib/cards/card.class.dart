@@ -7,6 +7,7 @@ class HACard {
   String name;
   String id;
   String type;
+  String icon;
   bool showName;
   bool showState;
   bool showEmpty;
@@ -40,6 +41,7 @@ class HACard {
     this.max,
     this.depth: 1,
     this.severity,
+    this.icon,
     @required this.type
   }) {
     if (this.columnsCount <= 0) {

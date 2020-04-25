@@ -4,10 +4,11 @@ class CardHeader extends StatelessWidget {
 
   final String name;
   final Widget trailing;
+  final Widget leading;
   final Widget subtitle;
   final double emptyPadding;
 
-  const CardHeader({Key key, this.name, this.emptyPadding: 0, this.trailing, this.subtitle}) : super(key: key);
+  const CardHeader({Key key, this.name, this.leading, this.emptyPadding: 0, this.trailing, this.subtitle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,7 @@ class CardHeader extends StatelessWidget {
     if ((name != null) && (name.trim().length > 0)) {
       result = new ListTile(
         trailing: trailing,
+        leading: leading,
         subtitle: subtitle,
         title: Text("$name",
             textAlign: TextAlign.left,

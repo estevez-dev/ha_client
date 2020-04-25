@@ -21,23 +21,28 @@ class EntitiesCard extends StatelessWidget {
           return en.entity.entityId;
       }).toList();
       headerSwitch = Switch(
-            value: headerToggleVal,
-            onChanged: (val) {
-              if (entitiesToToggle.isNotEmpty) {
-                ConnectionManager().callService(
-                  domain: "homeassistant",
-                  service: val ? "turn_on" : "turn_off",
-                  entityId: entitiesToToggle
-                );
-              }
-            },
-          );
+        value: headerToggleVal,
+        onChanged: (val) {
+          if (entitiesToToggle.isNotEmpty) {
+            ConnectionManager().callService(
+              domain: "homeassistant",
+              service: val ? "turn_on" : "turn_off",
+              entityId: entitiesToToggle
+            );
+          }
+        },
+      );
     }
     body.add(
       CardHeader(
         name: card.name,
         trailing: headerSwitch,
-        emptyPadding: Sizes.rowPadding
+        emptyPadding: Sizes.rowPadding,
+        leading: card.icon != null ? Icon(
+          MaterialDesignIcons.getIconDataFromIconName(card.icon),
+          size: Sizes.iconSize,
+          color: Theme.of(context).textTheme.headline.color
+        ) : null,
       )
     );
     body.addAll(
