@@ -167,7 +167,7 @@ class CardWidget extends StatelessWidget {
           );
       })  
     );
-    return Card(
+    return LovelaceCard(
         child: Padding(
           padding: EdgeInsets.only(right: Sizes.rightWidgetPadding, left: Sizes.leftWidgetPadding),
           child: Column(
@@ -186,7 +186,7 @@ class CardWidget extends StatelessWidget {
     List<Widget> body = [];
     body.add(CardHeader(name: card.name));
     body.add(MarkdownBody(data: card.content));
-    return Card(
+    return LovelaceCard(
         child: Padding(
           padding: EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, Sizes.rowPadding),
           child: new Column(mainAxisSize: MainAxisSize.min, children: body),
@@ -226,7 +226,7 @@ class CardWidget extends StatelessWidget {
           states: card.states,
         )
     );
-    return Card(
+    return LovelaceCard(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             handleTap: null,
@@ -278,7 +278,7 @@ class CardWidget extends StatelessWidget {
         )
       );
     }
-    return Card(
+    return LovelaceCard(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -295,7 +295,7 @@ class CardWidget extends StatelessWidget {
   }
 
   Widget _buildMediaControlsCard(BuildContext context) {
-    return Card(
+    return LovelaceCard(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             handleTap: null,
@@ -307,7 +307,7 @@ class CardWidget extends StatelessWidget {
   Widget _buildEntityButtonCard(BuildContext context) {
     card.linkedEntityWrapper.overrideName = card.name?.toUpperCase() ??
         card.linkedEntityWrapper.displayName.toUpperCase();
-    return Card(
+    return LovelaceCard(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             child: EntityButtonCardBody(
@@ -324,7 +324,7 @@ class CardWidget extends StatelessWidget {
         card.linkedEntityWrapper.displayName;
     card.linkedEntityWrapper.unitOfMeasurementOverride = card.unit ??
         card.linkedEntityWrapper.unitOfMeasurement;
-    return Card(
+    return LovelaceCard(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             child: GaugeCardBody(
@@ -341,7 +341,7 @@ class CardWidget extends StatelessWidget {
   Widget _buildLightCard(BuildContext context) {
     card.linkedEntityWrapper.overrideName = card.name ??
         card.linkedEntityWrapper.displayName;
-    return Card(
+    return LovelaceCard(
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             child: LightCardBody(
@@ -382,7 +382,7 @@ class CardWidget extends StatelessWidget {
       ]);
     }
     body.addAll(result);
-    return Card(
+    return LovelaceCard(
         child: new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

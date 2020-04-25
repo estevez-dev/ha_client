@@ -138,6 +138,7 @@ part 'types/ha_error.dart';
 part 'types/event_bus_events.dart';
 part 'cards/widgets/gauge_card_body.dart';
 part 'cards/widgets/light_card_body.dart';
+part 'cards/widgets/lovelace_card.dart';
 part 'pages/play_media.page.dart';
 part 'entities/entity_page_layout.widget.dart';
 part 'entities/media_player/widgets/media_player_seek_bar.widget.dart';
