@@ -155,21 +155,26 @@ class CardWidget extends StatelessWidget {
         trailing: headerSwitch 
       )
     );
-    entitiesToShow.forEach((EntityWrapper entity) {
-      body.add(
-          Padding(
+    body.addAll(
+      entitiesToShow.map((EntityWrapper entity) {
+        return Padding(
             padding: EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
             child: EntityModel(
                 entityWrapper: entity,
                 handleTap: true,
                 child: entity.entity.buildDefaultWidget(context)
             ),
-          ));
-    });
+          );
+      })  
+    );
     return Card(
         child: Padding(
           padding: EdgeInsets.only(right: Sizes.rightWidgetPadding, left: Sizes.leftWidgetPadding),
-          child: Column(mainAxisSize: MainAxisSize.min, children: body),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: body
+          ),
         )
     );
   }
