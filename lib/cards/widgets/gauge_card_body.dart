@@ -94,75 +94,61 @@ class GaugeCardBody extends StatelessWidget {
       onDoubleTap: () => entityWrapper.handleDoubleTap(),
       child: AspectRatio(
         aspectRatio: 2,
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            double fontSizeFactor;
-            if (constraints.maxWidth > 300.0) {
-              fontSizeFactor = 1.6;
-            } else if (constraints.maxWidth > 150.0) {
-              fontSizeFactor = 1;
-            } else if (constraints.maxWidth > 100.0)  {
-              fontSizeFactor = 0.6;
-            } else {
-              fontSizeFactor = 0.4;
-            }
-            return SfRadialGauge(
-              axes: <RadialAxis>[
-                RadialAxis(
-                  maximum: max.toDouble(),
-                  minimum: min.toDouble(),
-                  showLabels: false,
-                  useRangeColorForAxis: true,
-                  showTicks: false,
-                  canScaleToFit: true,
-                  ranges: ranges,
-                  axisLineStyle: AxisLineStyle(
-                    thickness: 0.3,
-                    thicknessUnit: GaugeSizeUnit.factor,
-                    color: Colors.transparent
-                  ),
-                  annotations: <GaugeAnnotation>[
-                    GaugeAnnotation(
-                      angle: -90,
-                      positionFactor: 1.3,
-                      //verticalAlignment: GaugeAlignment.far,
-                      widget: EntityName(
-                        textStyle: Theme.of(context).textTheme.body1.copyWith(
-                          fontSize: Theme.of(context).textTheme.body1.fontSize * fontSizeFactor
-                        ),
-                      ),
+        child: SfRadialGauge(
+          axes: <RadialAxis>[
+            RadialAxis(
+              maximum: max.toDouble(),
+              minimum: min.toDouble(),
+              showLabels: false,
+              useRangeColorForAxis: true,
+              showTicks: false,
+              canScaleToFit: true,
+              ranges: ranges,
+              axisLineStyle: AxisLineStyle(
+                thickness: 0.3,
+                thicknessUnit: GaugeSizeUnit.factor,
+                color: Colors.transparent
+              ),
+              annotations: <GaugeAnnotation>[
+                GaugeAnnotation(
+                  angle: -90,
+                  positionFactor: 1.3,
+                  //verticalAlignment: GaugeAlignment.far,
+                  widget: EntityName(
+                    textStyle: Theme.of(context).textTheme.body1.copyWith(
+                      fontSize: Theme.of(context).textTheme.body1.fontSize
                     ),
-                    GaugeAnnotation(
-                      angle: 180,
-                      positionFactor: 0,
-                      verticalAlignment: GaugeAlignment.center,
-                      widget: SimpleEntityState(
-                        expanded: false,
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        textStyle: Theme.of(context).textTheme.title.copyWith(
-                          fontSize: Theme.of(context).textTheme.title.fontSize * fontSizeFactor,
-                        ),
-                      ),
-                    )
-                  ],
-                  startAngle: 180,
-                  endAngle: 0,
-                  pointers: <GaugePointer>[
-                    RangePointer(
-                      value: fixedValue,
-                      sizeUnit: GaugeSizeUnit.factor,
-                      width: 0.3,
-                      color: currentColor,
-                      enableAnimation: true,
-                      animationType: AnimationType.bounceOut,
-                    )
-                  ]
+                  ),
+                ),
+                GaugeAnnotation(
+                  angle: 180,
+                  positionFactor: 0,
+                  verticalAlignment: GaugeAlignment.center,
+                  widget: SimpleEntityState(
+                    expanded: false,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    textStyle: Theme.of(context).textTheme.title.copyWith(
+                      fontSize: Theme.of(context).textTheme.title.fontSize,
+                    ),
+                  ),
                 )
               ],
-            );
-          },
-        ),
+              startAngle: 180,
+              endAngle: 0,
+              pointers: <GaugePointer>[
+                RangePointer(
+                  value: fixedValue,
+                  sizeUnit: GaugeSizeUnit.factor,
+                  width: 0.3,
+                  color: currentColor,
+                  enableAnimation: true,
+                  animationType: AnimationType.bounceOut,
+                )
+              ]
+            )
+          ],
+        )
       ),
     );
   }

@@ -87,12 +87,14 @@ class CardWidget extends StatelessWidget {
               child: childCard.build(context),
             )
           ).toList();
-          return Row(
+          return IntrinsicHeight(
+            child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: children,
-            );
+            ),
+          );
         }
         return Container(height: 0.0, width: 0.0,);
       }
@@ -237,52 +239,48 @@ class CardWidget extends StatelessWidget {
     if (entitiesToShow.isEmpty && !card.showEmpty) {
       return Container(height: 0.0, width: 0.0,);
     }
-    List<Widget> rows = [];
-    rows.add(CardHeader(name: card.name));
-
-    int columnsCount = entitiesToShow.length >= card.columnsCount ? card.columnsCount : entitiesToShow.length;
-
-    rows.add(
-        Padding(
-          padding: EdgeInsets.only(bottom: Sizes.rowPadding, top: Sizes.rowPadding),
-          child: FractionallySizedBox(
-            widthFactor: 1,
-            child: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  List<Widget> buttons = [];
-                  double buttonWidth = constraints.maxWidth / columnsCount;
-                  entitiesToShow.forEach((EntityWrapper entity) {
-                    buttons.add(
-                        SizedBox(
-                          width: buttonWidth,
-                          child: EntityModel(
-                              entityWrapper: entity,
-                              child: GlanceCardEntityContainer(
-                                showName: card.showName,
-                                showState: card.showState,
-                              ),
-                              handleTap: true
-                          ),
-                        )
-                    );
-                  });
-                  return Wrap(
-                    //spacing: 5.0,
-                    //alignment: WrapAlignment.spaceEvenly,
-                    runSpacing: Sizes.doubleRowPadding,
-                    children: buttons,
-                  );
-                }
-            ),
-          ),
+    int length = entitiesToShow.length;
+    int columnsCount = length >= card.columnsCount ? card.columnsCount : entitiesToShow.length;
+    int rowsCount = (length / columnsCount).round();
+    List<TableRow> rows = [];
+    for (int i = 0; i < rowsCount; i++) {
+      int start = i*columnsCount;
+      int end = start + math.min(columnsCount, length - start);
+      List<Widget> rowChildren = [];
+      rowChildren.addAll(entitiesToShow.sublist(
+          start, end
+        ).map(
+          (EntityWrapper entity){
+            return EntityModel(
+                entityWrapper: entity,
+                child: GlanceCardEntityContainer(
+                  showName: card.showName,
+                  showState: card.showState,
+                ),
+                handleTap: true
+            );
+          }
+        ).toList()
+      );
+      while (rowChildren.length < columnsCount) {
+        rowChildren.add(
+          Container()
+        );
+      }
+      rows.add(
+        TableRow(
+          children: rowChildren
         )
-    );
+      );
+    }
 
     return Card(
-        child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: rows
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: Sizes.rowPadding),
+        child: Table(
+          children: rows
         )
+      )
     );
   }
 
@@ -303,6 +301,7 @@ class CardWidget extends StatelessWidget {
         child: EntityModel(
             entityWrapper: card.linkedEntityWrapper,
             child: EntityButtonCardBody(
+              depth: card.depth,
               showName: card.showName,
             ),
             handleTap: true

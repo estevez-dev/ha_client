@@ -3,9 +3,10 @@ part of '../../main.dart';
 class EntityButtonCardBody extends StatelessWidget {
 
   final bool showName;
+  final int depth;
 
   EntityButtonCardBody({
-    Key key, this.showName: true,
+    Key key, this.showName: true, @required this.depth
   }) : super(key: key);
 
   @override
@@ -17,27 +18,20 @@ class EntityButtonCardBody extends StatelessWidget {
     if (entityWrapper.entity.statelessType > StatelessEntityType.MISSED) {
       return Container(width: 0.0, height: 0.0,);
     }
-
+    double widthBase =  math.min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height) / 6;
     return InkWell(
       onTap: () => entityWrapper.handleTap(),
       onLongPress: () => entityWrapper.handleHold(),
       onDoubleTap: () => entityWrapper.handleDoubleTap(),
-      child: FractionallySizedBox(
-        widthFactor: 1,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  return EntityIcon(
-                    padding: EdgeInsets.fromLTRB(2.0, 6.0, 2.0, 2.0),
-                    size: constraints.maxWidth / 2.5,
-                  );
-                }
-            ),
-            _buildName()
-          ],
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          EntityIcon(
+            padding: EdgeInsets.fromLTRB(2.0, 6.0, 2.0, 2.0),
+            size: widthBase / (depth * 0.5),
+          ),
+          _buildName()
+        ],
       ),
     );
   }

@@ -33,10 +33,10 @@ class HAView {
         });
       }
 
-      cards.addAll(_createLovelaceCards(rawData["cards"] ?? []));
+      cards.addAll(_createLovelaceCards(rawData["cards"] ?? [], 1));
   }
 
-  List<HACard> _createLovelaceCards(List rawCards) {
+  List<HACard> _createLovelaceCards(List rawCards, int depth) {
     List<HACard> result = [];
     rawCards.forEach((rawCard){
       try {
@@ -58,10 +58,11 @@ class HAView {
             min: rawCardInfo['min'] ?? 0,
             max: rawCardInfo['max'] ?? 100,
             unit: rawCardInfo['unit'],
+            depth: depth,
             severity: rawCardInfo['severity']
         );
         if (rawCardInfo["cards"] != null) {
-          card.childCards = _createLovelaceCards(rawCardInfo["cards"]);
+          card.childCards = _createLovelaceCards(rawCardInfo["cards"], depth + 1);
         }
         var rawEntities = rawCard["entities"] ?? rawCardInfo["entities"];
         rawEntities?.forEach((rawEntity) {

@@ -27,6 +27,11 @@ class ViewWidget extends StatelessWidget {
         cardsContainer = Container();
       }
       return ListView(
+          shrinkWrap: false,
+          padding: EdgeInsets.all(0),
+          children: this.view.cards.map((card) => card.build(context)).toList()
+      );
+      return ListView(
           shrinkWrap: true,
           padding: EdgeInsets.all(0),
           children: <Widget>[

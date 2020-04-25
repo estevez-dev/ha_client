@@ -19,6 +19,7 @@ class HACard {
   String unit;
   int min;
   int max;
+  int depth;
   Map severity;
 
   HACard({
@@ -37,6 +38,7 @@ class HACard {
     this.unit,
     this.min,
     this.max,
+    this.depth: 1,
     this.severity,
     @required this.type
   }) {
