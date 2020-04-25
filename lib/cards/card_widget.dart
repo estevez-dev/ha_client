@@ -273,13 +273,18 @@ class CardWidget extends StatelessWidget {
         )
       );
     }
-
     return Card(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: Sizes.rowPadding),
-        child: Table(
-          children: rows
-        )
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          CardHeader(name: card.name),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: Sizes.rowPadding),
+            child: Table(
+              children: rows
+            )
+          )
+        ],
       )
     );
   }
