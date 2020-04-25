@@ -1,6 +1,6 @@
 part of '../main.dart';
 
-class UniversalSlider extends StatelessWidget {
+class UniversalSlider extends StatefulWidget {
 
   final onChanged;
   final onChangeEnd;
@@ -15,32 +15,68 @@ class UniversalSlider extends StatelessWidget {
   const UniversalSlider({Key key, this.onChanged, this.onChangeEnd, this.leading, this.closing, this.title, this.min, this.max, this.value, this.padding: const EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, 0.0)}) : super(key: key);
 
   @override
+  State<StatefulWidget> createState() {
+    return UniversalSliderState();
+  }
+
+}
+
+class UniversalSliderState extends State<UniversalSlider> {
+
+  double _value;
+  bool _changeStarted = false;
+
+  @override
+  void initState() {
+    _value = widget.value;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     List <Widget> row = [];
-    if (leading != null) {
-      row.add(leading);
+    if (widget.leading != null) {
+      row.add(widget.leading);
     }
     row.add(
-        Flexible(
-          child: Slider(
-            value: value,
-            min: min,
-            max: max,
-            onChanged: (value) => onChanged(value),
-            onChangeEnd: (value) => onChangeEnd(value),
-          ),
-        )
+      Flexible(
+        child: Slider(
+          value: _value,
+          min: widget.min,
+          max: widget.max,
+          onChangeStart: (_) {
+            _changeStarted = true; 
+          },
+          onChanged: (value) {
+            setState(() {
+              _value = value;
+            });
+            widget.onChanged(value);
+          },
+          onChangeEnd: (value) {
+            _changeStarted = false;
+            Timer(Duration(milliseconds: 500), () {
+              if (!_changeStarted) {
+                setState(() {
+                  _value = value;
+                });
+                widget.onChangeEnd(value);
+              }
+            });
+          }
+        ),
+      )
     );
-    if (closing != null) {
-      row.add(closing);
+    if (widget.closing != null) {
+      row.add(widget.closing);
     }
     return Padding(
-      padding: padding,
+      padding: widget.padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(height: Sizes.rowPadding,),
-          Text("$title"),
+          Text('${widget.title}'),
           Container(height: Sizes.rowPadding,),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -51,5 +87,4 @@ class UniversalSlider extends StatelessWidget {
       ),
     );
   }
-
 }
