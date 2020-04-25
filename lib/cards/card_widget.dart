@@ -325,6 +325,7 @@ class CardWidget extends StatelessWidget {
             child: GaugeCardBody(
               min: card.min,
               max: card.max,
+              depth: card.depth,
               severity: card.severity,
             ),
             handleTap: true

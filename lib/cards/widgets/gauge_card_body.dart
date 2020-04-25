@@ -5,8 +5,9 @@ class GaugeCardBody extends StatelessWidget {
   final int min;
   final int max;
   final Map severity;
+  final int depth;
 
-  GaugeCardBody({Key key, this.min, this.max, this.severity}) : super(key: key);
+  GaugeCardBody({Key key, this.min, this.max, this.severity, @required this.depth}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +89,7 @@ class GaugeCardBody extends StatelessWidget {
       ];
     }
 
+    double fontSize = 30 / depth;
     return InkWell(
       onTap: () => entityWrapper.handleTap(),
       onLongPress: () => entityWrapper.handleHold(),
@@ -116,7 +118,7 @@ class GaugeCardBody extends StatelessWidget {
                   //verticalAlignment: GaugeAlignment.far,
                   widget: EntityName(
                     textStyle: Theme.of(context).textTheme.body1.copyWith(
-                      fontSize: Theme.of(context).textTheme.body1.fontSize
+                      fontSize: fontSize
                     ),
                   ),
                 ),
@@ -129,7 +131,7 @@ class GaugeCardBody extends StatelessWidget {
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     textStyle: Theme.of(context).textTheme.title.copyWith(
-                      fontSize: Theme.of(context).textTheme.title.fontSize,
+                      fontSize: fontSize,
                     ),
                   ),
                 )
