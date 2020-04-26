@@ -2,18 +2,24 @@ part of '../main.dart';
 
 class GaugeCard extends StatelessWidget {
 
-  final HACard card;
+  final GaugeCardData card;
 
   GaugeCard({Key key, this.card}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    EntityWrapper entityWrapper = card.linkedEntityWrapper;
+    EntityWrapper entityWrapper = card.entity;
+    if (entityWrapper.entity.statelessType == StatelessEntityType.missed) {
+      return EntityModel(
+        entityWrapper: card.entity,
+        child: MissedEntityWidget(),
+        handleTap: false,
+      );
+    }
     entityWrapper.overrideName = card.name ??
         entityWrapper.displayName;
     entityWrapper.unitOfMeasurementOverride = card.unit ??
         entityWrapper.unitOfMeasurement;
-
     double fixedValue;
     double value = entityWrapper.entity.doubleState;
     if (value > card.max) {

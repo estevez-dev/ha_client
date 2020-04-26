@@ -1,7 +1,7 @@
 part of '../main.dart';
 
 class EntitiesCard extends StatelessWidget {
-  final HACard card;
+  final EntitiesCardData card;
 
   const EntitiesCard({Key key, this.card}) : super(key: key);
 
@@ -35,7 +35,7 @@ class EntitiesCard extends StatelessWidget {
     }
     body.add(
       CardHeader(
-        name: card.name,
+        name: card.title,
         trailing: headerSwitch,
         emptyPadding: Sizes.rowPadding,
         leading: card.icon != null ? Icon(
@@ -64,10 +64,12 @@ class EntitiesCard extends StatelessWidget {
             left: Sizes.leftWidgetPadding,
             bottom: Sizes.rowPadding,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: body
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: body
+            )
           ),
         )
     );

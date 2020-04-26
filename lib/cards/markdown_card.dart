@@ -1,7 +1,7 @@
 part of '../main.dart';
 
 class MarkdownCard extends StatelessWidget {
-  final HACard card;
+  final MarkdownCardData card;
 
   const MarkdownCard({Key key, this.card}) : super(key: key);
 
@@ -19,7 +19,7 @@ class MarkdownCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              CardHeader(name: card.name),
+              CardHeader(name: card.title),
               MarkdownBody(
                 data: card.content,
               )

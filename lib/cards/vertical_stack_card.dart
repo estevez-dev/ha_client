@@ -1,7 +1,7 @@
 part of '../main.dart';
 
 class VerticalStackCard extends StatelessWidget {
-  final HACard card;
+  final VerticalStackCardData card;
 
   const VerticalStackCard({Key key, this.card}) : super(key: key);
 
@@ -11,8 +11,8 @@ class VerticalStackCard extends StatelessWidget {
       return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
-        children: card.childCards.map(
-          (childCard) => LovelaceCard(card: childCard)
+        children: card.childCards.map<Widget>(
+          (childCard) => childCard.buildCardWidget()
         ).toList(),
       );
     }

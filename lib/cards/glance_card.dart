@@ -1,7 +1,7 @@
 part of '../main.dart';
 
 class GlanceCard extends StatelessWidget {
-  final HACard card;
+  final GlanceCardData card;
 
   const GlanceCard({Key key, this.card}) : super(key: key);
 
@@ -12,8 +12,15 @@ class GlanceCard extends StatelessWidget {
       return Container(height: 0.0, width: 0.0,);
     }
     int length = entitiesToShow.length;
-    int columnsCount = length >= card.columnsCount ? card.columnsCount : entitiesToShow.length;
-    int rowsCount = (length / columnsCount).round();
+    int rowsCount;
+    int columnsCount;
+    if (length == 0) {
+      columnsCount = 0;
+      rowsCount = 0;
+    } else {
+      columnsCount = length >= card.columnsCount ? card.columnsCount : entitiesToShow.length;
+      rowsCount = (length / columnsCount).round();
+    }
     List<TableRow> rows = [];
     for (int i = 0; i < rowsCount; i++) {
       int start = i*columnsCount;
@@ -46,7 +53,7 @@ class GlanceCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          CardHeader(name: card.name),
+          CardHeader(name: card.title),
           Padding(
             padding: EdgeInsets.symmetric(vertical: Sizes.rowPadding),
             child: Table(

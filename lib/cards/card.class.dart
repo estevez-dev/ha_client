@@ -1,135 +1,17 @@
 part of '../main.dart';
 
-class HACard {
-  List<EntityWrapper> entities = [];
-  List<HACard> childCards = [];
-  EntityWrapper linkedEntityWrapper;
-  String name;
-  String id;
-  String type;
-  String icon;
-  bool showName;
-  bool showState;
-  bool showEmpty;
-  bool showHeaderToggle;
-  int columnsCount;
-  List stateFilter;
-  List states;
-  List conditions;
-  String content;
-  String unit;
-  int min;
-  int max;
-  int depth;
-  Map severity;
-  EntityUIAction action;
-
-  HACard({
-    this.name,
-    this.id,
-    this.linkedEntityWrapper,
-    this.columnsCount: 4,
-    this.showName: true,
-    this.showHeaderToggle: true,
-    this.showState: true,
-    this.stateFilter: const [],
-    this.showEmpty: true,
-    this.content,
-    this.states,
-    this.conditions: const [],
-    this.unit,
-    this.min,
-    this.max,
-    this.depth: 1,
-    this.severity,
-    this.icon,
-    @required this.type
-  }) {
-    if (this.columnsCount <= 0) {
-      this.columnsCount = 4;
-    }
-  }
-
-  List<EntityWrapper> getEntitiesToShow() {
-    return entities.where((entityWrapper) {
-      if (HomeAssistant().autoUi && entityWrapper.entity.isHidden) {
-        return false;
-      }
-      List currentStateFilter;
-      if (entityWrapper.stateFilter != null && entityWrapper.stateFilter.isNotEmpty) {
-        currentStateFilter = entityWrapper.stateFilter;
-      } else {
-        currentStateFilter = stateFilter;
-      }
-      bool showByFilter = currentStateFilter.isEmpty;
-      for (var allowedState in currentStateFilter) {
-        if (allowedState is String && allowedState == entityWrapper.entity.state) {
-          showByFilter = true;
-          break;
-        } else if (allowedState is Map) {
-          try {
-            var tmpVal = allowedState['attribute'] != null ? entityWrapper.entity.getAttribute(allowedState['attribute']) : entityWrapper.entity.state;
-            var valToCompareWith = allowedState['value'];
-            var valToCompare;
-            if (valToCompareWith is! String && tmpVal is String) {
-              valToCompare = double.tryParse(tmpVal);
-            } else {
-              valToCompare = tmpVal;
-            }
-            if (valToCompare != null) {
-              bool result;
-              switch (allowedState['operator']) {
-                case '<=': { result = valToCompare <= valToCompareWith;}
-                break;
-                
-                case '<': { result = valToCompare < valToCompareWith;}
-                break;
-
-                case '>=': { result = valToCompare >= valToCompareWith;}
-                break;
-
-                case '>': { result = valToCompare > valToCompareWith;}
-                break;
-
-                case '!=': { result = valToCompare != valToCompareWith;}
-                break;
-
-                case 'regex': {
-                  RegExp regExp = RegExp(valToCompareWith.toString());
-                  result = regExp.hasMatch(valToCompare.toString());
-                }
-                break;
-
-                default: {
-                    result = valToCompare == valToCompareWith;
-                  }
-              }
-              if (result) {
-                showByFilter = true;
-                break;
-              }  
-            }
-          } catch (e) {
-            Logger.e('Error filtering ${entityWrapper.entity.entityId} by $allowedState');
-            Logger.e('$e');
-          }
-        }
-      }
-      return showByFilter;
-    }).toList();
-  }
-}
-
 class CardData {
 
   String type;
   final int depth;
   List<EntityWrapper> entities = [];
   List conditions;
-  bool showEmapty;
+  bool showEmpty;
   List stateFilter;
 
-  factory CardData.parse(Map<String, dynamic> rawData, {depth}) {
+  EntityWrapper get entity => entities.isNotEmpty ? entities[0] : null;
+
+  factory CardData.parse(Map<String, dynamic> rawData, {depth: 1}) {
     switch (rawData['type']) {
       case CardType.ENTITIES:
         return EntitiesCardData(rawData, depth: depth);
@@ -167,17 +49,32 @@ class CardData {
       case CardType.VERTICAL_STACK:
         return VerticalStackCardData(rawData, depth: depth);
         break;
+      case CardType.MARKDOWN:
+        return MarkdownCardData(rawData, depth: depth);
+        break;
+      case CardType.MEDIA_CONTROL:
+        return MediaControlCardData(rawData, depth: depth);
+        break;
       default:
-        //TODO check for 'entity' and 'entities'
-        return EntitiesCardData(rawData, depth: depth);
+        if (rawData.containsKey('entities')) {
+          return EntitiesCardData(rawData, depth: depth);
+        } else if (rawData.containsKey('entity')) {
+          rawData['entities'] = [rawData['entity']];
+          return EntitiesCardData(rawData, depth: depth);
+        }
+        return CardData(rawData, depth: depth);
     }
   }
 
   CardData(Map<String, dynamic> rawData, {this.depth: 1}) {
     type = rawData['type'] ?? CardType.ENTITIES;
-    conditions = rawData['conditions'];
-    showEmapty = rawData['show_empty'] ?? true;
+    conditions = rawData['conditions'] ?? [];
+    showEmpty = rawData['show_empty'] ?? true;
     stateFilter = rawData['state_filter'] ?? [];
+  }
+
+  Widget buildCardWidget() {
+    return UnsupportedCard(card: this);
   }
 
   List<EntityWrapper> getEntitiesToShow() {
@@ -257,6 +154,11 @@ class EntitiesCardData extends CardData {
   String icon;
   bool showHeaderToggle;
   bool stateColor;
+
+  @override
+  Widget buildCardWidget() {
+    return EntitiesCard(card: this);
+  }
   
   EntitiesCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
     //Parsing card data
@@ -338,7 +240,12 @@ class EntitiesCardData extends CardData {
 class AlarmPanelCardData extends CardData {
 
   String name;
-  List<String> states;
+  List<dynamic> states;
+  
+  @override
+  Widget buildCardWidget() {
+    return AlarmPanelCard(card: this);
+  }
   
   AlarmPanelCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
     //Parsing card data
@@ -368,12 +275,17 @@ class ButtonCardData extends CardData {
   bool showName;
   bool showIcon;
   
+  @override
+  Widget buildCardWidget() {
+    return EntityButtonCard(card: this);
+  }
+  
   ButtonCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
     //Parsing card data
     name = rawData['name'];
     icon = rawData['icon'];
-    showName = rawData['show_name'];
-    showIcon = rawData['show_icon'];
+    showName = rawData['show_name'] ?? true;
+    showIcon = rawData['show_icon'] ?? true;
     //Parsing entity
     var entitiId = rawData["entity"];
     if (entitiId != null && entitiId is String) {
@@ -412,6 +324,11 @@ class GaugeCardData extends CardData {
   int min;
   int max;
   Map severity;
+
+  @override
+  Widget buildCardWidget() {
+    return GaugeCard(card: this);
+  }
   
   GaugeCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
     //Parsing card data
@@ -431,6 +348,8 @@ class GaugeCardData extends CardData {
       } else {
         entities.add(EntityWrapper(entity: Entity.missed(entitiId)));
       }
+    } else {
+      entities.add(EntityWrapper(entity: Entity.missed(entitiId)));
     }
     
   }
@@ -445,6 +364,11 @@ class GlanceCardData extends CardData {
   bool showState;
   bool stateColor;
   int columnsCount;
+
+  @override
+  Widget buildCardWidget() {
+    return GlanceCard(card: this);
+  }
   
   GlanceCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
     //Parsing card data
@@ -487,10 +411,15 @@ class GlanceCardData extends CardData {
 class HorizontalStackCardData extends CardData {
 
   List<CardData> childCards;
+
+  @override
+  Widget buildCardWidget() {
+    return HorizontalStackCard(card: this);
+  }
   
   HorizontalStackCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
     if (rawData.containsKey('cards')) {
-      childCards = rawData['cards'].map((childCard) {
+      childCards = rawData['cards'].map<CardData>((childCard) {
         return CardData.parse(childCard, depth: this.depth + 1);
       }).toList();
     } else {
@@ -503,14 +432,59 @@ class HorizontalStackCardData extends CardData {
 class VerticalStackCardData extends CardData {
 
   List<CardData> childCards;
+
+  @override
+  Widget buildCardWidget() {
+    return VerticalStackCard(card: this);
+  }
   
   VerticalStackCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
     if (rawData.containsKey('cards')) {
-      childCards = rawData['cards'].map((childCard) {
+      childCards = rawData['cards'].map<CardData>((childCard) {
         return CardData.parse(childCard);
       }).toList();
     } else {
       childCards = [];
+    }
+  }
+
+}
+
+class MarkdownCardData extends CardData {
+
+  String title;
+  String content;
+
+  @override
+  Widget buildCardWidget() {
+    return MarkdownCard(card: this);
+  }
+  
+  MarkdownCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+    //Parsing card data
+    title = rawData['title'];
+    content = rawData['content'];
+  }
+
+}
+
+class MediaControlCardData extends CardData {
+
+  @override
+  Widget buildCardWidget() {
+    return MediaControlsCard(card: this);
+  }
+
+  MediaControlCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+    var entitiId = rawData["entity"];
+    if (entitiId != null && entitiId is String) {
+      if (HomeAssistant().entities.isExist(entitiId)) {
+        entities.add(EntityWrapper(
+            entity: HomeAssistant().entities.get(entitiId),
+        ));
+      } else {
+        entities.add(EntityWrapper(entity: Entity.missed(entitiId)));
+      }
     }
   }
 

@@ -1,7 +1,7 @@
 part of '../main.dart';
 
 class HorizontalStackCard extends StatelessWidget {
-  final HACard card;
+  final HorizontalStackCardData card;
 
   const HorizontalStackCard({Key key, this.card}) : super(key: key);
 
@@ -11,7 +11,7 @@ class HorizontalStackCard extends StatelessWidget {
       List<Widget> children = [];
       children = card.childCards.map((childCard) => Flexible(
           fit: FlexFit.tight,
-          child: LovelaceCard(card: childCard)
+          child: childCard.buildCardWidget()
         )
       ).toList();
       return IntrinsicHeight(

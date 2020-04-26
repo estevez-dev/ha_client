@@ -2,7 +2,7 @@ part of '../main.dart';
 
 class EntityButtonCard extends StatelessWidget {
 
-  final HACard card;
+  final ButtonCardData card;
 
   EntityButtonCard({
     Key key, this.card
@@ -10,18 +10,20 @@ class EntityButtonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //card.linkedEntityWrapper.overrideName = card.name?.toUpperCase() ??
-    //    card.linkedEntityWrapper.displayName.toUpperCase();
-    EntityWrapper entityWrapper = card.linkedEntityWrapper;
+    EntityWrapper entityWrapper = card.entity;
     if (entityWrapper.entity.statelessType == StatelessEntityType.missed) {
-      return MissedEntityWidget();
+      return EntityModel(
+        entityWrapper: card.entity,
+        child: MissedEntityWidget(),
+        handleTap: false,
+      );
     } else if (entityWrapper.entity.statelessType != StatelessEntityType.ghost && entityWrapper.entity.statelessType != StatelessEntityType.none) {
       return Container(width: 0.0, height: 0.0,);
     }
     double widthBase =  math.min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height) / 6;
     
     Widget buttonIcon;
-    if (entityWrapper.icon == null || entityWrapper.icon.isEmpty) {
+    if (!card.showIcon) {
       buttonIcon = Container(height: Sizes.rowPadding, width: 10);
     } else {
       buttonIcon = EntityIcon(
@@ -32,12 +34,12 @@ class EntityButtonCard extends StatelessWidget {
 
     return CardWrapper(
       child: EntityModel(
-        entityWrapper: card.linkedEntityWrapper,
+        entityWrapper: card.entity,
         child: InkWell(
           onTap: () => entityWrapper.handleTap(),
           onLongPress: () => entityWrapper.handleHold(),
           onDoubleTap: () => entityWrapper.handleDoubleTap(),
-          child: Container(
+          child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
