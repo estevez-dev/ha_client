@@ -118,6 +118,7 @@ class CardType {
   static const ALARM_PANEL = "alarm-panel";
   static const MARKDOWN = "markdown";
   static const LIGHT = "light";
+  static const ENTITY_FILTER = "entity-filter";
 }
 
 class Sizes {
