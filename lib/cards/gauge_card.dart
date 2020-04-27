@@ -97,9 +97,8 @@ class GaugeCard extends StatelessWidget {
       ];
     }
 
-    double fontSize = 30 / card.depth;
-
     return CardWrapper(
+      padding: EdgeInsets.all(4),
       child: EntityModel(
         entityWrapper: entityWrapper,
         child: InkWell(
@@ -107,60 +106,65 @@ class GaugeCard extends StatelessWidget {
           onLongPress: () => entityWrapper.handleHold(),
           onDoubleTap: () => entityWrapper.handleDoubleTap(),
           child: AspectRatio(
-            aspectRatio: 2,
-            child: SfRadialGauge(
-              axes: <RadialAxis>[
-                RadialAxis(
-                  maximum: card.max.toDouble(),
-                  minimum: card.min.toDouble(),
-                  showLabels: false,
-                  useRangeColorForAxis: true,
-                  showTicks: false,
-                  canScaleToFit: true,
-                  ranges: ranges,
-                  axisLineStyle: AxisLineStyle(
-                    thickness: 0.3,
-                    thicknessUnit: GaugeSizeUnit.factor,
-                    color: Colors.transparent
-                  ),
-                  annotations: <GaugeAnnotation>[
-                    GaugeAnnotation(
-                      angle: -90,
-                      positionFactor: 1.3,
-                      //verticalAlignment: GaugeAlignment.far,
-                      widget: EntityName(
-                        textStyle: Theme.of(context).textTheme.body1.copyWith(
-                          fontSize: fontSize
-                        ),
+            aspectRatio: 1.8,
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: <Widget>[
+                SfRadialGauge(
+                  axes: <RadialAxis>[
+                    RadialAxis(
+                      maximum: card.max.toDouble(),
+                      minimum: card.min.toDouble(),
+                      showLabels: false,
+                      useRangeColorForAxis: true,
+                      showTicks: false,
+                      canScaleToFit: true,
+                      ranges: ranges,
+                      axisLineStyle: AxisLineStyle(
+                        thickness: 0.3,
+                        thicknessUnit: GaugeSizeUnit.factor,
+                        color: Colors.transparent
                       ),
-                    ),
-                    GaugeAnnotation(
-                      angle: 180,
-                      positionFactor: 0,
-                      verticalAlignment: GaugeAlignment.center,
-                      widget: SimpleEntityState(
-                        expanded: false,
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        textStyle: Theme.of(context).textTheme.title.copyWith(
-                          fontSize: fontSize,
-                        ),
-                      ),
+                      startAngle: 180,
+                      endAngle: 0,
+                      pointers: <GaugePointer>[
+                        RangePointer(
+                          value: fixedValue,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          width: 0.3,
+                          color: currentColor,
+                          enableAnimation: true,
+                          animationType: AnimationType.bounceOut,
+                        )
+                      ]
                     )
                   ],
-                  startAngle: 180,
-                  endAngle: 0,
-                  pointers: <GaugePointer>[
-                    RangePointer(
-                      value: fixedValue,
-                      sizeUnit: GaugeSizeUnit.factor,
-                      width: 0.3,
-                      color: currentColor,
-                      enableAnimation: true,
-                      animationType: AnimationType.bounceOut,
-                    )
-                  ]
-                )
+                ),
+                FractionallySizedBox(
+                  heightFactor: 0.2,
+                  widthFactor: 1,
+                  child: FittedBox(
+                    fit: BoxFit.fitHeight,
+                    child: EntityName(
+                      textStyle: Theme.of(context).textTheme.subhead
+                    ),
+                  )
+                ),
+                FractionallySizedBox(
+                  widthFactor: 0.4,
+                  heightFactor: 0.95,
+                  alignment: Alignment.bottomCenter,
+                  child: FittedBox(
+                    fit: BoxFit.fitWidth,
+                    alignment: Alignment.bottomCenter,
+                    child: SimpleEntityState(
+                      padding: EdgeInsets.all(0),
+                      expanded: false,
+                      maxLines: 1,
+                      textAlign: TextAlign.center
+                    ),
+                  )
+                ),
               ],
             )
           ),

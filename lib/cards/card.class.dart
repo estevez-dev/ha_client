@@ -3,7 +3,6 @@ part of '../main.dart';
 class CardData {
 
   String type;
-  final int depth;
   List<EntityWrapper> entities = [];
   List conditions;
   bool showEmpty;
@@ -11,22 +10,22 @@ class CardData {
 
   EntityWrapper get entity => entities.isNotEmpty ? entities[0] : null;
 
-  factory CardData.parse(Map<String, dynamic> rawData, {depth: 1}) {
+  factory CardData.parse(Map<String, dynamic> rawData) {
     switch (rawData['type']) {
       case CardType.ENTITIES:
-        return EntitiesCardData(rawData, depth: depth);
+        return EntitiesCardData(rawData);
         break;
       case CardType.ALARM_PANEL:
-        return AlarmPanelCardData(rawData, depth: depth);
+        return AlarmPanelCardData(rawData);
         break;
       case CardType.BUTTON:
-        return ButtonCardData(rawData, depth: depth);
+        return ButtonCardData(rawData);
         break;
       case CardType.ENTITY_BUTTON:
-        return ButtonCardData(rawData, depth: depth);
+        return ButtonCardData(rawData);
         break;
       case CardType.CONDITIONAL:
-        return CardData.parse(rawData['card'], depth: depth);
+        return CardData.parse(rawData['card']);
         break;
       case CardType.ENTITY_FILTER:
         Map<String, dynamic> cardData = Map.from(rawData);
@@ -35,38 +34,38 @@ class CardData {
           cardData.addAll(rawData['card']);
         }
         cardData['type'] ??= CardType.ENTITIES;
-        return CardData.parse(cardData, depth: depth);
+        return CardData.parse(cardData);
         break;
       case CardType.GAUGE:
-        return GaugeCardData(rawData, depth: depth);
+        return GaugeCardData(rawData);
         break;
       case CardType.GLANCE:
-        return GlanceCardData(rawData, depth: depth);
+        return GlanceCardData(rawData);
         break;
       case CardType.HORIZONTAL_STACK:
-        return HorizontalStackCardData(rawData, depth: depth);
+        return HorizontalStackCardData(rawData);
         break;
       case CardType.VERTICAL_STACK:
-        return VerticalStackCardData(rawData, depth: depth);
+        return VerticalStackCardData(rawData);
         break;
       case CardType.MARKDOWN:
-        return MarkdownCardData(rawData, depth: depth);
+        return MarkdownCardData(rawData);
         break;
       case CardType.MEDIA_CONTROL:
-        return MediaControlCardData(rawData, depth: depth);
+        return MediaControlCardData(rawData);
         break;
       default:
         if (rawData.containsKey('entities')) {
-          return EntitiesCardData(rawData, depth: depth);
+          return EntitiesCardData(rawData);
         } else if (rawData.containsKey('entity')) {
           rawData['entities'] = [rawData['entity']];
-          return EntitiesCardData(rawData, depth: depth);
+          return EntitiesCardData(rawData);
         }
-        return CardData(rawData, depth: depth);
+        return CardData(rawData);
     }
   }
 
-  CardData(Map<String, dynamic> rawData, {this.depth: 1}) {
+  CardData(Map<String, dynamic> rawData) {
     type = rawData['type'] ?? CardType.ENTITIES;
     conditions = rawData['conditions'] ?? [];
     showEmpty = rawData['show_empty'] ?? true;
@@ -160,7 +159,7 @@ class EntitiesCardData extends CardData {
     return EntitiesCard(card: this);
   }
   
-  EntitiesCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  EntitiesCardData(Map<String, dynamic> rawData) : super(rawData) {
     //Parsing card data
     title = rawData["title"];
     icon = rawData['icon'];
@@ -247,7 +246,7 @@ class AlarmPanelCardData extends CardData {
     return AlarmPanelCard(card: this);
   }
   
-  AlarmPanelCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  AlarmPanelCardData(Map<String, dynamic> rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
     states = rawData['states'];
@@ -274,18 +273,30 @@ class ButtonCardData extends CardData {
   String icon;
   bool showName;
   bool showIcon;
+  double iconHeightPx = 0;
+  double iconHeightRem = 0;
   
   @override
   Widget buildCardWidget() {
     return EntityButtonCard(card: this);
   }
   
-  ButtonCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  ButtonCardData(Map<String, dynamic> rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
     icon = rawData['icon'];
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
+    if (rawData.containsKey('icon_height')) {
+      String rawHeight = rawData['icon_height'];
+      if (rawHeight.contains('px')) {
+        iconHeightPx = double.tryParse(rawHeight.replaceFirst('px', '')) ?? 0;
+      } else if (rawHeight.contains('rem')) {
+        iconHeightRem = double.tryParse(rawHeight.replaceFirst('rem', '')) ?? 0; 
+      } else if (rawHeight.contains('em')) {
+        iconHeightRem = double.tryParse(rawHeight.replaceFirst('em', '')) ?? 0;
+      }
+    }
     //Parsing entity
     var entitiId = rawData["entity"];
     if (entitiId != null && entitiId is String) {
@@ -330,7 +341,7 @@ class GaugeCardData extends CardData {
     return GaugeCard(card: this);
   }
   
-  GaugeCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  GaugeCardData(Map<String, dynamic> rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
     unit = rawData['unit'];
@@ -370,7 +381,7 @@ class GlanceCardData extends CardData {
     return GlanceCard(card: this);
   }
   
-  GlanceCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  GlanceCardData(Map<String, dynamic> rawData) : super(rawData) {
     //Parsing card data
     title = rawData["title"];
     showName = rawData['show_name'] ?? true;
@@ -417,10 +428,10 @@ class HorizontalStackCardData extends CardData {
     return HorizontalStackCard(card: this);
   }
   
-  HorizontalStackCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  HorizontalStackCardData(Map<String, dynamic> rawData) : super(rawData) {
     if (rawData.containsKey('cards')) {
       childCards = rawData['cards'].map<CardData>((childCard) {
-        return CardData.parse(childCard, depth: this.depth + 1);
+        return CardData.parse(childCard);
       }).toList();
     } else {
       childCards = [];
@@ -438,7 +449,7 @@ class VerticalStackCardData extends CardData {
     return VerticalStackCard(card: this);
   }
   
-  VerticalStackCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  VerticalStackCardData(Map<String, dynamic> rawData) : super(rawData) {
     if (rawData.containsKey('cards')) {
       childCards = rawData['cards'].map<CardData>((childCard) {
         return CardData.parse(childCard);
@@ -460,7 +471,7 @@ class MarkdownCardData extends CardData {
     return MarkdownCard(card: this);
   }
   
-  MarkdownCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  MarkdownCardData(Map<String, dynamic> rawData) : super(rawData) {
     //Parsing card data
     title = rawData['title'];
     content = rawData['content'];
@@ -475,7 +486,7 @@ class MediaControlCardData extends CardData {
     return MediaControlsCard(card: this);
   }
 
-  MediaControlCardData(Map<String, dynamic> rawData, {int depth: 1}) : super(rawData, depth: depth) {
+  MediaControlCardData(Map<String, dynamic> rawData) : super(rawData) {
     var entitiId = rawData["entity"];
     if (entitiId != null && entitiId is String) {
       if (HomeAssistant().entities.isExist(entitiId)) {

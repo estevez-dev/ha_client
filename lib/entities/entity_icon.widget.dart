@@ -50,13 +50,10 @@ class EntityIcon extends StatelessWidget {
       iconCode = getDefaultIconByEntityId(data.entity.entityId,
           data.entity.deviceClass, data.entity.state); //
     }
-    return Padding(
-        padding: EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 6.0),
-        child: Icon(
-          IconData(iconCode, fontFamily: 'Material Design Icons'),
-          size: size,
-          color: color,
-        )
+    return Icon(
+      IconData(iconCode, fontFamily: 'Material Design Icons'),
+      size: size,
+      color: color,
     );
   }
 
@@ -66,8 +63,8 @@ class EntityIcon extends StatelessWidget {
     return Padding(
       padding: padding,
       child: buildIcon(
-          entityWrapper,
-          color ?? HAClientTheme().getColorByEntityState(entityWrapper.entity.state, context)
+        entityWrapper,
+        color ?? HAClientTheme().getColorByEntityState(entityWrapper.entity.state, context)
       ),
     );
   }

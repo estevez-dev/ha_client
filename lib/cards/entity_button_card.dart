@@ -20,15 +20,37 @@ class EntityButtonCard extends StatelessWidget {
     } else if (entityWrapper.entity.statelessType != StatelessEntityType.ghost && entityWrapper.entity.statelessType != StatelessEntityType.none) {
       return Container(width: 0.0, height: 0.0,);
     }
-    double widthBase =  math.min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height) / 6;
+    
+    double iconSize = math.max(card.iconHeightPx, card.iconHeightRem * Theme.of(context).textTheme.body1.fontSize);
     
     Widget buttonIcon;
     if (!card.showIcon) {
       buttonIcon = Container(height: Sizes.rowPadding, width: 10);
+    } else if (iconSize > 0) {
+      buttonIcon = SizedBox(
+        height: iconSize,
+        child: FractionallySizedBox(
+          widthFactor: 0.5,
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: EntityIcon(
+              //padding: EdgeInsets.only(top: 6),
+            ),
+          )
+        ),
+      );
     } else {
-      buttonIcon = EntityIcon(
-        padding: EdgeInsets.fromLTRB(2.0, 6.0, 2.0, 2.0),
-        size: widthBase / (card.depth * 0.5),
+      buttonIcon = AspectRatio(
+        aspectRatio: 2,
+        child: FractionallySizedBox(
+          widthFactor: 0.5,
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: EntityIcon(
+              //padding: EdgeInsets.only(top: 6),
+            ),
+          )
+        ),
       );
     }
 
@@ -45,7 +67,7 @@ class EntityButtonCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 buttonIcon,
-                _buildName()
+                _buildName(context)
               ],
             )
           ),
@@ -55,12 +77,13 @@ class EntityButtonCard extends StatelessWidget {
     );
   }
 
-  Widget _buildName() {
+  Widget _buildName(BuildContext context) {
     if (card.showName) {
       return EntityName(
         padding: EdgeInsets.fromLTRB(Sizes.buttonPadding, 0.0, Sizes.buttonPadding, Sizes.rowPadding),
         textOverflow: TextOverflow.ellipsis,
         maxLines: 3,
+        textStyle: Theme.of(context).textTheme.subhead,
         wordsWrap: true,
         textAlign: TextAlign.center
       );
