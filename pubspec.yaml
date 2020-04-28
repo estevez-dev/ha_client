@@ -1,7 +1,7 @@
 name: hass_client
 description: Home Assistant Android Client
 
-version: 0.8.5+893
+version: 0.8.5+894
 
 
 environment:
@@ -23,7 +23,7 @@ dependencies:
   flutter_custom_tabs: ^0.6.0
   flutter_webview_plugin: ^0.3.10+1
   webview_flutter: ^0.3.19+7
-  firebase_messaging: ^6.0.9
+  firebase_messaging: ^6.0.13
   flutter_secure_storage: ^3.3.1+1
   device_info: ^0.4.1+4
   flutter_local_notifications: ^1.1.6
