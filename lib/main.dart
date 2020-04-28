@@ -155,8 +155,8 @@ EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
-const appVersionNumber = "0.8.4";
-const appVersionAdd = "";
+const appVersionNumber = "0.8.5";
+const appVersionAdd = "alpha1";
 const appVersion = "$appVersionNumber$appVersionAdd";
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
@@ -170,7 +170,7 @@ Future<void> _reportError(dynamic error, dynamic stackTrace) async {
 }
 
 void main() async {
-  Crashlytics.instance.enableInDevMode = false;
+  Crashlytics.instance.enableInDevMode = true;
   SyncfusionLicense.registerLicense(secrets['syncfusion_license_key']); 
 
   FlutterError.onError = (FlutterErrorDetails details) {
