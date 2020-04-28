@@ -7,6 +7,7 @@ class CardData {
   List conditions;
   bool showEmpty;
   List stateFilter;
+  bool stateColor = true;
 
   EntityWrapper get entity => entities.isNotEmpty ? entities[0] : null;
 
@@ -152,7 +153,6 @@ class EntitiesCardData extends CardData {
   String title;
   String icon;
   bool showHeaderToggle;
-  bool stateColor;
 
   @override
   Widget buildCardWidget() {
@@ -163,8 +163,8 @@ class EntitiesCardData extends CardData {
     //Parsing card data
     title = rawData["title"];
     icon = rawData['icon'];
-    showHeaderToggle = rawData['show_header_toggle'] ?? false; 
-    stateColor = rawData['state_color'] ?? true;
+    stateColor = rawData['state_color'] ?? false;
+    showHeaderToggle = rawData['show_header_toggle'] ?? false;
     //Parsing entities
     var rawEntities = rawData["entities"] ?? [];
     rawEntities.forEach((rawEntity) {
@@ -191,13 +191,14 @@ class EntitiesCardData extends CardData {
           entities.add(
             EntityWrapper(
               entity: Entity.callService(
-              icon: rawEntity["icon"],
-              name: rawEntity["name"],
-              service: rawEntity["service"],
-              actionName: rawEntity["action_name"]
-            ),
-            uiAction: EntityUIAction(rawEntityData: uiActionData)
-          )
+                icon: rawEntity["icon"],
+                name: rawEntity["name"],
+                service: rawEntity["service"],
+                actionName: rawEntity["action_name"]
+              ),
+              stateColor: rawEntity["state_color"] ?? stateColor,
+              uiAction: EntityUIAction(rawEntityData: uiActionData)
+            )
           );
         } else if (rawEntity["type"] == "weblink") {
           Map uiActionData = {
@@ -213,6 +214,7 @@ class EntitiesCardData extends CardData {
                   name: rawEntity["name"],
                   url: rawEntity["url"]
               ),
+              stateColor: rawEntity["state_color"] ?? stateColor,
               uiAction: EntityUIAction(rawEntityData: uiActionData)
           )
           );
@@ -221,6 +223,7 @@ class EntitiesCardData extends CardData {
           entities.add(
             EntityWrapper(
                 entity: e,
+                stateColor: rawEntity["state_color"] ?? stateColor,
                 overrideName: rawEntity["name"],
                 overrideIcon: rawEntity["icon"],
                 stateFilter: rawEntity['state_filter'] ?? [],
@@ -256,6 +259,7 @@ class AlarmPanelCardData extends CardData {
       if (HomeAssistant().entities.isExist(entitiId)) {
         entities.add(EntityWrapper(
             entity: HomeAssistant().entities.get(entitiId),
+            stateColor: true,
             overrideName: name
         ));
       } else {
@@ -287,6 +291,7 @@ class ButtonCardData extends CardData {
     icon = rawData['icon'];
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
+    stateColor = rawData['state_color'] ?? true;
     if (rawData.containsKey('icon_height')) {
       String rawHeight = rawData['icon_height'];
       if (rawHeight.contains('px')) {
@@ -305,6 +310,7 @@ class ButtonCardData extends CardData {
             entity: HomeAssistant().entities.get(entitiId),
             overrideName: name,
             overrideIcon: icon,
+            stateColor: stateColor,
             uiAction: EntityUIAction(
               rawEntityData: rawData
             )
@@ -319,6 +325,7 @@ class ButtonCardData extends CardData {
             name,
             icon,
           ),
+          stateColor: stateColor,
           uiAction: EntityUIAction(
             rawEntityData: rawData
           )
@@ -404,6 +411,7 @@ class GlanceCardData extends CardData {
           entities.add(
             EntityWrapper(
                 entity: e,
+                stateColor: stateColor,
                 overrideName: rawEntity["name"],
                 overrideIcon: rawEntity["icon"],
                 stateFilter: rawEntity['state_filter'] ?? [],

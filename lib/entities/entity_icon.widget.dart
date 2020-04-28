@@ -60,11 +60,19 @@ class EntityIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EntityWrapper entityWrapper = EntityModel.of(context).entityWrapper;
+    Color iconColor;
+    if (color != null) {
+      iconColor = color;
+    } else if (entityWrapper.stateColor) {
+      iconColor = HAClientTheme().getColorByEntityState(entityWrapper.entity.state, context);
+    } else {
+      iconColor = HAClientTheme().getOffStateColor(context);
+    }
     return Padding(
       padding: padding,
       child: buildIcon(
         entityWrapper,
-        color ?? HAClientTheme().getColorByEntityState(entityWrapper.entity.state, context)
+        iconColor 
       ),
     );
   }

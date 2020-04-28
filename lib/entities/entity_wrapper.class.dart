@@ -4,6 +4,7 @@ class EntityWrapper {
 
   String overrideName;
   final String overrideIcon;
+  final bool stateColor;
   EntityUIAction uiAction;
   Entity entity;
   String unitOfMeasurementOverride;
@@ -18,6 +19,7 @@ class EntityWrapper {
     this.entity,
     this.overrideIcon,
     this.overrideName,
+    this.stateColor: true,
     this.uiAction,
     this.stateFilter
   }) {
