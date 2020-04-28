@@ -108,7 +108,7 @@ class GaugeCard extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 1.8,
             child: Stack(
-              alignment: Alignment.topCenter,
+              alignment: Alignment.bottomCenter,
               children: <Widget>[
                 SfRadialGauge(
                   axes: <RadialAxis>[
@@ -140,31 +140,45 @@ class GaugeCard extends StatelessWidget {
                     )
                   ],
                 ),
-                FractionallySizedBox(
-                  heightFactor: 0.2,
-                  widthFactor: 1,
-                  child: FittedBox(
-                    fit: BoxFit.fitHeight,
-                    child: EntityName(
-                      textStyle: Theme.of(context).textTheme.subhead
+                Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Flexible(
+                      flex: 8,
+                      fit: FlexFit.tight,
+                      child: Container()
                     ),
-                  )
-                ),
-                FractionallySizedBox(
-                  widthFactor: 0.4,
-                  heightFactor: 0.95,
-                  alignment: Alignment.bottomCenter,
-                  child: FittedBox(
-                    fit: BoxFit.fitWidth,
-                    alignment: Alignment.bottomCenter,
-                    child: SimpleEntityState(
-                      padding: EdgeInsets.all(0),
-                      expanded: false,
-                      maxLines: 1,
-                      textAlign: TextAlign.center
+                    Flexible(
+                      flex: 6,
+                      fit: FlexFit.tight,
+                      child: FractionallySizedBox(
+                        widthFactor: 0.4,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          alignment: Alignment.bottomCenter,
+                          child: SimpleEntityState(
+                            padding: EdgeInsets.all(0),
+                            expanded: false,
+                            maxLines: 1,
+                            textAlign: TextAlign.center
+                          ),
+                        )
+                      )
                     ),
-                  )
-                ),
+                    Flexible(
+                      flex: 3,
+                      fit: FlexFit.tight,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: EntityName(
+                          padding: EdgeInsets.all(0),
+                          textStyle: Theme.of(context).textTheme.subhead
+                        ),
+                      )
+                    ),  
+                  ],
+                )
               ],
             )
           ),
