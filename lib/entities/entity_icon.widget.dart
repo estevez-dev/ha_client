@@ -42,52 +42,53 @@ class EntityIcon extends StatelessWidget {
             )
         ),
       );
-    }
-    String iconName = data.icon;
-    int iconCode = 0;
-    if (iconName.length > 0) {
-      iconCode = MaterialDesignIcons.getIconCodeByIconName(iconName);
     } else {
-      iconCode = getDefaultIconByEntityId(data.entity.entityId,
-          data.entity.deviceClass, data.entity.state); //
-    }
-    result = Icon(
-      IconData(iconCode, fontFamily: 'Material Design Icons'),
-      size: size,
-      color: color,
-    );
-    if (data.entity is LightEntity &&
-      (data.entity as LightEntity).supportColor &&
-      (data.entity as LightEntity).color != null
-      ) {
-      Color lightColor = (data.entity as LightEntity).color.toColor();
-      if (lightColor == Colors.white) {
-        return result;
-      }  
-      result = Stack(
-        children: <Widget>[
-          result,
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              width: size / 3,
-              height: size / 3,
-              decoration: BoxDecoration(
-                color: lightColor,
-                shape: BoxShape.circle,
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    spreadRadius: 0,
-                    blurRadius: 0,
-                    offset: Offset(0.3, 0.3)
-                  )
-                ]
-              ),
-            ),
-          )
-        ],
+      String iconName = data.icon;
+      int iconCode = 0;
+      if (iconName.length > 0) {
+        iconCode = MaterialDesignIcons.getIconCodeByIconName(iconName);
+      } else {
+        iconCode = getDefaultIconByEntityId(data.entity.entityId,
+            data.entity.deviceClass, data.entity.state); //
+      }
+      result = Icon(
+        IconData(iconCode, fontFamily: 'Material Design Icons'),
+        size: size,
+        color: color,
       );
+      if (data.entity is LightEntity &&
+        (data.entity as LightEntity).supportColor &&
+        (data.entity as LightEntity).color != null
+        ) {
+        Color lightColor = (data.entity as LightEntity).color.toColor();
+        if (lightColor == Colors.white) {
+          return result;
+        }  
+        result = Stack(
+          children: <Widget>[
+            result,
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                width: size / 3,
+                height: size / 3,
+                decoration: BoxDecoration(
+                  color: lightColor,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      spreadRadius: 0,
+                      blurRadius: 0,
+                      offset: Offset(0.3, 0.3)
+                    )
+                  ]
+                ),
+              ),
+            )
+          ],
+        );
+      }
     }
     return result;
   }
