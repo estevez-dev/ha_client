@@ -36,7 +36,6 @@ class DefaultEntityContainer extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         EntityIcon(),
-
         Flexible(
           fit: FlexFit.tight,
           flex: 3,

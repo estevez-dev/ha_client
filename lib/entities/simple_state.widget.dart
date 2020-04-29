@@ -27,7 +27,7 @@ class SimpleEntityState extends StatelessWidget {
       tStyle = textStyle;
     } else if (entityModel.entityWrapper.entity.statelessType == StatelessEntityType.callService) {
       tStyle = Theme.of(context).textTheme.subhead.copyWith(
-        color: Colors.blue
+        color: HAClientTheme().getLinkTextStyle(context).color
       );
     } else {
       tStyle = Theme.of(context).textTheme.body1;
