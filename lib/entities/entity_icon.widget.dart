@@ -23,12 +23,13 @@ class EntityIcon extends StatelessWidget {
     }
   }
 
-  Widget buildIcon(EntityWrapper data, Color color) {
+  Widget buildIcon(BuildContext context, EntityWrapper data, Color color) {
+    Widget result;
     if (data == null) {
       return null;
     }
     if (data.entityPicture != null) {
-      return Container(
+      result = Container(
         height: size+12,
         width: size+12,
         decoration: BoxDecoration(
@@ -50,11 +51,45 @@ class EntityIcon extends StatelessWidget {
       iconCode = getDefaultIconByEntityId(data.entity.entityId,
           data.entity.deviceClass, data.entity.state); //
     }
-    return Icon(
+    result = Icon(
       IconData(iconCode, fontFamily: 'Material Design Icons'),
       size: size,
       color: color,
     );
+    if (data.entity is LightEntity &&
+      (data.entity as LightEntity).supportColor &&
+      (data.entity as LightEntity).color != null
+      ) {
+      Color lightColor = (data.entity as LightEntity).color.toColor();
+      if (lightColor == Colors.white) {
+        return result;
+      }  
+      result = Stack(
+        children: <Widget>[
+          result,
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              width: size / 3,
+              height: size / 3,
+              decoration: BoxDecoration(
+                color: lightColor,
+                shape: BoxShape.circle,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    spreadRadius: 0,
+                    blurRadius: 0,
+                    offset: Offset(0.3, 0.3)
+                  )
+                ]
+              ),
+            ),
+          )
+        ],
+      );
+    }
+    return result;
   }
 
   @override
@@ -71,6 +106,7 @@ class EntityIcon extends StatelessWidget {
     return Padding(
       padding: padding,
       child: buildIcon(
+        context,
         entityWrapper,
         iconColor 
       ),
