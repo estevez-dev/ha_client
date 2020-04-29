@@ -292,8 +292,8 @@ class ButtonCardData extends CardData {
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
     stateColor = rawData['state_color'] ?? true;
-    if (rawData.containsKey('icon_height')) {
-      String rawHeight = rawData['icon_height'];
+    var rawHeight = rawData['icon_height'];
+    if (rawHeight != null && rawHeight is String) {
       if (rawHeight.contains('px')) {
         iconHeightPx = double.tryParse(rawHeight.replaceFirst('px', '')) ?? 0;
       } else if (rawHeight.contains('rem')) {
