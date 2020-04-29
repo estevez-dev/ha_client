@@ -156,9 +156,9 @@ EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = "HA Client";
-const appVersionNumber = "0.8.6";
-const appVersionAdd = "";
-const appVersion = "$appVersionNumber$appVersionAdd";
+const appVersionNumber = "0.8.7";
+const appVersionAdd = "alpha1";
+const appVersion = "$appVersionNumber-$appVersionAdd";
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.
