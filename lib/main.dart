@@ -171,7 +171,7 @@ Future<void> _reportError(dynamic error, dynamic stackTrace) async {
 }
 
 void main() async {
-  Crashlytics.instance.enableInDevMode = true;
+  Crashlytics.instance.enableInDevMode = false;
   SyncfusionLicense.registerLicense(secrets['syncfusion_license_key']); 
 
   FlutterError.onError = (FlutterErrorDetails details) {
