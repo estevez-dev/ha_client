@@ -119,6 +119,7 @@ class CardType {
   static const MARKDOWN = "markdown";
   static const LIGHT = "light";
   static const ENTITY_FILTER = "entity-filter";
+  static const UNKNOWN = "unknown";
 }
 
 class Sizes {

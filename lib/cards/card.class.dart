@@ -12,65 +12,77 @@ class CardData {
   EntityWrapper get entity => entities.isNotEmpty ? entities[0] : null;
 
   factory CardData.parse(Map<String, dynamic> rawData) {
-    switch (rawData['type']) {
-      case CardType.ENTITIES:
-        return EntitiesCardData(rawData);
-        break;
-      case CardType.ALARM_PANEL:
-        return AlarmPanelCardData(rawData);
-        break;
-      case CardType.BUTTON:
-        return ButtonCardData(rawData);
-        break;
-      case CardType.ENTITY_BUTTON:
-        return ButtonCardData(rawData);
-        break;
-      case CardType.CONDITIONAL:
-        return CardData.parse(rawData['card']);
-        break;
-      case CardType.ENTITY_FILTER:
-        Map<String, dynamic> cardData = Map.from(rawData);
-        cardData.remove('type');
-        if (rawData.containsKey('card')) {
-          cardData.addAll(rawData['card']);
-        }
-        cardData['type'] ??= CardType.ENTITIES;
-        return CardData.parse(cardData);
-        break;
-      case CardType.GAUGE:
-        return GaugeCardData(rawData);
-        break;
-      case CardType.GLANCE:
-        return GlanceCardData(rawData);
-        break;
-      case CardType.HORIZONTAL_STACK:
-        return HorizontalStackCardData(rawData);
-        break;
-      case CardType.VERTICAL_STACK:
-        return VerticalStackCardData(rawData);
-        break;
-      case CardType.MARKDOWN:
-        return MarkdownCardData(rawData);
-        break;
-      case CardType.MEDIA_CONTROL:
-        return MediaControlCardData(rawData);
-        break;
-      default:
-        if (rawData.containsKey('entities')) {
+    try {
+      switch (rawData['type']) {
+        case CardType.ENTITIES:
           return EntitiesCardData(rawData);
-        } else if (rawData.containsKey('entity')) {
-          rawData['entities'] = [rawData['entity']];
-          return EntitiesCardData(rawData);
-        }
-        return CardData(rawData);
+          break;
+        case CardType.ALARM_PANEL:
+          return AlarmPanelCardData(rawData);
+          break;
+        case CardType.BUTTON:
+          return ButtonCardData(rawData);
+          break;
+        case CardType.ENTITY_BUTTON:
+          return ButtonCardData(rawData);
+          break;
+        case CardType.CONDITIONAL:
+          return CardData.parse(rawData['card']);
+          break;
+        case CardType.ENTITY_FILTER:
+          Map<String, dynamic> cardData = Map.from(rawData);
+          cardData.remove('type');
+          if (rawData.containsKey('card')) {
+            cardData.addAll(rawData['card']);
+          }
+          cardData['type'] ??= CardType.ENTITIES;
+          return CardData.parse(cardData);
+          break;
+        case CardType.GAUGE:
+          return GaugeCardData(rawData);
+          break;
+        case CardType.GLANCE:
+          return GlanceCardData(rawData);
+          break;
+        case CardType.HORIZONTAL_STACK:
+          return HorizontalStackCardData(rawData);
+          break;
+        case CardType.VERTICAL_STACK:
+          return VerticalStackCardData(rawData);
+          break;
+        case CardType.MARKDOWN:
+          return MarkdownCardData(rawData);
+          break;
+        case CardType.MEDIA_CONTROL:
+          return MediaControlCardData(rawData);
+          break;
+        default:
+          if (rawData.containsKey('entities')) {
+            return EntitiesCardData(rawData);
+          } else if (rawData.containsKey('entity')) {
+            rawData['entities'] = [rawData['entity']];
+            return EntitiesCardData(rawData);
+          }
+          return CardData(rawData);
+      }
+    } catch (error) {
+      Logger.e('Error parsing card: $error');
+      return ErrorCardData(rawData);
     }
   }
 
   CardData(Map<String, dynamic> rawData) {
-    type = rawData['type'] ?? CardType.ENTITIES;
-    conditions = rawData['conditions'] ?? [];
-    showEmpty = rawData['show_empty'] ?? true;
-    stateFilter = rawData['state_filter'] ?? [];
+    if (rawData != null) {
+      type = rawData['type'] ?? CardType.ENTITIES;
+      conditions = rawData['conditions'] ?? [];
+      showEmpty = rawData['show_empty'] ?? true;
+      stateFilter = rawData['state_filter'] ?? [];
+    } else {
+      type = CardType.UNKNOWN;
+      conditions = [];
+      showEmpty = true;
+      stateFilter = [];
+    }
   }
 
   Widget buildCardWidget() {
@@ -288,7 +300,7 @@ class ButtonCardData extends CardData {
   ButtonCardData(Map<String, dynamic> rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
-    icon = rawData['icon'];
+    icon = rawData['icondd'].replace('d','');
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
     stateColor = rawData['state_color'] ?? true;
@@ -505,6 +517,21 @@ class MediaControlCardData extends CardData {
         entities.add(EntityWrapper(entity: Entity.missed(entitiId)));
       }
     }
+  }
+
+}
+
+class ErrorCardData extends CardData {
+
+  String cardConfig;
+
+  @override
+  Widget buildCardWidget() {
+    return ErrorCard(card: this);
+  }
+
+  ErrorCardData(Map<String, dynamic> rawData) : super(rawData) {
+    cardConfig = '$rawData';
   }
 
 }
