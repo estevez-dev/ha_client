@@ -48,25 +48,30 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
   Widget build(BuildContext context) {
     Widget section;
     String title;
+    String helpUrl;
     switch (_currentSection) {
       case AppSettingsSection.menu: {
         section = _buildMenu(context);
         title = 'App settings';
+        helpUrl = 'https://ha-client.app/help/';
         break;
       }
       case AppSettingsSection.connectionSettings: {
         section = ConnectionSettingsPage();
         title = 'App settings - Connection';
+        helpUrl = 'https://ha-client.app/help/connection';
         break;
       }
       case AppSettingsSection.integrationSettings: {
         section = IntegrationSettingsPage();
         title = 'App settings - Integration';
+        helpUrl = 'https://ha-client.app/help/mobile_app_integration';
         break;
       }
       case AppSettingsSection.lookAndFeel: {
         section = LookAndFeelSettingsPage();
         title = 'App settings - Look&Feel';
+        helpUrl = 'https://ha-client.app/help/';
         break;
       }
       default:
@@ -86,6 +91,17 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
             }
           }),
           title: Text(title),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.help),
+              onPressed: () {
+                Launcher.launchURLInCustomTab(
+                context: context,
+                url: helpUrl
+              );
+              },
+            )
+          ],
         ),
         body: section
       ),

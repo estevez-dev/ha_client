@@ -415,7 +415,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         title: Text("Help"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURL("http://ha-client.app/docs");
+          Launcher.launchURLInCustomTab(
+            context: context,
+            url: "http://ha-client.app/help"
+          );
         },
       ),
       new ListTile(
