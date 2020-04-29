@@ -300,7 +300,7 @@ class ButtonCardData extends CardData {
   ButtonCardData(Map<String, dynamic> rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
-    icon = rawData['icondd'].replace('d','');
+    icon = rawData['icon'];
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
     stateColor = rawData['state_color'] ?? true;
