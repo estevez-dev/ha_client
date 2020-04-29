@@ -25,7 +25,7 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
     await prefs.reload();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
-        _currentTheme = AppTheme.values[prefs.getInt("app-theme") ?? AppTheme.defaultTheme];
+        _currentTheme = AppTheme.values[prefs.getInt("app-theme") ?? AppTheme.defaultTheme.index];
       });
     });
   }
