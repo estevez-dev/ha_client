@@ -110,35 +110,38 @@ class GaugeCard extends StatelessWidget {
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: <Widget>[
-                SfRadialGauge(
-                  axes: <RadialAxis>[
-                    RadialAxis(
-                      maximum: card.max.toDouble(),
-                      minimum: card.min.toDouble(),
-                      showLabels: false,
-                      useRangeColorForAxis: true,
-                      showTicks: false,
-                      canScaleToFit: true,
-                      ranges: ranges,
-                      axisLineStyle: AxisLineStyle(
-                        thickness: 0.3,
-                        thicknessUnit: GaugeSizeUnit.factor,
-                        color: Colors.transparent
-                      ),
-                      startAngle: 180,
-                      endAngle: 0,
-                      pointers: <GaugePointer>[
-                        RangePointer(
-                          value: fixedValue,
-                          sizeUnit: GaugeSizeUnit.factor,
-                          width: 0.3,
-                          color: currentColor,
-                          enableAnimation: true,
-                          animationType: AnimationType.bounceOut,
-                        )
-                      ]
-                    )
-                  ],
+                IgnorePointer(
+                  ignoring: true,
+                  child: SfRadialGauge(
+                    axes: <RadialAxis>[
+                      RadialAxis(
+                        maximum: card.max.toDouble(),
+                        minimum: card.min.toDouble(),
+                        showLabels: false,
+                        useRangeColorForAxis: true,
+                        showTicks: false,
+                        canScaleToFit: true,
+                        ranges: ranges,
+                        axisLineStyle: AxisLineStyle(
+                          thickness: 0.3,
+                          thicknessUnit: GaugeSizeUnit.factor,
+                          color: Colors.transparent
+                        ),
+                        startAngle: 180,
+                        endAngle: 0,
+                        pointers: <GaugePointer>[
+                          RangePointer(
+                            value: fixedValue,
+                            sizeUnit: GaugeSizeUnit.factor,
+                            width: 0.3,
+                            color: currentColor,
+                            enableAnimation: true,
+                            animationType: AnimationType.bounceOut,
+                          )
+                        ]
+                      )
+                    ],
+                  )
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.max,
