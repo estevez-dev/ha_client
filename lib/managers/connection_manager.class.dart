@@ -50,6 +50,7 @@ class ConnectionManager {
       "${prefs.getString('hassio-protocol')}://$_domain:$_port/api/websocket";
       httpWebHost =
       "${prefs.getString('hassio-res-protocol')}://$_domain:$_port";
+      Logger.d('$_domain$_port');
       if ((_domain == null) || (_port == null) ||
           (_domain.isEmpty) || (_port.isEmpty)) {
         completer.completeError(HAError.checkConnectionSettings());
