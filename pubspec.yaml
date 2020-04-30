@@ -44,7 +44,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - images/hassio-192x192.png
     - assets/js/externalAuth.js
     - assets/html/cameraView.html
     - assets/html/cameraLiveView.html
