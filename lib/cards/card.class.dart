@@ -350,8 +350,8 @@ class GaugeCardData extends CardData {
 
   String name;
   String unit;
-  int min;
-  int max;
+  double min;
+  double max;
   Map severity;
 
   @override
@@ -363,8 +363,20 @@ class GaugeCardData extends CardData {
     //Parsing card data
     name = rawData['name'];
     unit = rawData['unit'];
-    min = rawData['min'] ?? 0;
-    max = rawData['max'] ?? 100;
+    if (rawData['min'] is int) {
+      min = rawData['min'].toDouble();  
+    } else if (rawData['min'] is double) {
+      min = rawData['min'];
+    } else {
+      min = 0;
+    }
+    if (rawData['max'] is int) {
+      max = rawData['max'].toDouble();  
+    } else if (rawData['max'] is double) {
+      max = rawData['max'];
+    } else {
+      max = 100;
+    }
     severity = rawData['severity'];
     //Parsing entity
     var entitiId = rawData["entity"];
