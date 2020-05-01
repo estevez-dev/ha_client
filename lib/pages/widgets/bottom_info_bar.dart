@@ -40,12 +40,12 @@ class BottomInfoBarController {
     }
   }
 
-  void showErrorBottomBar(HAError error) {
+  void showErrorBottomBar(HACException error) {
     actions.clear();
     actions.addAll(error.actions);
     bottomBarErrorColor = true;
     bottomBarProgress = false;
-    bottomBarText = "${error.message}";
+    bottomBarText = "${error.cause}";
     if (show == null) {
       initialState = true;
     } else {

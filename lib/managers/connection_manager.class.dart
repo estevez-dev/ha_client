@@ -53,7 +53,7 @@ class ConnectionManager {
       Logger.d('$_domain$_port');
       if ((_domain == null) || (_port == null) ||
           (_domain.isEmpty) || (_port.isEmpty)) {
-        completer.completeError(HAError.checkConnectionSettings());
+        completer.completeError(HACException.checkConnectionSettings());
         stopInit = true;
       } else {
         final storage = new FlutterSecureStorage();
@@ -66,7 +66,7 @@ class ConnectionManager {
               'https://ha-client.app/service/auth_callback.html')}";
           settingsLoaded = true;
         } catch (e) {
-          completer.completeError(HAError("Error reading login details", actions: [HAErrorAction.tryAgain(type: HAErrorActionType.FULL_RELOAD), HAErrorAction.loginAgain()]));
+          completer.completeError(HACException("Error reading login details", actions: [HAErrorAction.tryAgain(type: HAErrorActionType.FULL_RELOAD), HAErrorAction.loginAgain()]));
           Logger.e("Cannt read secure storage. Need to relogin.");
           stopInit = true;
         }
@@ -74,7 +74,7 @@ class ConnectionManager {
     } else {
       if ((_domain == null) || (_port == null) ||
           (_domain.isEmpty) || (_port.isEmpty)) {
-        completer.completeError(HAError.checkConnectionSettings());
+        completer.completeError(HACException.checkConnectionSettings());
         stopInit = true;
       }
     }
@@ -107,13 +107,13 @@ class ConnectionManager {
           _disconnect().then((_) {
             if (e is TimeoutException) {
               if (connecting != null && !connecting.isCompleted) {
-                connecting.completeError(HAError("Connection timeout"));
+                connecting.completeError(HACException("Connection timeout"));
               }
-              completer?.completeError(HAError("Connection timeout"));
-            } else if (e is HAError) {
+              completer?.completeError(HACException("Connection timeout"));
+            } else if (e is HACException) {
               completer?.completeError(e);
             } else {
-              completer?.completeError(HAError("${e.toString()}"));
+              completer?.completeError(HACException("${e.toString()}"));
             }
           });
         });
@@ -167,9 +167,9 @@ class ConnectionManager {
                   });
                 } else if (data["type"] == "auth_invalid") {
                   Logger.d("[Received] <== ${data.toString()}");
-                  _messageResolver["auth"]?.completeError(HAError("${data["message"]}", actions: [HAErrorAction.loginAgain()]));
+                  _messageResolver["auth"]?.completeError(HACException("${data["message"]}", actions: [HAErrorAction.loginAgain()]));
                   _messageResolver.remove("auth");
-                  if (!connecting.isCompleted) connecting.completeError(HAError("${data["message"]}", actions: [HAErrorAction.tryAgain(title: "Retry"), HAErrorAction.loginAgain(title: "Relogin")]));
+                  if (!connecting.isCompleted) connecting.completeError(HACException("${data["message"]}", actions: [HAErrorAction.tryAgain(title: "Retry"), HAErrorAction.loginAgain(title: "Relogin")]));
                 } else {
                   _handleMessage(data);
                 }
@@ -179,7 +179,7 @@ class ConnectionManager {
               onError: (e) => _handleSocketError(e, connecting)
           );
         } catch(exeption) {
-          connecting.completeError(HAError("${exeption.toString()}"));
+          connecting.completeError(HACException("${exeption.toString()}"));
         }
       });
       return connecting.future;
@@ -213,7 +213,7 @@ class ConnectionManager {
         _messageResolver["${data["id"]}"]?.complete(data["result"]);
       } else if (data["id"] != null) {
         Logger.e("[Received] <== Error received on request id ${data['id']}: ${data['error']}");
-        _messageResolver["${data["id"]}"]?.completeError("${data["error"]["code"]}");
+        _messageResolver["${data["id"]}"]?.completeError("${data["error"]["code"]}: ${data["error"]["message"]}");
       }
       _messageResolver.remove("${data["id"]}");
     } else if (data["type"] == "event") {
@@ -236,9 +236,9 @@ class ConnectionManager {
     _disconnect().then((_) {
       if (!connectionCompleter.isCompleted) {
         isConnected = false;
-        connectionCompleter.completeError(HAError("Disconnected", actions: [HAErrorAction.reconnect()]));
+        connectionCompleter.completeError(HACException("Disconnected", actions: [HAErrorAction.reconnect()]));
       }
-      eventBus.fire(ShowErrorEvent(HAError("Unable to connect to Home Assistant")));  
+      eventBus.fire(ShowErrorEvent(HACException("Unable to connect to Home Assistant")));  
     });
   }
 
@@ -247,9 +247,9 @@ class ConnectionManager {
     _disconnect().then((_) {
       if (!connectionCompleter.isCompleted) {
         isConnected = false;
-        connectionCompleter.completeError(HAError("Disconnected", actions: [HAErrorAction.reconnect()]));
+        connectionCompleter.completeError(HACException("Disconnected", actions: [HAErrorAction.reconnect()]));
       }
-      eventBus.fire(ShowErrorEvent(HAError("Unable to connect to Home Assistant")));  
+      eventBus.fire(ShowErrorEvent(HACException("Unable to connect to Home Assistant")));  
     });
   }
 
@@ -282,7 +282,7 @@ class ConnectionManager {
         });
       }).catchError((e) => completer.completeError(e));
     } else {
-      completer.completeError(HAError("General login error"));
+      completer.completeError(HACException("General login error"));
     }
     return completer.future;
   }
@@ -317,7 +317,7 @@ class ConnectionManager {
         throw e;
       });
     }).catchError((e) {
-      completer.completeError(HAError("Authentication error: $e", actions: [HAErrorAction.reload(title: "Retry"), HAErrorAction.loginAgain(title: "Relogin")]));
+      completer.completeError(HACException("Authentication error: $e", actions: [HAErrorAction.reload(title: "Retry"), HAErrorAction.loginAgain(title: "Relogin")]));
     });
     return completer.future;
   }
@@ -344,7 +344,7 @@ class ConnectionManager {
         _socket.sink.add(rawMessage);
       }).catchError((e) {
         if (!_completer.isCompleted) {
-          _completer.completeError(HAError("No connection to Home Assistant", actions: [HAErrorAction.reconnect()]));
+          _completer.completeError(HACException("No connection to Home Assistant", actions: [HAErrorAction.reconnect()]));
         }
       });
     } else {
@@ -373,12 +373,12 @@ class ConnectionManager {
       sendHTTPPost(
         endPoint: "/api/services/$domain/$service",
         data: json.encode(serviceData)
-      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError(e.toString())));
+      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HACException(e.toString())));
       //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service, "service_data": serviceData});
     else
       sendHTTPPost(
           endPoint: "/api/services/$domain/$service"
-      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HAError(e.toString())));
+      ).then((data) => completer.complete(data)).catchError((e) => completer.completeError(HACException(e.toString())));
       //return sendSocketMessage(type: "call_service", additionalData: {"domain": domain, "service": service});
     return completer.future;
   }

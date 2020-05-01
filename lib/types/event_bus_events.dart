@@ -90,7 +90,7 @@ class ShowPageEvent {
 }
 
 class ShowErrorEvent {
-  final HAError error;
+  final HACException error;
 
   ShowErrorEvent(this.error);
 }

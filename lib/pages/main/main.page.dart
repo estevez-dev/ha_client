@@ -131,10 +131,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       });
       HomeAssistant().saveCache();
     }).catchError((e) {
-      if (e is HAError) {
+      if (e is HACException) {
         _setErrorState(e);
       } else {
-        _setErrorState(HAError(e.toString()));
+        _setErrorState(HACException(e.toString()));
       }
     });
     eventBus.fire(RefreshDataFinishedEvent());
@@ -254,10 +254,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     Navigator.of(context).pushNamed("/auth", arguments: {"url": ConnectionManager().oauthUrl});
   }
 
-  _setErrorState(HAError e) {
+  _setErrorState(HACException e) {
     if (e == null) {
       _bottomInfoBarController.showErrorBottomBar(
-          HAError("Unknown error")
+          HACException("Unknown error")
       );
     } else {
       _bottomInfoBarController.showErrorBottomBar(e);

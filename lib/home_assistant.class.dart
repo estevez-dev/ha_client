@@ -79,7 +79,7 @@ class HomeAssistant {
         _fetchCompleter.complete();
         if (!uiOnly) MobileAppIntegrationManager.checkAppRegistration();
       } else {
-        _fetchCompleter.completeError(HAError("Mobile app component not found", actions: [HAErrorAction.tryAgain(), HAErrorAction(type: HAErrorActionType.URL ,title: "Help",url: "http://ha-client.app/docs#mobile-app-integration")]));
+        _fetchCompleter.completeError(HACException("Mobile app component not found", actions: [HAErrorAction.tryAgain(), HAErrorAction(type: HAErrorActionType.URL ,title: "Help",url: "http://ha-client.app/docs#mobile-app-integration")]));
       }
     }).catchError((e) {
       _fetchCompleter.completeError(e);
@@ -144,11 +144,11 @@ class HomeAssistant {
         var data = json.decode(sharedPrefs.getString('cached_config'));
         _parseConfig(data);
       } catch (e) {
-        throw HAError("Error getting config: $e");
+        throw HACException("Error getting config: $e");
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_config").then((data) => _parseConfig(data)).catchError((e) {
-        throw HAError("Error getting config: $e");
+        throw HACException("Error getting config: $e");
       });
     }
   }
@@ -164,13 +164,13 @@ class HomeAssistant {
         var data = json.decode(sharedPrefs.getString('cached_states'));
         _parseStates(data);
       } catch (e) {
-        throw HAError("Error getting states: $e");
+        throw HACException("Error getting states: $e");
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_states").then(
               (data) => _parseStates(data)
       ).catchError((e) {
-        throw HAError("Error getting states: $e");
+        throw HACException("Error getting states: $e");
       });
     }
   }
@@ -209,7 +209,7 @@ class HomeAssistant {
           _rawLovelaceData = null;
           completer.complete();
         } else {
-          completer.completeError(HAError("Error getting lovelace config: $e"));
+          completer.completeError(HACException("Error getting lovelace config: $e"));
         }
       });
       return completer.future;
@@ -249,14 +249,17 @@ class HomeAssistant {
   Future _getPanels(SharedPreferences sharedPrefs) async {
     if (sharedPrefs != null) {
       try {
-        var data = json.decode(sharedPrefs.getString('cached_panels'));
+        var data = json.decode(sharedPrefs.getString('cached_panels') ?? '{}');
         _parsePanels(data);
-      } catch (e) {
-        throw HAError("Error getting panels list: $e");
+      } catch (e, stacktrace) {
+        Crashlytics.instance.recordError(e, stacktrace);
+        panels.clear();
       }
     } else {
-      await ConnectionManager().sendSocketMessage(type: "get_panels").then((data) => _parsePanels(data)).catchError((e) {
-        throw HAError("Error getting panels list: $e");
+      await ConnectionManager().sendSocketMessage(type: "get_panels").then((data) => _parsePanels(data)).catchError((e, stacktrace) {
+        panels.clear();
+        Crashlytics.instance.recordError(e, stacktrace);
+        throw HACException('Can\'t get panles: $e');
       });
     }
   }

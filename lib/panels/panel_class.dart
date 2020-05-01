@@ -24,7 +24,7 @@ class Panel {
       icon = Panel.iconsByComponent[componentName];
     }
     isHidden = (componentName == 'kiosk' || componentName == 'states' || componentName == 'profile' || componentName == 'developer-tools');
-    isWebView = (componentName != 'config' && componentName != 'lovelace' && !componentName.startsWith('haclient'));
+    isWebView = (componentName != 'lovelace' && !componentName.startsWith('haclient'));
   }
 
   void handleOpen(BuildContext context) {
@@ -68,10 +68,6 @@ class Panel {
 
   Widget getWidget() {
     switch (componentName) {
-      case "config": {
-        return ConfigPanelWidget();
-      }
-
       default: {
         return Text("Unsupported panel component: $componentName");
       }

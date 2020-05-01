@@ -1,21 +1,26 @@
 part of '../main.dart';
 
-class HAError {
-  String message;
+class HACException implements Exception {
+  String cause;
   final List<HAErrorAction> actions;
 
-  HAError(this.message, {this.actions: const [HAErrorAction.tryAgain()]});
+  HACException(this.cause, {this.actions: const [HAErrorAction.tryAgain()]});
 
-  HAError.unableToConnect({this.actions = const [HAErrorAction.tryAgain()]}) {
-    this.message = "Unable to connect to Home Assistant";
+  HACException.unableToConnect({this.actions = const [HAErrorAction.tryAgain()]}) {
+    this.cause = "Unable to connect to Home Assistant";
   }
 
-  HAError.disconnected({this.actions = const [HAErrorAction.reconnect()]}) {
-    this.message = "Disconnected";
+  HACException.disconnected({this.actions = const [HAErrorAction.reconnect()]}) {
+    this.cause = "Disconnected";
   }
 
-  HAError.checkConnectionSettings({this.actions = const [HAErrorAction.reload(), HAErrorAction(title: "Settings", type: HAErrorActionType.OPEN_CONNECTION_SETTINGS)]}) {
-    this.message = "Check connection settings";
+  HACException.checkConnectionSettings({this.actions = const [HAErrorAction.reload(), HAErrorAction(title: "Settings", type: HAErrorActionType.OPEN_CONNECTION_SETTINGS)]}) {
+    this.cause = "Check connection settings";
+  }
+
+  @override
+  String toString() {
+    return 'HACException: $cause';
   }
 }
 
