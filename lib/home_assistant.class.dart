@@ -251,23 +251,25 @@ class HomeAssistant {
   }
 
   Future _getPanels(SharedPreferences sharedPrefs) async {
-    panels.clear();
     if (sharedPrefs != null) {
       try {
         var data = json.decode(sharedPrefs.getString('cached_panels') ?? '{}');
         _parsePanels(data);
       } catch (e, stacktrace) {
         Logger.e(e, stacktrace: stacktrace);
+        panels.clear();
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_panels").then((data) => _parsePanels(data)).catchError((e, stacktrace) {
-       Logger.e('get_panels error: $e', stacktrace: stacktrace);
-          throw HACException('Can\'t get panles: $e');
+          Logger.e('get_panels error: $e', stacktrace: stacktrace);
+          panels.clear();
+          throw HACException('Can\'t get panels: $e');
       });
     }
   }
 
   void _parsePanels(data) {
+    panels.clear();
     _rawPanels = data;
     List<Panel> dashboards = [];
     data.forEach((k,v) {
