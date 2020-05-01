@@ -29,22 +29,22 @@ class Logger {
     print(data);
   }
 
-  static void e(String message, {dynamic stacktrace}) {
-    _writeToLog(ErrorLevel.ERROR, message, stacktrace);
+  static void e(String message, {dynamic stacktrace, bool skipCrashlytics: false}) {
+    _writeToLog(ErrorLevel.ERROR, message, stacktrace, skipCrashlytics);
   }
 
   static void w(String message) {
-    _writeToLog(ErrorLevel.WARNING, message, null);
+    _writeToLog(ErrorLevel.WARNING, message, null, true);
   }
 
   static void d(String message) {
-    _writeToLog(ErrorLevel.DEBUG, message, null);
+    _writeToLog(ErrorLevel.DEBUG, message, null, true);
   }
 
-  static void _writeToLog(ErrorLevel level, String message, dynamic stacktrace) {
+  static void _writeToLog(ErrorLevel level, String message, dynamic stacktrace, bool skipCrashlytics) {
     if (isInDebugMode) {
       debugPrint('$message');
-    } else if (level == ErrorLevel.ERROR) {
+    } else if (!skipCrashlytics) {
       Crashlytics.instance.recordError('$message', stacktrace);
     }
     DateTime t = DateTime.now();

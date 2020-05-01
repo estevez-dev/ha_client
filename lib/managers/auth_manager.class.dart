@@ -31,7 +31,7 @@ class AuthManager {
           eventBus.fire(StartAuthEvent(oauthUrl, false));
           completer.complete(tempToken);
         }).catchError((e) {
-          Logger.e("Error getting temp token: ${e.toString()}");
+          Logger.e("Error getting temp token: $e");
           eventBus.fire(StartAuthEvent(oauthUrl, false));
           completer.completeError(HACException("Error getting temp token"));
         }).whenComplete(() => flutterWebviewPlugin.close());

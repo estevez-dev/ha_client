@@ -30,8 +30,8 @@ class _TimerStateState extends State<TimerState> {
                   .difference(entity.lastUpdatedTimestamp)
                   .inSeconds;
               remaining = Duration(seconds: entity.duration.inSeconds - passed);
-            } catch (e) {
-              Logger.e("Error calculating ${entity.entityId} remaining time: ${e.toString()}");
+            } catch (e, stacktrace) {
+              Logger.e("Error calculating ${entity.entityId} remaining time: $e", stacktrace: stacktrace);
               remaining = Duration(seconds: 0);
             }
           });

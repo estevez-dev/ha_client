@@ -65,8 +65,8 @@ class CardData {
           }
           return CardData(rawData);
       }
-    } catch (error) {
-      Logger.e('Error parsing card: $error');
+    } catch (error, stacktrace) {
+      Logger.e('Parsing ${rawData['type']} card: $error', stacktrace: stacktrace);
       return ErrorCardData(rawData);
     }
   }
@@ -148,9 +148,8 @@ class CardData {
                 break;
               }  
             }
-          } catch (e) {
-            Logger.e('Error filtering ${entityWrapper.entity.entityId} by $allowedState');
-            Logger.e('$e');
+          } catch (e, stacktrace) {
+            Logger.e('Error filtering ${entityWrapper.entity.entityId} by $allowedState: $e', stacktrace: stacktrace);
           }
         }
       }

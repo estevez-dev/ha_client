@@ -163,7 +163,7 @@ const appVersion = "$appVersionNumber-$appVersionAdd";
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.
     if (Logger.isInDebugMode) {
-      Logger.e('Caught error: $error');
+      Logger.e('Caught error: $error', skipCrashlytics: true);
       Logger.p(stackTrace);
     }
     Crashlytics.instance.recordError(error, stackTrace);
@@ -175,7 +175,7 @@ void main() async {
   SyncfusionLicense.registerLicense(secrets['syncfusion_license_key']); 
 
   FlutterError.onError = (FlutterErrorDetails details) {
-    Logger.e("Caut Flutter runtime error: ${details.exception}");
+    Logger.e("Caut Flutter runtime error: ${details.exception}", skipCrashlytics: true);
     if (Logger.isInDebugMode) {
       FlutterError.dumpErrorToConsole(details);
     }

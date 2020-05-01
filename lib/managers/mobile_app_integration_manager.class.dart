@@ -56,7 +56,7 @@ class MobileAppIntegrationManager {
         });
       }).catchError((e) {
         completer.complete();
-        Logger.e("Error registering the app: ${e.toString()}");
+        Logger.e("Error registering the app: $e");
       });
       return completer.future;
     } else {
@@ -98,10 +98,10 @@ class MobileAppIntegrationManager {
         completer.complete();
       }).catchError((e) {
         if (e is http.Response && e.statusCode == 410) {
-          Logger.e("MobileApp integration was removed");
+          Logger.e("MobileApp integration was removed", skipCrashlytics: true);
           _askToRegisterApp();
         } else {
-          Logger.e("Error updating app registration: ${e.toString()}");
+          Logger.e("Error updating app registration: $e");
           eventBus.fire(ShowPopupDialogEvent(
             title: "App integration is not working properly",
             body: "Something wrong with HA Client integration on your Home Assistant server. Please report this issue.",

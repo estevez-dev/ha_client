@@ -65,9 +65,9 @@ class ConnectionManager {
               .encodeComponent(
               'https://ha-client.app/service/auth_callback.html')}";
           settingsLoaded = true;
-        } catch (e) {
+        } catch (e, stacktrace) {
           completer.completeError(HACException("Error reading login details", actions: [HAErrorAction.tryAgain(type: HAErrorActionType.FULL_RELOAD), HAErrorAction.loginAgain()]));
-          Logger.e("Cannt read secure storage. Need to relogin.");
+          Logger.e("Error reading secure storage: $e", stacktrace: stacktrace);
           stopInit = true;
         }
       }
@@ -212,7 +212,7 @@ class ConnectionManager {
         //Logger.d("[Received] <== Request id ${data['id']} was successful");
         _messageResolver["${data["id"]}"]?.complete(data["result"]);
       } else if (data["id"] != null) {
-        Logger.e("[Received] <== Error received on request id ${data['id']}: ${data['error']}");
+        Logger.e("[Received] <== Error received on request id ${data['id']}: ${data['error']}", skipCrashlytics: true);
         _messageResolver["${data["id"]}"]?.completeError("${data["error"]["code"]}: ${data["error"]["message"]}");
       }
       _messageResolver.remove("${data["id"]}");
@@ -243,7 +243,7 @@ class ConnectionManager {
   }
 
   void _handleSocketError(e, Completer connectionCompleter) {
-    Logger.e("Socket stream Error: $e");
+    Logger.e("Socket stream Error: $e", skipCrashlytics: true);
     _disconnect().then((_) {
       if (!connectionCompleter.isCompleted) {
         isConnected = false;
