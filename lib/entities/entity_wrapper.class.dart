@@ -61,9 +61,9 @@ class EntityWrapper {
       case EntityUIAction.navigate: {
         if (uiAction.tapService != null && uiAction.tapService.startsWith("/")) {
           //TODO handle local urls
-          Logger.w("Local urls is not supported yet");
+          Launcher.launchURLInBrowser('${ConnectionManager().httpWebHost}${uiAction.tapService}');
         } else {
-          Launcher.launchURL(uiAction.tapService);
+          Launcher.launchURLInBrowser(uiAction.tapService);
         }
         break;
       }
@@ -101,9 +101,9 @@ class EntityWrapper {
         case EntityUIAction.navigate: {
           if (uiAction.holdService != null && uiAction.holdService.startsWith("/")) {
             //TODO handle local urls
-            Logger.w("Local urls is not supported yet");
+            Launcher.launchURLInBrowser('${ConnectionManager().httpWebHost}${uiAction.holdService}');
           } else {
-            Launcher.launchURL(uiAction.holdService);
+            Launcher.launchURLInBrowser(uiAction.holdService);
           }
           break;
         }
@@ -141,9 +141,9 @@ class EntityWrapper {
         case EntityUIAction.navigate: {
           if (uiAction.doubleTapService != null && uiAction.doubleTapService.startsWith("/")) {
             //TODO handle local urls
-            Logger.w("Local urls is not supported yet");
+            Launcher.launchURLInBrowser('${ConnectionManager().httpWebHost}${uiAction.doubleTapService}');
           } else {
-            Launcher.launchURL(uiAction.doubleTapService);
+            Launcher.launchURLInBrowser(uiAction.doubleTapService);
           }
           break;
         }

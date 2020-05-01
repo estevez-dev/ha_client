@@ -2,7 +2,7 @@ part of '../main.dart';
 
 class Launcher {
 
-  static void launchURL(String url) async {
+  static void launchURLInBrowser(String url) async {
     if (await urlLauncher.canLaunch(url)) {
       await urlLauncher.launch(url);
     } else {
@@ -30,7 +30,7 @@ class Launcher {
     } catch (e) {
       Logger.w("Can't open custom tab: ${e.toString()}");
       Logger.w("Launching in default browser");
-      Launcher.launchURL(url);
+      Launcher.launchURLInBrowser(url);
     }
   }
 

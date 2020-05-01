@@ -26,7 +26,7 @@ class ErrorCard extends StatelessWidget {
             ),
             RaisedButton(
               onPressed: () {
-                Launcher.launchURL("https://github.com/estevez-dev/ha_client/issues/new?assignees=&labels=&template=bug_report.md&title=");
+                Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new?assignees=&labels=&template=bug_report.md&title=");
               },
               child: Text('Report issue'),
             )
