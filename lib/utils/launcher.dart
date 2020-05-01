@@ -19,7 +19,6 @@ class Launcher {
           enableDefaultShare: enableDefaultShare,
           enableUrlBarHiding: true,
           showPageTitle: showPageTitle,
-          animation: new CustomTabsAnimation.slideIn(),
           extraCustomTabs: <String>[
             // ref. https://play.google.com/store/apps/details?id=org.mozilla.firefox
             'org.mozilla.firefox',
