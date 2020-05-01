@@ -211,7 +211,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     if (_showEntityPageSubscription == null) {
       _showEntityPageSubscription =
           eventBus.on<ShowEntityPageEvent>().listen((event) {
-            _showEntityPage(event.entity?.entityId);
+            _showEntityPage(event.entityId);
           });
     }
 

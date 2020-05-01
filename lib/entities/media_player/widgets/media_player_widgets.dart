@@ -228,7 +228,7 @@ class MediaPlayerPlaybackControls extends StatelessWidget {
           IconButton(
               icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
                   "mdi:dots-vertical")),
-              onPressed: () => eventBus.fire(new ShowEntityPageEvent(entity: entity))
+              onPressed: () => eventBus.fire(new ShowEntityPageEvent(entityId: entity.entityId))
           )
       );
     } else if (entity.supportStop && entity.state != EntityState.off && entity.state != EntityState.unavailable) {

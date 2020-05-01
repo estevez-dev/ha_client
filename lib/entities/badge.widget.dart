@@ -143,6 +143,6 @@ class BadgeWidget extends StatelessWidget {
           ],
         ),
         onTap: () =>
-            eventBus.fire(new ShowEntityPageEvent(entity: entityModel.entityWrapper.entity)));
+            eventBus.fire(new ShowEntityPageEvent(entityId: entityModel.entityWrapper.entity.entityId)));
   }
 }

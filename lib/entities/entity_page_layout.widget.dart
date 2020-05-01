@@ -2,10 +2,9 @@ part of '../main.dart';
 
 class EntityPageLayout extends StatelessWidget {
 
-  final bool showClose;
   final Entity entity;
 
-  EntityPageLayout({Key key, this.showClose: false, this.entity}) : super(key: key);
+  EntityPageLayout({Key key, this.entity}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,34 +13,6 @@ class EntityPageLayout extends StatelessWidget {
       child: ListView(
           padding: EdgeInsets.all(0),
           children: <Widget>[
-            showClose ?
-            Container(
-              color: Theme.of(context).primaryColor,
-              height: 40,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Text(
-                        entity.displayName,
-                        style: Theme.of(context).primaryTextTheme.headline
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    padding: EdgeInsets.all(0),
-                    icon: Icon(Icons.close),
-                    color: Theme.of(context).primaryTextTheme.headline.color,
-                    iconSize: 36.0,
-                    onPressed: () {
-                      eventBus.fire(ShowEntityPageEvent());
-                    },
-                  )
-                ],
-              ),
-            ) :
-            Container(height: 0, width: 0,),
             Padding(
               padding: EdgeInsets.only(top: Sizes.rowPadding, left: Sizes.leftWidgetPadding),
               child: DefaultEntityContainer(state: entity._buildStatePartForPage(context)),

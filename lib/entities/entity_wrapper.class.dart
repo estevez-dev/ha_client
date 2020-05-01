@@ -54,7 +54,7 @@ class EntityWrapper {
 
       case EntityUIAction.moreInfo: {
         eventBus.fire(
-            new ShowEntityPageEvent(entity: entity));
+            new ShowEntityPageEvent(entityId: entity.entityId));
         break;
       }
 
@@ -94,7 +94,7 @@ class EntityWrapper {
 
         case EntityUIAction.moreInfo: {
           eventBus.fire(
-              new ShowEntityPageEvent(entity: entity));
+              new ShowEntityPageEvent(entityId: entity.entityId));
           break;
         }
 
@@ -134,7 +134,7 @@ class EntityWrapper {
 
         case EntityUIAction.moreInfo: {
           eventBus.fire(
-              new ShowEntityPageEvent(entity: entity));
+              new ShowEntityPageEvent(entityId: entity.entityId));
           break;
         }
 

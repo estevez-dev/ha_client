@@ -33,7 +33,7 @@ class AlarmPanelCard extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
                     "mdi:dots-vertical")),
-                onPressed: () => eventBus.fire(new ShowEntityPageEvent(entity: card.entity.entity))
+                onPressed: () => eventBus.fire(new ShowEntityPageEvent(entityId: card.entity.entity.entityId))
             )
         )
       ]

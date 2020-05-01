@@ -77,9 +77,9 @@ class ShowPopupMessageEvent {
 }
 
 class ShowEntityPageEvent {
-  final Entity entity;
+  final String entityId;
 
-  ShowEntityPageEvent({this.entity});
+  ShowEntityPageEvent({@required this.entityId});
 }
 
 class ShowPageEvent {

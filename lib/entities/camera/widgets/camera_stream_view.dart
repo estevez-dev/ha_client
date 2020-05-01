@@ -138,8 +138,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
             iconSize: 40,
             color: Theme.of(context).accentColor,
             onPressed: _isLoaded ? () {
-              eventBus.fire(ShowEntityPageEvent());
-              Navigator.of(context).push(
+              Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (conext) => FullScreenPage(
                     child: EntityModel(
@@ -154,8 +153,8 @@ class _CameraStreamViewState extends State<CameraStreamView> {
                   ),
                   fullscreenDialog: true
                 )
-              ).then((_) {
-                eventBus.fire(ShowEntityPageEvent(entity: _entity));
+              ).then((_){
+                eventBus.fire(ShowEntityPageEvent(entityId: _entity.entityId));
               });
             } : null,
           )

@@ -105,7 +105,7 @@ class _PlayMediaPageState extends State<PlayMediaPage> {
         );
         HomeAssistant().sendFromPlayerId = null;
       }
-      eventBus.fire(ShowEntityPageEvent(entity: entity));
+      eventBus.fire(ShowEntityPageEvent(entityId: entity.entityId));
     }
   }
 
