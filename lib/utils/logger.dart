@@ -1,4 +1,3 @@
-import 'package:date_format/date_format.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -6,16 +5,6 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 enum ErrorLevel {ERROR, WARNING, DEBUG}
 
 class Logger {
-
-  static List<String> _log = [];
-
-  static String getLog() {
-    String res = '';
-    _log.forEach((line) {
-      res += "$line\n";
-    });
-    return res;
-  }
 
   static bool get isInDebugMode {
     bool inDebugMode = false;
@@ -46,11 +35,6 @@ class Logger {
       debugPrint('$message');
     } else if (!skipCrashlytics) {
       Crashlytics.instance.recordError('$message', stacktrace);
-    }
-    DateTime t = DateTime.now();
-    _log.add("${formatDate(t, ["mm","dd"," ","HH",":","nn",":","ss"])} [$level] :  $message");
-    if (_log.length > 100) {
-      _log.removeAt(0);
     }
   }
 

@@ -385,14 +385,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     menuItems.addAll([
       Divider(),
       new ListTile(
-        leading: Icon(Icons.insert_drive_file),
-        title: Text("Log"),
-        onTap: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pushNamed('/log-view');
-        },
-      ),
-      new ListTile(
         leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:github-circle")),
         title: Text("Report an issue"),
         onTap: () {

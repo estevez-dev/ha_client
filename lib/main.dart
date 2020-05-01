@@ -113,7 +113,6 @@ part 'pages/settings/app_settings.page.dart';
 part 'pages/settings/lookandfeel_settings.part.dart';
 part 'pages/zha_page.dart';
 part 'home_assistant.class.dart';
-part 'pages/log.page.dart';
 part 'pages/entity.page.dart';
 part 'utils/mdi.class.dart';
 part 'entity_collection.class.dart';
@@ -267,7 +266,6 @@ class _HAClientAppState extends State<HAClientApp> {
           mediaUrl: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['url'] : ''}",
           mediaType: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['type'] ?? '' : ''}",
         ),
-        "/log-view": (context) => LogViewPage(title: "Log"),
         "/webview": (context) => standaloneWebview.WebviewScaffold(
           url: "${(ModalRoute.of(context).settings.arguments as Map)['url']}",
           appBar: new AppBar(
