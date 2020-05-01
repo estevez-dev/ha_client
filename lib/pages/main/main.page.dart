@@ -611,7 +611,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                     icon: mediaMenuIcon,
                     onPressed: () {
                       showMenu(
-                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 100.0, 50, 0.0),
+                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, MediaQuery.of(context).padding.top + Sizes.iconSize + 20, 50, 0),
                           context: context,
                           items: mediaMenuItems
                       ).then((String val) {
@@ -628,7 +628,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                         "mdi:dots-vertical"), color: Colors.white,),
                     onPressed: () {
                       showMenu(
-                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 100, 0.0, 0.0),
+                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, MediaQuery.of(context).padding.top + Sizes.iconSize + 20, 0.0, 0.0),
                           context: context,
                           items: serviceMenuItems
                       ).then((String val) {
