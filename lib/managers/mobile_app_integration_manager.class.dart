@@ -16,9 +16,13 @@ class MobileAppIntegrationManager {
     }
   };
 
+  static String getDefaultDeviceName() {
+    return '${HomeAssistant().userName}\'s ${DeviceInfoManager().model}';
+  }
+
   static Future checkAppRegistration({bool forceRegister: false, bool showOkDialog: false}) {
     Completer completer = Completer();
-    _appRegistrationData["device_name"] = "${HomeAssistant().userName}'s ${DeviceInfoManager().model}";
+    _appRegistrationData["device_name"] = ConnectionManager().mobileAppDeviceName ?? getDefaultDeviceName();
     (_appRegistrationData["app_data"] as Map)["push_token"] = "${HomeAssistant().fcmToken}";
     if (ConnectionManager().webhookId == null || forceRegister) {
       Logger.d("Mobile app was not registered yet or need to be reseted. Registering...");

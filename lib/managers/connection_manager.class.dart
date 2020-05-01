@@ -19,6 +19,7 @@ class ConnectionManager {
   String _tempToken;
   String oauthUrl;
   String webhookId;
+  String mobileAppDeviceName;
   bool settingsLoaded = false;
   int appIntegrationVersion;
   bool get isAuthenticated => _token != null;
@@ -45,6 +46,7 @@ class ConnectionManager {
       _port = prefs.getString('hassio-port');
       webhookId = prefs.getString('app-webhook-id');
       appIntegrationVersion = prefs.getInt('app-integration-version') ?? 0;
+      mobileAppDeviceName = prefs.getString('app-integration-device-name');
       displayHostname = "$_domain:$_port";
       _webSocketAPIEndpoint =
       "${prefs.getString('hassio-protocol')}://$_domain:$_port/api/websocket";

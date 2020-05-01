@@ -14,6 +14,9 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   int _locationInterval = LocationManager().defaultUpdateIntervalMinutes;
   bool _locationTrackingEnabled = false;
   bool _wait = false;
+  String _deviceName = '';
+  bool _applyNameEnabled = false;
+  String _newDeviceName = '';
 
   @override
   void initState() {
@@ -27,6 +30,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     await prefs.reload();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
+        _deviceName = _newDeviceName = ConnectionManager().mobileAppDeviceName ?? MobileAppIntegrationManager.getDefaultDeviceName();
         _locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
         _locationInterval = prefs.getInt("location-interval") ?? LocationManager().defaultUpdateIntervalMinutes;
         if (_locationInterval % 5 != 0) {
@@ -157,30 +161,25 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                 ],
               ),
               Divider(),
-              Text("Integration status", style: Theme.of(context).textTheme.title),
+              Text("Device name", style: Theme.of(context).textTheme.title),
               Container(height: Sizes.rowPadding,),
-              Text(
-                "${HomeAssistant().userName}'s ${DeviceInfoManager().model}, ${DeviceInfoManager().osName} ${DeviceInfoManager().osVersion}",
-                style: Theme.of(context).textTheme.subtitle,
-                ),
+              TextField(
+                /*decoration: InputDecoration(
+                    labelText: "Long-lived token"
+                ),*/
+                controller: TextEditingController.fromValue(TextEditingValue(text: _newDeviceName)),
+                onChanged: (value) {
+                  setState(() {
+                    _newDeviceName = value;
+                    _applyNameEnabled = _newDeviceName != _deviceName;
+                  });
+                }
+              ),
               Container(height: 6.0,),
-              Text("Here you can manually check if HA Client integration with your Home Assistant works fine. As mobileApp integration in Home Assistant is still in development, this is not 100% correct check."),
-              //Divider(),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  RaisedButton(
-                      color: Colors.blue,
-                      onPressed: () => updateRegistration(),
-                      child: Text("Check integration", style: Theme.of(context).textTheme.button)
-                  ),
-                  Container(width: 10.0,),
-                  RaisedButton(
-                      color: Colors.redAccent,
-                      onPressed: () => resetRegistration(),
-                      child: Text("Reset integration", style: Theme.of(context).textTheme.button)
-                  )
-                ],
+              RaisedButton(
+                color: Colors.blue,
+                onPressed: () => _applyNameEnabled ? updateRegistration() : null,
+                child: Text("Update device name", style: Theme.of(context).textTheme.button)
               ),
             ]
         );
