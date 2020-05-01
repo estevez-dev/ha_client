@@ -211,6 +211,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     if (_showEntityPageSubscription == null) {
       _showEntityPageSubscription =
           eventBus.on<ShowEntityPageEvent>().listen((event) {
+            Logger.d('Showing entity page event handled: ${event.entityId}');
             _showEntityPage(event.entityId);
           });
     }
@@ -309,6 +310,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   }
 
   void _showEntityPage(String entityId) {
+    Logger.d('Showing entity page: $entityId');
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -615,7 +617,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                       ).then((String val) {
                         if (val == "play_media") {
                           Navigator.pushNamed(context, "/play-media", arguments: {"url": ""});
-                        } else  {
+                        } else if (val != null)  {
                           _showEntityPage(val);
                         }
                       });
