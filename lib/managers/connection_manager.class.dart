@@ -59,7 +59,7 @@ class ConnectionManager {
         final storage = new FlutterSecureStorage();
         try {
           _token = await storage.read(key: "hacl_llt");
-          Logger.e("Long-lived token read successful");
+          Logger.d("Long-lived token read successful");
           oauthUrl = "$httpWebHost/auth/authorize?client_id=${Uri.encodeComponent(
               'https://ha-client.app')}&redirect_uri=${Uri
               .encodeComponent(
