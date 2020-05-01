@@ -122,9 +122,9 @@ class HomeAssistant {
       await prefs.setString('cached_panels', json.encode(_rawPanels));
       await prefs.setString('cached_services', json.encode(services));
       await prefs.setBool('cached', true);
-    } catch (e) {
+    } catch (e, stacktrace) {
       await prefs.setBool('cached', false);
-      Logger.e('Error saving cache: $e');
+      Logger.e('Error saving cache: $e', stacktrace: stacktrace);
     }
     Logger.d('Done saving cache');
   }
@@ -145,12 +145,12 @@ class HomeAssistant {
         var data = json.decode(sharedPrefs.getString('cached_config') ?? '{}');
         _parseConfig(data);
       } catch (e, stacktrace) {
-        Crashlytics.instance.recordError('Error gettong config from cache: $e', stacktrace);
+       Logger.e('Error gettong config from cache: $e', stacktrace: stacktrace);
         throw HACException("Error getting config: $e");
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_config").then((data) => _parseConfig(data)).catchError((e) {
-        Crashlytics.instance.recordError('get_config error: $e', null);
+       Logger.e('get_config error: $e');
         throw HACException("Error getting config: $e");
       });
     }
@@ -166,14 +166,14 @@ class HomeAssistant {
         var data = json.decode(sharedPrefs.getString('cached_states') ?? '[]');
         _parseStates(data);
       } catch (e, stacktrace) {
-        Crashlytics.instance.recordError('Error getting cached states: $e', stacktrace);
+       Logger.e('Error getting cached states: $e', stacktrace: stacktrace);
         throw HACException("Error getting states: $e");
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_states").then(
               (data) => _parseStates(data)
       ).catchError((e) {
-        Crashlytics.instance.recordError('get_states error: $e', null);
+       Logger.e('get_states error: $e');
         throw HACException("Error getting states: $e");
       });
     }
@@ -213,7 +213,7 @@ class HomeAssistant {
           _rawLovelaceData = null;
           completer.complete();
         } else {
-          Crashlytics.instance.recordError('lovelace/config error: $e', null);
+         Logger.e('lovelace/config error: $e');
           completer.completeError(HACException("Error getting lovelace config: $e"));
         }
       });
@@ -228,11 +228,11 @@ class HomeAssistant {
         var data = json.decode(prefs.getString('cached_services') ?? '{}');
         _parseServices(data);
       } catch (e, stacktrace) {
-        Crashlytics.instance.recordError(e, stacktrace);  
+       Logger.e(e, stacktrace: stacktrace);  
       }
     }
     await ConnectionManager().sendSocketMessage(type: "get_services").then((data) => _parseServices(data)).catchError((e) {	
-      Crashlytics.instance.recordError('get_services error: $e', null);
+     Logger.e('get_services error: $e');
     });	
   }
 
@@ -243,7 +243,7 @@ class HomeAssistant {
   Future _getUserInfo(SharedPreferences sharedPrefs) async {
     _userName = null;
     await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) => _parseUserInfo(data)).catchError((e) {
-      Crashlytics.instance.recordError('auth/current_user error: $e', null);
+     Logger.e('auth/current_user error: $e');
     });
   }
 
@@ -259,11 +259,11 @@ class HomeAssistant {
         var data = json.decode(sharedPrefs.getString('cached_panels') ?? '{}');
         _parsePanels(data);
       } catch (e, stacktrace) {
-        Crashlytics.instance.recordError(e, stacktrace);
+       Logger.e(e, stacktrace: stacktrace);
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_panels").then((data) => _parsePanels(data)).catchError((e, stacktrace) {
-        Crashlytics.instance.recordError('get_panels error: $e', stacktrace);
+       Logger.e('get_panels error: $e', stacktrace: stacktrace);
         throw HACException('Can\'t get panles: $e');
       });
     }
