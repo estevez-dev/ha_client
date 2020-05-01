@@ -397,7 +397,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         title: Text("Report an issue"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURL("https://github.com/estevez-dev/ha_client/issues/new");
+          Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
         },
       ),
       Divider(),
@@ -426,7 +426,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         title: Text("Contacts/Discussion"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURL("https://discord.gg/nd6FZQ");
+          Launcher.launchURLInBrowser("https://discord.gg/nd6FZQ");
         },
       ),
       new ListTile(
@@ -441,7 +441,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();
-                Launcher.launchURL("http://ha-client.app/");
+                Launcher.launchURLInBrowser("http://ha-client.app/");
               },
               child: Text(
                 "ha-client.app",

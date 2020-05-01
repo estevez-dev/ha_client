@@ -108,10 +108,10 @@ class MobileAppIntegrationManager {
             positiveText: "Report to GitHub",
             negativeText: "Report to Discord",
             onPositive: () {
-              Launcher.launchURL("https://github.com/estevez-dev/ha_client/issues/new");
+              Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
             },
             onNegative: () {
-              Launcher.launchURL("https://discord.gg/AUzEvwn");
+              Launcher.launchURLInBrowser("https://discord.gg/AUzEvwn");
             },
           ));
         }
@@ -128,7 +128,7 @@ class MobileAppIntegrationManager {
       positiveText: "Ok",
       negativeText: "Report an issue",
       onNegative: () {
-        Launcher.launchURL("https://github.com/estevez-dev/ha_client/issues/new");
+        Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
       },
     ));
   }
