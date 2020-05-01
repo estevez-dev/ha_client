@@ -139,37 +139,41 @@ class HomeAssistant {
   }
 
   Future _getConfig(SharedPreferences sharedPrefs) async {
+    _instanceConfig?.clear();
     if (sharedPrefs != null) {
       try {
-        var data = json.decode(sharedPrefs.getString('cached_config'));
+        var data = json.decode(sharedPrefs.getString('cached_config') ?? '{}');
         _parseConfig(data);
-      } catch (e) {
+      } catch (e, stacktrace) {
+        Crashlytics.instance.recordError('Error gettong config from cache: $e', stacktrace);
         throw HACException("Error getting config: $e");
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_config").then((data) => _parseConfig(data)).catchError((e) {
+        Crashlytics.instance.recordError('get_config error: $e', null);
         throw HACException("Error getting config: $e");
       });
     }
   }
 
   void _parseConfig(data) {
-    _instanceConfig = Map.from(data);
-    Logger.d('stream: ${_instanceConfig['components'].contains('stream')}');
+    _instanceConfig = data;
   }
 
   Future _getStates(SharedPreferences sharedPrefs) async {
     if (sharedPrefs != null) {
       try {
-        var data = json.decode(sharedPrefs.getString('cached_states'));
+        var data = json.decode(sharedPrefs.getString('cached_states') ?? '[]');
         _parseStates(data);
-      } catch (e) {
+      } catch (e, stacktrace) {
+        Crashlytics.instance.recordError('Error getting cached states: $e', stacktrace);
         throw HACException("Error getting states: $e");
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_states").then(
               (data) => _parseStates(data)
       ).catchError((e) {
+        Crashlytics.instance.recordError('get_states error: $e', null);
         throw HACException("Error getting states: $e");
       });
     }
@@ -183,7 +187,7 @@ class HomeAssistant {
   Future _getLovelace(SharedPreferences sharedPrefs) {
     if (sharedPrefs != null) {
       try {
-        var data = json.decode(sharedPrefs.getString('cached_lovelace'));
+        var data = json.decode(sharedPrefs.getString('cached_lovelace') ?? '{}');
         _rawLovelaceData = data;
       } catch (e) {
         autoUi = true;
@@ -204,11 +208,12 @@ class HomeAssistant {
         _rawLovelaceData = data;
         completer.complete();
       }).catchError((e) {
-        if ("$e" == "config_not_found") {
+        if ("$e".contains("config_not_found")) {
           autoUi = true;
           _rawLovelaceData = null;
           completer.complete();
         } else {
+          Crashlytics.instance.recordError('lovelace/config error: $e', null);
           completer.completeError(HACException("Error getting lovelace config: $e"));
         }
       });
@@ -216,17 +221,18 @@ class HomeAssistant {
     }
   }
 
-  Future _getServices(SharedPreferences prefs) async {	
+  Future _getServices(SharedPreferences prefs) async {
+    services?.clear();	
     if (prefs != null) {
       try {
-        var data = json.decode(prefs.getString('cached_services'));
+        var data = json.decode(prefs.getString('cached_services') ?? '{}');
         _parseServices(data);
-      } catch (e) {
-        Logger.w("Can't get services: $e");  
+      } catch (e, stacktrace) {
+        Crashlytics.instance.recordError(e, stacktrace);  
       }
     }
     await ConnectionManager().sendSocketMessage(type: "get_services").then((data) => _parseServices(data)).catchError((e) {	
-      Logger.w("Can't get services: $e");	
+      Crashlytics.instance.recordError('get_services error: $e', null);
     });	
   }
 
@@ -237,7 +243,7 @@ class HomeAssistant {
   Future _getUserInfo(SharedPreferences sharedPrefs) async {
     _userName = null;
     await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) => _parseUserInfo(data)).catchError((e) {
-      Logger.w("Can't get user info: $e");
+      Crashlytics.instance.recordError('auth/current_user error: $e', null);
     });
   }
 
@@ -247,18 +253,17 @@ class HomeAssistant {
   }
 
   Future _getPanels(SharedPreferences sharedPrefs) async {
+    panels.clear();
     if (sharedPrefs != null) {
       try {
         var data = json.decode(sharedPrefs.getString('cached_panels') ?? '{}');
         _parsePanels(data);
       } catch (e, stacktrace) {
         Crashlytics.instance.recordError(e, stacktrace);
-        panels.clear();
       }
     } else {
       await ConnectionManager().sendSocketMessage(type: "get_panels").then((data) => _parsePanels(data)).catchError((e, stacktrace) {
-        panels.clear();
-        Crashlytics.instance.recordError(e, stacktrace);
+        Crashlytics.instance.recordError('get_panels error: $e', stacktrace);
         throw HACException('Can\'t get panles: $e');
       });
     }
@@ -266,7 +271,6 @@ class HomeAssistant {
 
   void _parsePanels(data) {
     _rawPanels = data;
-    panels.clear();
     List<Panel> dashboards = [];
     data.forEach((k,v) {
         String title = v['title'] == null ? "${k[0].toUpperCase()}${k.substring(1)}" : "${v['title'][0].toUpperCase()}${v['title'].substring(1)}";
@@ -319,7 +323,6 @@ class HomeAssistant {
   }
 
   void _handleEntityStateChange(Map eventData) {
-    //TheLogger.debug( "New state for ${eventData['entity_id']}");
     if (_fetchCompleter != null && _fetchCompleter.isCompleted) {
       Map data = Map.from(eventData);
       eventBus.fire(new StateChangedEvent(
@@ -338,57 +341,5 @@ class HomeAssistant {
   void _createUI() {
     Logger.d("Creating Lovelace UI");
     ui = HomeAssistantUI(rawLovelaceConfig: _rawLovelaceData);
-    /*if (isServiceExist('zha_map')) {
-      panels.add(
-          Panel(
-            id: 'haclient_zha',
-            componentName: 'haclient_zha',
-            title: 'ZHA',
-            urlPath: '/haclient_zha',
-            icon: 'mdi:zigbee'
-          )
-        );
-    }*/
   }
 }
-
-/*
-class SendMessageQueue {
-  int _messageTimeout;
-  List<HAMessage> _queue = [];
-
-  SendMessageQueue(this._messageTimeout);
-
-  void add(String message) {
-    _queue.add(HAMessage(_messageTimeout, message));
-  }
-
-  List<String> getActualMessages() {
-    _queue.removeWhere((item) => item.isExpired());
-    List<String> result = [];
-    _queue.forEach((haMessage){
-      result.add(haMessage.message);
-    });
-    this.clear();
-    return result;
-  }
-
-  void clear() {
-    _queue.clear();
-  }
-
-}
-
-class HAMessage {
-  DateTime _timeStamp;
-  int _messageTimeout;
-  String message;
-
-  HAMessage(this._messageTimeout, this.message) {
-    _timeStamp = DateTime.now();
-  }
-
-  bool isExpired() {
-    return DateTime.now().difference(_timeStamp).inSeconds > _messageTimeout;
-  }
-}*/
