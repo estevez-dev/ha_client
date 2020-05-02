@@ -35,12 +35,15 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
   }
 
   Widget _buildMenu(BuildContext context) {
+    List<Widget> items = [
+      _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:network'), 'Connection settings', AppSettingsSection.connectionSettings),
+      _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:brush'), 'Look and feel', AppSettingsSection.lookAndFeel),
+    ];
+    if (ConnectionManager().webhookId != null) {
+      items.insert(1, _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:cellphone-android'), 'Integration settings', AppSettingsSection.integrationSettings));
+    }
     return ListView(
-      children: <Widget>[
-        _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:network'), 'Connection settings', AppSettingsSection.connectionSettings),
-        _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:cellphone-android'), 'Integration settings', AppSettingsSection.integrationSettings),
-        _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:brush'), 'Look and feel', AppSettingsSection.lookAndFeel),
-      ],
+      children: items,
     );
   }
 

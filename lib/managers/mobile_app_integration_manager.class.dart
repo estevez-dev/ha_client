@@ -17,6 +17,9 @@ class MobileAppIntegrationManager {
   };
 
   static String getDefaultDeviceName() {
+    if (HomeAssistant().userName.isEmpty) {
+      return '${DeviceInfoManager().model}';  
+    }
     return '${HomeAssistant().userName}\'s ${DeviceInfoManager().model}';
   }
 

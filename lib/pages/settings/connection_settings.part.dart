@@ -1,187 +1,194 @@
 part of '../../main.dart';
 
 class ConnectionSettingsPage extends StatefulWidget {
-  ConnectionSettingsPage({Key key, this.title}) : super(key: key);
+  ConnectionSettingsPage({Key key, this.title, this.quickStart: false}) : super(key: key);
 
   final String title;
+  final bool quickStart;
 
   @override
   _ConnectionSettingsPageState createState() => new _ConnectionSettingsPageState();
 }
 
 class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
-  String _hassioDomain = "";
-  String _newHassioDomain = "";
-  String _hassioPort = "";
-  String _newHassioPort = "";
-  String _socketProtocol = "wss";
-  String _newSocketProtocol = "wss";
-  String _longLivedToken = "";
-  String _newLongLivedToken = "";
+  String _homeAssistantUrl = '';
+  String _deviceName;
+  bool _loaded = false;
+  bool _includeDeviceName = false;
 
-  String oauthUrl;
-  bool useOAuth = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _loadSettings();
-
+    if (!widget.quickStart) {
+      _loadSettings();
+    } else {
+      _deviceName = MobileAppIntegrationManager.getDefaultDeviceName();
+      _loaded = true;
+    }
   }
 
   _loadSettings() async {
+    Logger.d('Loading settings...');
+    _includeDeviceName = widget.quickStart || ConnectionManager().webhookId == null;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final storage = new FlutterSecureStorage();
-
-    try {
-      useOAuth = prefs.getBool("oauth-used") ?? true;
-    } catch (e) {
-      useOAuth = true;
-    }
-
-    if (!useOAuth) {
-      try {
-        _longLivedToken = _newLongLivedToken =
-        await storage.read(key: "hacl_llt");
-      } catch (e) {
-        _longLivedToken = _newLongLivedToken = "";
-        await storage.delete(key: "hacl_llt");
-      }
-    }
-
+    String domain = prefs.getString('hassio-domain')?? '';
+    String port = prefs.getString('hassio-port') ?? '';
+    String urlProtocol = prefs.getString('hassio-res-protocol') ?? 'https';
+    _homeAssistantUrl = '$urlProtocol://$domain:$port';
+    _deviceName = prefs.getString('app-integration-device-name') ?? MobileAppIntegrationManager.getDefaultDeviceName();
     setState(() {
-      _hassioDomain = _newHassioDomain = prefs.getString("hassio-domain")?? "";
-      _hassioPort = _newHassioPort = prefs.getString("hassio-port") ?? "";
-      _socketProtocol = _newSocketProtocol = prefs.getString("hassio-protocol") ?? 'wss';
+      _loaded = true;
     });
   }
 
-  bool _checkConfigChanged() {
-    return (
-      (_newHassioPort != _hassioPort) ||
-      (_newHassioDomain != _hassioDomain) ||
-      (_newSocketProtocol != _socketProtocol) ||
-      (_newLongLivedToken != _longLivedToken));
-
-  }
-
   _saveSettings() async {
-    _newHassioDomain = _newHassioDomain.trim();
-    if (_newHassioDomain.startsWith("http") && _newHassioDomain.indexOf("//") > 0) {
-      _newHassioDomain.startsWith("https") ? _newSocketProtocol = "wss" : _newSocketProtocol = "ws";
-      _newHassioDomain = _newHassioDomain.split("//")[1];
+    _homeAssistantUrl = _homeAssistantUrl.trim();
+    String socketProtocol;
+    String domain;
+    String port;
+    if (_homeAssistantUrl.startsWith("http") && _homeAssistantUrl.indexOf("//") > 0) {
+      _homeAssistantUrl.startsWith("https") ? socketProtocol = "wss" : socketProtocol = "ws";
+      domain = _homeAssistantUrl.split("//")[1];
+    } else {
+      domain = _homeAssistantUrl;
     }
-    _newHassioDomain = _newHassioDomain.split("/")[0];
-    if (_newHassioDomain.contains(":")) {
-      List<String> domainAndPort = _newHassioDomain.split(":");
-      _newHassioDomain = domainAndPort[0];
-      _newHassioPort = domainAndPort[1];
+    domain = domain.split("/")[0];
+    if (domain.contains(":")) {
+      List<String> domainAndPort = domain.split(":");
+      domain = domainAndPort[0];
+      port = domainAndPort[1];
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final storage = new FlutterSecureStorage();
-    if (_newLongLivedToken.isNotEmpty) {
-      _newLongLivedToken = _newLongLivedToken.trim();
-      prefs.setBool("oauth-used", false);
-      await storage.write(key: "hacl_llt", value: _newLongLivedToken);
-    } else if (!useOAuth) {
-      await storage.delete(key: "hacl_llt");
-    }
-    prefs.setString("hassio-domain", _newHassioDomain);
-    if (_newHassioPort == null || _newHassioPort.isEmpty) {
-      _newHassioPort = _newSocketProtocol == "wss" ? "443" : "80";
+    await prefs.setString("hassio-domain", domain);
+    if (port == null || port.isEmpty) {
+      port = socketProtocol == "wss" ? "443" : "80";
     } else {
-      _newHassioPort = _newHassioPort.trim();
+      port = port.trim();
     }
-    prefs.setString("hassio-port", _newHassioPort);
-    prefs.setString("hassio-protocol", _newSocketProtocol);
-    prefs.setString("hassio-res-protocol", _newSocketProtocol == "wss" ? "https" : "http");
+    await prefs.setString("hassio-port", port);
+    await prefs.setString("hassio-protocol", socketProtocol);
+    await prefs.setString("hassio-res-protocol", socketProtocol == "wss" ? "https" : "http");
+    if (_includeDeviceName) {
+      await prefs.setString('app-integration-device-name', _deviceName);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      scrollDirection: Axis.vertical,
-      padding: const EdgeInsets.all(20.0),
-      children: <Widget>[
+    if (!_loaded) {
+      return PageLoadingIndicator();
+    }
+    List<Widget> formChildren = <Widget>[
+      Text(
+          "Home Assistant url:",
+          style: Theme.of(context).textTheme.headline,
+      ),
+      TextFormField(
+        initialValue: _homeAssistantUrl,
+        decoration: InputDecoration(
+          hintText: "Please enter url",
+          contentPadding: EdgeInsets.all(0),
+          hintStyle: Theme.of(context).textTheme.subhead.copyWith(
+            color: Theme.of(context).textTheme.overline.color
+          )
+        ),
+        onSaved: (newValue) {
+          _homeAssistantUrl = newValue;
+        },
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'Url is required';
+          }
+          return null;
+        },
+      ),
+      Container(
+        height: 10,
+      ),
+      Text(
+          "For example:",
+          style: Theme.of(context).textTheme.body1,
+      ),
+      Text(
+          "192.186.2.14:8123",
+          style: Theme.of(context).textTheme.subhead,
+      ),
+      Text(
+          "http://myhome.duckdns.org:8123",
+          style: Theme.of(context).textTheme.subhead,
+      ),
+      Text(
+          "https://efkmfrwk3r4fsfwrfrg5.ui.nabu.casa/",
+          style: Theme.of(context).textTheme.subhead,
+      ),
+    ];
+
+    if (_includeDeviceName) {
+      formChildren.addAll(<Widget>[
+        Container(
+          height: 30,
+        ),
         Text(
-            "Connection settings",
+            "Device name:",
             style: Theme.of(context).textTheme.headline,
         ),
-        new Row(
-          children: [
-            Text("Use ssl (HTTPS)"),
-            Switch(
-              value: (_newSocketProtocol == "wss"),
-              onChanged: (value) {
-                setState(() {
-                  _newSocketProtocol = value ? "wss" : "ws";
-                });
-              },
+        TextFormField(
+          initialValue: _deviceName,
+          onSaved: (newValue) {
+            _deviceName = newValue;
+          },
+          decoration: InputDecoration(
+            hintText: 'Please enter device name',
+            contentPadding: EdgeInsets.all(0),
+            hintStyle: Theme.of(context).textTheme.subhead.copyWith(
+              color: Theme.of(context).textTheme.overline.color
             )
-          ],
-        ),
-        new TextField(
-          decoration: InputDecoration(
-            labelText: "Home Assistant domain or ip address"
           ),
-          controller: TextEditingController.fromValue(TextEditingValue(text: _newHassioDomain)),
-          onChanged: (value) {
-            _newHassioDomain = value;
-          }
-        ),
-        new TextField(
-          decoration: InputDecoration(
-            labelText: "Home Assistant port (default is 8123)"
-          ),
-          controller: TextEditingController.fromValue(TextEditingValue(text: _newHassioPort)),
-          onChanged: (value) {
-            _newHassioPort = value;
-          }
-        ),
-        new Text(
-          "Try ports 80 and 443 if default is not working and you don't know why.",
-          style: Theme.of(context).textTheme.caption,
-        ),
-        Text(
-          "Authentication settings",
-          style: Theme.of(context).textTheme.headline,
-        ),
-        Container(height: 10.0,),
-        Text(
-          "You can leave this field blank to make app generate new long-lived token automatically by asking you to login to your Home Assistant. Use this field only if you still want to use manually generated long-lived token. Leave it blank if you don't understand what we are talking about.",
-          style: Theme.of(context).textTheme.body1.copyWith(
-            color: Colors.redAccent
-          ),
-        ),
-        new TextField(
-            decoration: InputDecoration(
-                labelText: "Long-lived token"
-            ),
-            controller: TextEditingController.fromValue(TextEditingValue(text: _newLongLivedToken)),
-            onChanged: (value) {
-              _newLongLivedToken = value;
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Device name is required';
             }
+            return null;
+          },
         ),
-        Container(
-          height: Sizes.rowPadding,
-        ),
-        RaisedButton(
-          child: Text('Apply', style: Theme.of(context).textTheme.button),
-          color: Theme.of(context).primaryColorDark,
+      ]);
+    }
+
+    formChildren.addAll(<Widget>[
+      Container(
+        height: 30,
+      ),
+      ButtonTheme(
+        height: 60,
+        child: RaisedButton(
+          child: Text(widget.quickStart ? 'Engage' : 'Apply', style: Theme.of(context).textTheme.button.copyWith(fontSize: 20)),
+          color: Theme.of(context).primaryColor,
           onPressed: () {
-            if (_checkConfigChanged()) {
-              Logger.d("Settings changed. Saving...");
+            if (_formKey.currentState.validate()) {
+              _formKey.currentState.save();
               _saveSettings().then((r) {
-                Navigator.pop(context);
+                if (widget.quickStart) {
+                  Navigator.pushReplacementNamed(context, '/');
+                } else {
+                  Navigator.pop(context);
+                }
                 eventBus.fire(SettingsChangedEvent(true));
               });
-            } else {
-              Logger.d("Settings was not changed");
-              Navigator.pop(context);
             }
           },
         )
-      ],
+      )
+    ]);
+
+    return Form(
+      key: _formKey,
+      child: ListView(
+        scrollDirection: Axis.vertical,
+        padding: const EdgeInsets.all(20.0),
+        children: formChildren,
+      ),
     );
   }
 

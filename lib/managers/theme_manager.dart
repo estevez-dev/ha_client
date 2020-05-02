@@ -19,7 +19,7 @@ class HAClientTheme {
       fontWeight: FontWeight.normal,
       letterSpacing: 1,
     ),
-    button: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+    button: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
   );
 
   static const offEntityStates = [

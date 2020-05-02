@@ -76,6 +76,12 @@ class ShowPopupMessageEvent {
   ShowPopupMessageEvent({this.title, this.body, this.buttonText: "Ok", this.onButtonClick});
 }
 
+class ShowTokenLoginPopupEvent {    
+  final bool goBackFirst;
+
+  ShowTokenLoginPopupEvent({this.goBackFirst: false});
+}
+
 class ShowEntityPageEvent {
   final String entityId;
 

@@ -42,7 +42,7 @@ class HomeAssistant {
       return _instanceConfig["location_name"] ?? "Home";
     }
   }
-  String get userName => _userName ?? locationName;
+  String get userName => _userName ?? '';
   String get userAvatarText => userName.length > 0 ? userName[0] : "";
   bool get isNoEntities => entities == null || entities.isEmpty;
   bool get isNoViews => ui == null || ui.isEmpty;

@@ -113,6 +113,7 @@ part 'pages/settings/integration_settings.part.dart';
 part 'pages/settings/app_settings.page.dart';
 part 'pages/settings/lookandfeel_settings.part.dart';
 part 'pages/zha_page.dart';
+part 'pages/quick_start.page.dart';
 part 'home_assistant.class.dart';
 part 'pages/entity.page.dart';
 part 'utils/mdi.class.dart';
@@ -260,7 +261,7 @@ class _HAClientAppState extends State<HAClientApp> {
       routes: {
         "/": (context) => MainPage(title: 'HA Client'),
         "/app-settings": (context) => AppSettingsPage(),
-        "/connection-settings": (context) => AppSettingsPage(showSection: AppSettingsSection.connectionSettings),
+        "/connection-settings": (context) => AppSettingsPage(),
         "/integration-settings": (context) => AppSettingsPage(showSection: AppSettingsSection.integrationSettings),
         "/putchase": (context) => PurchasePage(title: "Support app development"),
         "/play-media": (context) => PlayMediaPage(
@@ -278,22 +279,23 @@ class _HAClientAppState extends State<HAClientApp> {
           ),
         ),
         "/whats-new": (context) => WhatsNewPage(),
+        "/quick-start": (context) => QuickStartPage(),
         "/haclient_zha": (context) => ZhaPage(),
         "/auth": (context) => new standaloneWebview.WebviewScaffold(
           url: "${ConnectionManager().oauthUrl}",
           appBar: new AppBar(
             leading: IconButton(
-                icon: Icon(Icons.help),
-                onPressed: () => Launcher.launchURLInCustomTab(context: context, url: "http://ha-client.app/docs#authentication")
+              icon: Icon(Icons.help),
+              onPressed: () => Launcher.launchURLInCustomTab(context: context, url: "https://ha-client.app/help/connection")
             ),
-            title: new Text("Login with HA"),
+            title: new Text("Login"),
             actions: <Widget>[
               FlatButton(
-                child: Text("Manual", style: Theme.of(context).textTheme.button.copyWith(
+                child: Text("Long-lived token", style: Theme.of(context).textTheme.button.copyWith(
                   decoration: TextDecoration.underline
                 )),
                 onPressed: () {
-                  eventBus.fire(ShowPageEvent(path: "/connection-settings", goBackFirst: true));
+                  eventBus.fire(ShowTokenLoginPopupEvent(goBackFirst: true));
                 },
               )
             ],

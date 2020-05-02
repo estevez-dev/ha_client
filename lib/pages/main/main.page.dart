@@ -20,6 +20,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   StreamSubscription _startAuthSubscription;
   StreamSubscription _showPopupDialogSubscription;
   StreamSubscription _showPopupMessageSubscription;
+  StreamSubscription _showTokenLoginPopupSubscription;
   StreamSubscription _reloadUISubscription;
   StreamSubscription _fullReloadSubscription;
   StreamSubscription _showPageSubscription;
@@ -105,7 +106,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           StartupUserMessagesManager().checkMessagesToShow();
         });
       }, onError: (e) {
-        _setErrorState(e);
+        if (e is HACNotSetUpException) {
+          Navigator.of(context).pushReplacementNamed('/quick-start');
+        } else {
+          _setErrorState(e);
+        }
       });
     });
   }
@@ -199,6 +204,14 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             positiveText: event.buttonText,
             negativeText: null
         );
+      });
+    }
+    if (_showTokenLoginPopupSubscription == null) {
+      _showTokenLoginPopupSubscription = eventBus.on<ShowTokenLoginPopupEvent>().listen((event){
+        if (event.goBackFirst) {
+          Navigator.of(context).pop();
+        }
+        _showTokenLoginDialog();
       });
     }
     if (_serviceCallSubscription == null) {
@@ -297,6 +310,78 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           title: new Text("$title"),
           content: new Text("$body"),
           actions: buttons,
+        );
+      },
+    );
+  }
+
+  final _tokenLoginFormKey = GlobalKey<FormState>();
+
+  void _showTokenLoginDialog() {
+    // flutter defined function
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return SimpleDialog(
+          title: new Text('Login with long-lived token'),
+          children: <Widget>[
+            Form(
+              key: _tokenLoginFormKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                      child: TextFormField(
+                      onSaved: (newValue) {
+                        final storage = new FlutterSecureStorage();
+                        storage.write(key: "hacl_llt", value: newValue).then((_) {
+                          Navigator.of(context).pop();
+                          eventBus.fire(SettingsChangedEvent(true));
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Please enter long-lived token',
+                        contentPadding: EdgeInsets.all(0),
+                        hintStyle: Theme.of(context).textTheme.subhead.copyWith(
+                          color: Theme.of(context).textTheme.overline.color
+                        )
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Long-lived token can\'t be emty';
+                        }
+                        return null;
+                      },
+                    )
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      RaisedButton(
+                        child: Text('Login', style: Theme.of(context).textTheme.button.copyWith(fontSize: 20)),
+                        color: Theme.of(context).primaryColor,
+                        onPressed: () {
+                          if (_tokenLoginFormKey.currentState.validate()) {
+                            _tokenLoginFormKey.currentState.save();
+                          }
+                        },
+                      ),
+                      Container(width: 10),
+                      RaisedButton(
+                        child: Text('Cancel', style: Theme.of(context).textTheme.button.copyWith(fontSize: 20)),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
         );
       },
     );
@@ -577,9 +662,15 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   FlatButton(
-                    child: Text("Login with Home Assistant", style: Theme.of(context).textTheme.button),
-                    color: Colors.blue,
+                    child: Text("Login", style: Theme.of(context).textTheme.button),
+                    color: Theme.of(context).primaryColor,
                     onPressed: () => _fullLoad(),
+                  ),
+                  Container(height: 20,),
+                  FlatButton(
+                    child: Text("Login with long-lived token", style: Theme.of(context).textTheme.button),
+                    color: Theme.of(context).primaryColor,
+                    onPressed: () => eventBus.fire(ShowTokenLoginPopupEvent(goBackFirst: false))
                   )
                 ]
             )
@@ -697,6 +788,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     //final flutterWebviewPlugin = new FlutterWebviewPlugin();
     //flutterWebviewPlugin.dispose();
     _viewsTabController?.dispose();
+    _showTokenLoginPopupSubscription?.cancel();
     _stateSubscription?.cancel();
     _lovelaceSubscription?.cancel();
     _settingsSubscription?.cancel();

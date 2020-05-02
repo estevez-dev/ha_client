@@ -24,6 +24,13 @@ class HACException implements Exception {
   }
 }
 
+class HACNotSetUpException implements Exception {
+  @override
+  String toString() {
+    return 'HA Client is not set up';
+  }
+}
+
 class HAErrorAction {
   final String title;
   final int type;

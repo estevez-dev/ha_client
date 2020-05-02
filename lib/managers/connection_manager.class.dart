@@ -53,7 +53,10 @@ class ConnectionManager {
       httpWebHost =
       "${prefs.getString('hassio-res-protocol')}://$_domain:$_port";
       Logger.d('$_domain$_port');
-      if ((_domain == null) || (_port == null) ||
+      if (_domain == null && _port == null && webhookId == null && mobileAppDeviceName == null) {
+        completer.completeError(HACNotSetUpException());
+        stopInit = true;
+      } else if ((_domain == null) || (_port == null) ||
           (_domain.isEmpty) || (_port.isEmpty)) {
         completer.completeError(HACException.checkConnectionSettings());
         stopInit = true;
