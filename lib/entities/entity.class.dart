@@ -148,7 +148,7 @@ class Entity {
 
   void update(Map rawData, String webHost) {
     attributes = rawData["attributes"] ?? {};
-    domain = rawData["entity_id"].split(".")[0];
+    domain = rawData["entity_id"] != null ? rawData["entity_id"].split(".")[0] : null;
     entityId = rawData["entity_id"];
     deviceClass = attributes["device_class"];
     state = rawData["state"] is bool ? (rawData["state"] ? EntityState.on : EntityState.off) : rawData["state"];

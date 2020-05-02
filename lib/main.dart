@@ -100,6 +100,7 @@ part 'entities/alarm_control_panel/widgets/alarm_control_panel_controls.widget.d
 part 'entities/vacuum/vacuum_entity.class.dart';
 part 'entities/vacuum/widgets/vacuum_controls.dart';
 part 'entities/vacuum/widgets/vacuum_state_button.dart';
+part 'entities/error_entity_widget.dart';
 part 'pages/settings/connection_settings.part.dart';
 part 'pages/purchase.page.dart';
 part 'pages/widgets/product_purchase.widget.dart';
