@@ -35,7 +35,7 @@ class _EntityViewPageState extends State<EntityViewPage> {
   }
 
   _getEntity() {
-    _entity = HomeAssistant().entities.get(widget.entityId);
+    _entity = HomeAssistant().entities?.get(widget.entityId);
   }
 
   @override
