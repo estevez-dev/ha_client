@@ -9,6 +9,9 @@ class EntityIcon extends StatelessWidget {
   const EntityIcon({Key key, this.color, this.size: Sizes.iconSize, this.padding: const EdgeInsets.all(0.0)}) : super(key: key);
 
   int getDefaultIconByEntityId(String entityId, String deviceClass, String state) {
+    if (entityId == null) {
+      return 0;
+    }
     String domain = entityId.split(".")[0];
     String iconNameByDomain = MaterialDesignIcons.defaultIconsByDomains["$domain.$state"] ?? MaterialDesignIcons.defaultIconsByDomains["$domain"];
     String iconNameByDeviceClass;
