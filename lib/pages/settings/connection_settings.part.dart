@@ -25,12 +25,12 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
       _loadSettings();
     } else {
       _deviceName = MobileAppIntegrationManager.getDefaultDeviceName();
+      _includeDeviceName = true;
       _loaded = true;
     }
   }
 
   _loadSettings() async {
-    Logger.d('Loading settings...');
     _includeDeviceName = widget.quickStart || ConnectionManager().webhookId == null;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String domain = prefs.getString('hassio-domain')?? '';

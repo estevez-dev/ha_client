@@ -19,7 +19,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   StreamSubscription _showErrorSubscription;
   StreamSubscription _startAuthSubscription;
   StreamSubscription _showPopupSubscription;
-  StreamSubscription _showTokenLoginPopupSubscription;
   StreamSubscription _reloadUISubscription;
   StreamSubscription _fullReloadSubscription;
   StreamSubscription _showPageSubscription;
@@ -187,14 +186,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         event.popup.show(context);
       });
     }
-    if (_showTokenLoginPopupSubscription == null) {
-      _showTokenLoginPopupSubscription = eventBus.on<ShowTokenLoginPopupEvent>().listen((event){
-        if (event.goBackFirst) {
-          Navigator.of(context).pop();
-        }
-        _showTokenLoginDialog();
-      });
-    }
     if (_serviceCallSubscription == null) {
       _serviceCallSubscription =
           eventBus.on<NotifyServiceCallEvent>().listen((event) {
@@ -257,77 +248,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     } else {
       _bottomInfoBarController.showErrorBottomBar(e);
     }
-  }
-
-  final _tokenLoginFormKey = GlobalKey<FormState>();
-
-  void _showTokenLoginDialog() {
-    // flutter defined function
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return SimpleDialog(
-          title: new Text('Login with long-lived token'),
-          children: <Widget>[
-            Form(
-              key: _tokenLoginFormKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                      child: TextFormField(
-                      onSaved: (newValue) {
-                        final storage = new FlutterSecureStorage();
-                        storage.write(key: "hacl_llt", value: newValue).then((_) {
-                          Navigator.of(context).pop();
-                          eventBus.fire(SettingsChangedEvent(true));
-                        });
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Please enter long-lived token',
-                        contentPadding: EdgeInsets.all(0),
-                        hintStyle: Theme.of(context).textTheme.subhead.copyWith(
-                          color: Theme.of(context).textTheme.overline.color
-                        )
-                      ),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Long-lived token can\'t be emty';
-                        }
-                        return null;
-                      },
-                    )
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      FlatButton(
-                        child: Text('Login'),
-                        onPressed: () {
-                          if (_tokenLoginFormKey.currentState.validate()) {
-                            _tokenLoginFormKey.currentState.save();
-                          }
-                        },
-                      ),
-                      Container(width: 10),
-                      FlatButton(
-                        child: Text('Cancel'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
-        );
-      },
-    );
   }
 
   void _notifyServiceCalled(String domain, String service, entityId) {
@@ -731,7 +651,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     //final flutterWebviewPlugin = new FlutterWebviewPlugin();
     //flutterWebviewPlugin.dispose();
     _viewsTabController?.dispose();
-    _showTokenLoginPopupSubscription?.cancel();
     _stateSubscription?.cancel();
     _lovelaceSubscription?.cancel();
     _settingsSubscription?.cancel();

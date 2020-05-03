@@ -47,3 +47,80 @@ class Popup {
     );
   }
 }
+
+class TokenLoginPopup extends Popup {
+
+  TokenLoginPopup() : super(title: 'Login with long-lived token', body: '');
+
+  final _tokenLoginFormKey = GlobalKey<FormState>();
+
+  @override
+  void show(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return SimpleDialog(
+          title: new Text('Login with long-lived token'),
+          children: <Widget>[
+            Form(
+              key: _tokenLoginFormKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                      child: TextFormField(
+                      onSaved: (newValue) {
+                        final storage = new FlutterSecureStorage();
+                        storage.write(key: "hacl_llt", value: newValue).then((_) {
+                          Navigator.of(context).pop();
+                          eventBus.fire(SettingsChangedEvent(true));
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Please enter long-lived token',
+                        contentPadding: EdgeInsets.all(0),
+                        hintStyle: Theme.of(context).textTheme.subhead.copyWith(
+                          color: Theme.of(context).textTheme.overline.color
+                        )
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Long-lived token can\'t be emty';
+                        }
+                        return null;
+                      },
+                    )
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      FlatButton(
+                        child: Text('Login'),
+                        onPressed: () {
+                          if (_tokenLoginFormKey.currentState.validate()) {
+                            _tokenLoginFormKey.currentState.save();
+                          }
+                        },
+                      ),
+                      Container(width: 10),
+                      FlatButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+}
