@@ -377,7 +377,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         title: Text("Contacts/Discussion"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURLInBrowser("https://discord.gg/nd6FZQ");
+          Launcher.launchURLInBrowser("https://discord.gg/u9vq7QE");
         },
       ),
       new ListTile(

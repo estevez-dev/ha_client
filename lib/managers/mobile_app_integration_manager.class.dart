@@ -122,7 +122,7 @@ class MobileAppIntegrationManager {
           Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
         },
         onNegative: () {
-          Launcher.launchURLInBrowser("https://discord.gg/AUzEvwn");
+          Launcher.launchURLInBrowser("https://discord.gg/u9vq7QE");
         },
       )
     ));

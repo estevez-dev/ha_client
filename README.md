@@ -6,7 +6,7 @@ Visit [ha-client.app](http://ha-client.app/) for more info.
 
 Download the app from [Google Play](https://play.google.com/apps/testing/com.keyboardcrumbs.haclient)
 
-Discuss it on [Discord](https://discord.gg/nd6FZQ) or at [Home Assistant community](https://community.home-assistant.io/c/mobile-apps/ha-client-android)
+Discuss it on [Discord](https://discord.gg/u9vq7QE) or at [Home Assistant community](https://community.home-assistant.io/c/mobile-apps/ha-client-android)
 
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/estevez-dev/ha_client) 
 
