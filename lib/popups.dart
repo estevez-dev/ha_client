@@ -74,7 +74,7 @@ class TokenLoginPopup extends Popup {
                       child: TextFormField(
                       onSaved: (newValue) {
                         final storage = new FlutterSecureStorage();
-                        storage.write(key: "hacl_llt", value: newValue).then((_) {
+                        storage.write(key: "hacl_llt", value: newValue.trim()).then((_) {
                           Navigator.of(context).pop();
                           eventBus.fire(SettingsChangedEvent(true));
                         });
@@ -87,7 +87,7 @@ class TokenLoginPopup extends Popup {
                         )
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value.trim().isEmpty) {
                           return 'Long-lived token can\'t be emty';
                         }
                         return null;

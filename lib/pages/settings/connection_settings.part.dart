@@ -44,7 +44,6 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
   }
 
   _saveSettings() async {
-    _homeAssistantUrl = _homeAssistantUrl.trim();
     String socketProtocol;
     String domain;
     String port;
@@ -96,10 +95,10 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
           )
         ),
         onSaved: (newValue) {
-          _homeAssistantUrl = newValue;
+          _homeAssistantUrl = newValue.trim();
         },
         validator: (value) {
-          if (value.isEmpty) {
+          if (value.trim().isEmpty) {
             return 'Url is required';
           }
           return null;
@@ -138,7 +137,7 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
         TextFormField(
           initialValue: _deviceName,
           onSaved: (newValue) {
-            _deviceName = newValue;
+            _deviceName = newValue.trim();
           },
           decoration: InputDecoration(
             hintText: 'Please enter device name',
@@ -148,7 +147,7 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
             )
           ),
           validator: (value) {
-            if (value.isEmpty) {
+            if (value.trim().isEmpty) {
               return 'Device name is required';
             }
             return null;
