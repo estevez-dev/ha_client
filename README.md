@@ -10,7 +10,7 @@ Discuss it on [Discord](https://discord.gg/nd6FZQ) or at [Home Assistant communi
 
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/estevez-dev/ha_client) 
 
-#### Srable CI build
+#### Stable CI build
 [![Codemagic build status](https://api.codemagic.io/apps/5da8bdab9f20ef798f7c2c65/5eaef46c513b9f9b25eb7f1a/status_badge.svg)](https://codemagic.io/apps/5da8bdab9f20ef798f7c2c65/5eaef46c513b9f9b25eb7f1a/latest_build)
 #### Beta CI build
 [![Codemagic build status](https://api.codemagic.io/apps/5da8bdab9f20ef798f7c2c65/5db1862025dc3f0b0288a57a/status_badge.svg)](https://codemagic.io/apps/5da8bdab9f20ef798f7c2c65/5db1862025dc3f0b0288a57a/latest_build)
