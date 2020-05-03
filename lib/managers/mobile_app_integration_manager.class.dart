@@ -23,7 +23,7 @@ class MobileAppIntegrationManager {
     return '${HomeAssistant().userName}\'s ${DeviceInfoManager().model}';
   }
 
-  static Future checkAppRegistration({bool showOkDialog: false}) {
+  static Future checkAppRegistration() {
     Completer completer = Completer();
     _appRegistrationData["device_name"] = ConnectionManager().mobileAppDeviceName ?? getDefaultDeviceName();
     (_appRegistrationData["app_data"] as Map)["push_token"] = "${HomeAssistant().fcmToken}";
@@ -52,7 +52,7 @@ class MobileAppIntegrationManager {
 
           completer.complete();
           eventBus.fire(ShowPopupEvent(
-            Popup(
+            popup: Popup(
               title: "Mobile app Integration was created",
               body: "HA Client was registered as MobileApp in your Home Assistant. To start using notifications you need to restart your Home Assistant",
               positiveText: "Restart now",
@@ -94,15 +94,6 @@ class MobileAppIntegrationManager {
             _askToRemoveAndRegisterApp();
           } else {
             Logger.d('App registration works fine');
-            if (showOkDialog) {
-              eventBus.fire(ShowPopupEvent(
-                Popup(
-                  title: "All good",
-                  body: "HA Client integration with your Home Assistant server works fine",
-                  positiveText: "Ok"
-                )
-              ));
-            }
           }
         }
         completer.complete();
@@ -122,7 +113,7 @@ class MobileAppIntegrationManager {
 
   static void _showError() {
     eventBus.fire(ShowPopupEvent(
-      Popup(
+      popup: Popup(
         title: "App integration is not working properly",
         body: "Something wrong with HA Client integration on your Home Assistant server. Please report this issue. You can try to remove Mobile App integration from Home Assistant and restart server to fix this issue.",
         positiveText: "Report to GitHub",
@@ -139,7 +130,7 @@ class MobileAppIntegrationManager {
 
   static void _askToRemoveAndRegisterApp() {
     eventBus.fire(ShowPopupEvent(
-      Popup(
+      popup: Popup(
         title: "Mobile app integration needs to be updated",
         body: "You need to update HA Client integration to continue using notifications and location tracking. Please remove 'Mobile App' integration for this device from your Home Assistant and restart Home Assistant. Then go back to HA Client to create app integration again.",
         positiveText: "Ok",
@@ -153,7 +144,7 @@ class MobileAppIntegrationManager {
 
   static void _askToRegisterApp() {
     eventBus.fire(ShowPopupEvent(
-      RegisterAppPopup(
+      popup: RegisterAppPopup(
         title: "Mobile App integration is missing",
         body: "Looks like mobile app integration was removed from your Home Assistant or it needs to be updated.",
       )

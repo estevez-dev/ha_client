@@ -238,7 +238,7 @@ class _HAClientAppState extends State<HAClientApp> {
     if (purchase is List<PurchaseDetails>) {
       if (purchase[0].status == PurchaseStatus.purchased) {
         eventBus.fire(ShowPopupEvent(
-          Popup(
+          popup: Popup(
             title: "Thanks a lot!",
             body: "Thank you for supporting HA Client development!",
             positiveText: "Ok"
@@ -298,7 +298,10 @@ class _HAClientAppState extends State<HAClientApp> {
                   decoration: TextDecoration.underline
                 )),
                 onPressed: () {
-                  eventBus.fire(ShowTokenLoginPopupEvent(goBackFirst: true));
+                  eventBus.fire(ShowPopupEvent(
+                    goBackFirst: true,
+                    popup: TokenLoginPopup()
+                  ));
                 },
               )
             ],

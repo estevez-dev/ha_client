@@ -186,6 +186,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       _showPopupSubscription = eventBus.on<ShowPopupEvent>().listen((event){
         if (!_popupShown) {
           _popupShown = true;
+          if (event.goBackFirst) {
+            Navigator.of(context).pop();
+          }
           event.popup.show(context).then((_){
             _popupShown = false;
           });
@@ -539,7 +542,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                   FlatButton(
                     child: Text("Login with long-lived token", style: Theme.of(context).textTheme.button),
                     color: Theme.of(context).primaryColor,
-                    onPressed: () => eventBus.fire(ShowTokenLoginPopupEvent(goBackFirst: false))
+                    onPressed: () => eventBus.fire(ShowPopupEvent(
+                      popup: TokenLoginPopup()
+                    ))
                   ),
                   Container(height: 20,),
                   FlatButton(

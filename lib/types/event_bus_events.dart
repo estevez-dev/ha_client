@@ -58,35 +58,9 @@ class NotifyServiceCallEvent {
 
 class ShowPopupEvent {
   final Popup popup;
-
-  ShowPopupEvent(this.popup);
-}
-/*
-class ShowPopupDialogEvent {
-  final String title;
-  final String body;
-  final String positiveText;
-  final String negativeText;
-  final  onPositive;
-  final  onNegative;
-
-  ShowPopupDialogEvent({this.title, this.body, this.positiveText: "Ok", this.negativeText: "Cancel", this.onPositive, this.onNegative});
-}
-
-class ShowPopupMessageEvent {
-  final String title;
-  final String body;
-  final String buttonText;
-  final  onButtonClick;
-
-  ShowPopupMessageEvent({this.title, this.body, this.buttonText: "Ok", this.onButtonClick});
-}
-*/
-
-class ShowTokenLoginPopupEvent {    
   final bool goBackFirst;
 
-  ShowTokenLoginPopupEvent({this.goBackFirst: false});
+  ShowPopupEvent({this.popup, this.goBackFirst: false});
 }
 
 class ShowEntityPageEvent {
