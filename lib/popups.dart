@@ -10,7 +10,7 @@ class Popup {
 
   Popup({@required this.title, @required this.body, this.positiveText, this.negativeText, this.onPositive, this.onNegative});
 
-  void show(BuildContext context) {
+  Future show(BuildContext context) {
     List<Widget> buttons = [];
     buttons.add(FlatButton(
       child: new Text("$positiveText"),
@@ -33,7 +33,7 @@ class Popup {
       ));
     }
     // flutter defined function
-    showDialog(
+    return showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
@@ -55,8 +55,8 @@ class TokenLoginPopup extends Popup {
   final _tokenLoginFormKey = GlobalKey<FormState>();
 
   @override
-  void show(BuildContext context) {
-    showDialog(
+  Future show(BuildContext context) {
+    return showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
@@ -98,6 +98,13 @@ class TokenLoginPopup extends Popup {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       FlatButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      Container(width: 10),
+                      FlatButton(
                         child: Text('Login'),
                         onPressed: () {
                           if (_tokenLoginFormKey.currentState.validate()) {
@@ -105,13 +112,93 @@ class TokenLoginPopup extends Popup {
                           }
                         },
                       ),
-                      Container(width: 10),
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+}
+
+class RegisterAppPopup extends Popup {
+
+  RegisterAppPopup({String title, String body}): super(title: title, body: body);
+
+  final _tokenLoginFormKey = GlobalKey<FormState>();
+
+  @override
+  Future show(BuildContext context) {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return SimpleDialog(
+          title: new Text('${this.title}'),
+          children: <Widget>[
+            Form(
+              key: _tokenLoginFormKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    child: Text('${this.body}')
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                      child: TextFormField(
+                        initialValue: ConnectionManager().mobileAppDeviceName ?? MobileAppIntegrationManager.getDefaultDeviceName(),
+                        onSaved: (newValue) {
+                          String deviceName =  newValue?.trim();
+                          SharedPreferences.getInstance().then((prefs) {
+                            prefs.remove("app-webhook-id");
+                            prefs.setString('app-integration-device-name', deviceName);
+                            ConnectionManager().webhookId = null;
+                            ConnectionManager().mobileAppDeviceName = deviceName;
+                            Navigator.of(context).pop();
+                            MobileAppIntegrationManager.checkAppRegistration();
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Device name*',
+                          hintText: 'Please enter device name',
+                          contentPadding: EdgeInsets.all(0),
+                          hintStyle: Theme.of(context).textTheme.subhead.copyWith(
+                            color: Theme.of(context).textTheme.overline.color
+                          )
+                        ),
+                        validator: (value) {
+                          if (value.trim().isEmpty) {
+                            return 'Device name can\'t be emty';
+                          }
+                          return null;
+                        },
+                      )
+                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
                       FlatButton(
                         child: Text('Cancel'),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                      )
+                      ),
+                      Container(width: 10),
+                      FlatButton(
+                        child: Text('Create now'),
+                        onPressed: () {
+                          if (_tokenLoginFormKey.currentState.validate()) {
+                            _tokenLoginFormKey.currentState.save();
+                          }
+                        },
+                      ),
                     ],
                   )
                 ],

@@ -23,6 +23,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   StreamSubscription _fullReloadSubscription;
   StreamSubscription _showPageSubscription;
   BottomInfoBarController _bottomInfoBarController;
+  bool _popupShown = false;
   int _previousViewCount;
   bool _showLoginButton = false;
   bool _preventAppRefresh = false;
@@ -183,7 +184,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     }
     if (_showPopupSubscription == null) {
       _showPopupSubscription = eventBus.on<ShowPopupEvent>().listen((event){
-        event.popup.show(context);
+        if (!_popupShown) {
+          _popupShown = true;
+          event.popup.show(context).then((_){
+            _popupShown = false;
+          });
+        }
       });
     }
     if (_serviceCallSubscription == null) {
