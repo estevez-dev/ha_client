@@ -91,7 +91,7 @@ class CardData {
 
   List<EntityWrapper> getEntitiesToShow() {
     return entities.where((entityWrapper) {
-      if (HomeAssistant().autoUi && entityWrapper.entity.isHidden) {
+      if (entityWrapper.entity.isHidden) {
         return false;
       }
       List currentStateFilter;
