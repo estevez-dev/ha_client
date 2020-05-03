@@ -28,13 +28,7 @@ class Panel {
   }
 
   void handleOpen(BuildContext context) {
-    if (componentName == "config") {
-      Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PanelPage(title: "$title", panel: this),
-          )
-      );
-    } else if (componentName.startsWith('haclient')) {
+    if (componentName.startsWith('haclient')) {
       Navigator.of(context).pushNamed(urlPath);
     } else if (componentName == 'lovelace') {
       HomeAssistant().lovelaceDashboardUrl = this.urlPath;
