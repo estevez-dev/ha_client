@@ -24,7 +24,7 @@ class _WhatsNewPageState extends State<WhatsNewPage> {
       error = "";
     });
     http.Response response;
-    response = await http.get("http://ha-client.app/service/whats_new_0.8.5.md");
+    response = await http.get("http://ha-client.app/service/whats_new_1.0.0.md");
     if (response.statusCode == 200) {
       setState(() {
         data = response.body;

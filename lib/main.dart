@@ -264,7 +264,7 @@ class _HAClientAppState extends State<HAClientApp> {
       routes: {
         "/": (context) => MainPage(title: 'HA Client'),
         "/app-settings": (context) => AppSettingsPage(),
-        "/connection-settings": (context) => AppSettingsPage(),
+        "/connection-settings": (context) => AppSettingsPage(showSection: AppSettingsSection.connectionSettings),
         "/integration-settings": (context) => AppSettingsPage(showSection: AppSettingsSection.integrationSettings),
         "/putchase": (context) => PurchasePage(title: "Support app development"),
         "/play-media": (context) => PlayMediaPage(

@@ -540,6 +540,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                     child: Text("Login with long-lived token", style: Theme.of(context).textTheme.button),
                     color: Theme.of(context).primaryColor,
                     onPressed: () => eventBus.fire(ShowTokenLoginPopupEvent(goBackFirst: false))
+                  ),
+                  Container(height: 20,),
+                  FlatButton(
+                    child: Text("Connection settings", style: Theme.of(context).textTheme.button),
+                    color: Theme.of(context).primaryColor,
+                    onPressed: () => Navigator.of(context).pushNamed('/connection-settings')
                   )
                 ]
             )
