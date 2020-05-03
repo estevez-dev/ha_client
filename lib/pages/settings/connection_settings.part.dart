@@ -53,6 +53,7 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
       domain = _homeAssistantUrl.split("//")[1];
     } else {
       domain = _homeAssistantUrl;
+      socketProtocol = "ws";
     }
     domain = domain.split("/")[0];
     if (domain.contains(":")) {
