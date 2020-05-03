@@ -20,12 +20,7 @@ class _QuickStartPageState extends State<QuickStartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        leading: Container(),
         title: Text('Quick start'),
         actions: <Widget>[
           IconButton(
