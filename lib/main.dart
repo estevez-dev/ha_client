@@ -152,6 +152,7 @@ part 'entities/media_player/widgets/media_player_seek_bar.widget.dart';
 part 'entities/media_player/widgets/media_player_progress_bar.widget.dart';
 part 'pages/whats_new.page.dart';
 part 'pages/fullscreen.page.dart';
+part 'popups.dart';
 
 EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -236,10 +237,12 @@ class _HAClientAppState extends State<HAClientApp> {
   void _handlePurchaseUpdates(purchase) {
     if (purchase is List<PurchaseDetails>) {
       if (purchase[0].status == PurchaseStatus.purchased) {
-        eventBus.fire(ShowPopupMessageEvent(
+        eventBus.fire(ShowPopupEvent(
+          Popup(
             title: "Thanks a lot!",
             body: "Thank you for supporting HA Client development!",
-            buttonText: "Ok"
+            positiveText: "Ok"
+          )
         ));
       } else {
         Logger.d("Purchase change handler: ${purchase[0].status}");

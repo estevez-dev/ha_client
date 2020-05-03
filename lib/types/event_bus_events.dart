@@ -56,6 +56,12 @@ class NotifyServiceCallEvent {
   NotifyServiceCallEvent(this.domain, this.service, this.entityId);
 }
 
+class ShowPopupEvent {
+  final Popup popup;
+
+  ShowPopupEvent(this.popup);
+}
+/*
 class ShowPopupDialogEvent {
   final String title;
   final String body;
@@ -75,6 +81,7 @@ class ShowPopupMessageEvent {
 
   ShowPopupMessageEvent({this.title, this.body, this.buttonText: "Ok", this.onButtonClick});
 }
+*/
 
 class ShowTokenLoginPopupEvent {    
   final bool goBackFirst;

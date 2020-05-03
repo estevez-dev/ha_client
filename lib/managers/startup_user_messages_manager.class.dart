@@ -29,7 +29,8 @@ class StartupUserMessagesManager {
   }
 
   void _showSupportAppDevelopmentMessage() {
-    eventBus.fire(ShowPopupDialogEvent(
+    eventBus.fire(ShowPopupEvent(
+      Popup(
         title: "Hi!",
         body: "As you may have noticed this app contains no ads. Also all app features are available for you for free. I'm not planning to change this in nearest future, but still you can support this application development materially. There is one-time payment available as well as several subscription options. Thanks.",
         positiveText: "Show options",
@@ -45,6 +46,7 @@ class StartupUserMessagesManager {
             prefs.setBool(_supportAppDevelopmentMessageKey, true);
           });
         }
+      )
     ));
   }
 

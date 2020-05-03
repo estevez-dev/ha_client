@@ -18,8 +18,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   StreamSubscription _showEntityPageSubscription;
   StreamSubscription _showErrorSubscription;
   StreamSubscription _startAuthSubscription;
-  StreamSubscription _showPopupDialogSubscription;
-  StreamSubscription _showPopupMessageSubscription;
+  StreamSubscription _showPopupSubscription;
   StreamSubscription _showTokenLoginPopupSubscription;
   StreamSubscription _reloadUISubscription;
   StreamSubscription _fullReloadSubscription;
@@ -183,27 +182,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         _fullLoad();
       });
     }
-    if (_showPopupDialogSubscription == null) {
-      _showPopupDialogSubscription = eventBus.on<ShowPopupDialogEvent>().listen((event){
-        _showPopupDialog(
-            title: event.title,
-            body: event.body,
-            onPositive: event.onPositive,
-            onNegative: event.onNegative,
-            positiveText: event.positiveText,
-            negativeText: event.negativeText
-        );
-      });
-    }
-    if (_showPopupMessageSubscription == null) {
-      _showPopupMessageSubscription = eventBus.on<ShowPopupMessageEvent>().listen((event){
-        _showPopupDialog(
-            title: event.title,
-            body: event.body,
-            onPositive: event.onButtonClick,
-            positiveText: event.buttonText,
-            negativeText: null
-        );
+    if (_showPopupSubscription == null) {
+      _showPopupSubscription = eventBus.on<ShowPopupEvent>().listen((event){
+        event.popup.show(context);
       });
     }
     if (_showTokenLoginPopupSubscription == null) {
@@ -278,43 +259,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     }
   }
 
-  void _showPopupDialog({String title, String body, var onPositive, var onNegative, String positiveText, String negativeText}) {
-    List<Widget> buttons = [];
-    buttons.add(FlatButton(
-      child: new Text("$positiveText"),
-      onPressed: () {
-        Navigator.of(context).pop();
-        if (onPositive != null) {
-          onPositive();
-        }
-      },
-    ));
-    if (negativeText != null) {
-      buttons.add(FlatButton(
-        child: new Text("$negativeText"),
-        onPressed: () {
-          Navigator.of(context).pop();
-          if (onNegative != null) {
-            onNegative();
-          }
-        },
-      ));
-    }
-    // flutter defined function
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("$title"),
-          content: new Text("$body"),
-          actions: buttons,
-        );
-      },
-    );
-  }
-
   final _tokenLoginFormKey = GlobalKey<FormState>();
 
   void _showTokenLoginDialog() {
@@ -360,9 +304,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      RaisedButton(
-                        child: Text('Login', style: Theme.of(context).textTheme.button.copyWith(fontSize: 20)),
-                        color: Theme.of(context).primaryColor,
+                      FlatButton(
+                        child: Text('Login'),
                         onPressed: () {
                           if (_tokenLoginFormKey.currentState.validate()) {
                             _tokenLoginFormKey.currentState.save();
@@ -370,8 +313,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                         },
                       ),
                       Container(width: 10),
-                      RaisedButton(
-                        child: Text('Cancel', style: Theme.of(context).textTheme.button.copyWith(fontSize: 20)),
+                      FlatButton(
+                        child: Text('Cancel'),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -793,8 +736,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _lovelaceSubscription?.cancel();
     _settingsSubscription?.cancel();
     _serviceCallSubscription?.cancel();
-    _showPopupDialogSubscription?.cancel();
-    _showPopupMessageSubscription?.cancel();
+    _showPopupSubscription?.cancel();
     _showEntityPageSubscription?.cancel();
     _showErrorSubscription?.cancel();
     _startAuthSubscription?.cancel();
