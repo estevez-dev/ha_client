@@ -160,7 +160,7 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLoc
 const String appName = "HA Client";
 const appVersionNumber = "1.0.0";
 const appVersionAdd = "";
-const appVersion = "$appVersionNumber${appVersionAdd}";
+const appVersion = "$appVersionNumber$appVersionAdd";
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.
