@@ -33,6 +33,9 @@ class Logger {
   static void _writeToLog(ErrorLevel level, String message, dynamic stacktrace, bool skipCrashlytics) {
     if (isInDebugMode) {
       debugPrint('$message');
+      if (stacktrace != null) {
+        debugPrint('$stacktrace');
+      }
     } else if (!skipCrashlytics) {
       Crashlytics.instance.recordError('$message', stacktrace);
     }

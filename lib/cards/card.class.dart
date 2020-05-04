@@ -11,68 +11,68 @@ class CardData {
 
   EntityWrapper get entity => entities.isNotEmpty ? entities[0] : null;
 
-  factory CardData.parse(Map<String, dynamic> rawData) {
+  factory CardData.parse(rawData) {
     try {
       switch (rawData['type']) {
-        case CardType.ENTITIES:
-          return EntitiesCardData(rawData);
-          break;
-        case CardType.ALARM_PANEL:
-          return AlarmPanelCardData(rawData);
-          break;
-        case CardType.BUTTON:
-          return ButtonCardData(rawData);
-          break;
-        case CardType.ENTITY_BUTTON:
-          return ButtonCardData(rawData);
-          break;
-        case CardType.CONDITIONAL:
-          return CardData.parse(rawData['card']);
-          break;
-        case CardType.ENTITY_FILTER:
-          Map<String, dynamic> cardData = Map.from(rawData);
-          cardData.remove('type');
-          if (rawData.containsKey('card')) {
-            cardData.addAll(rawData['card']);
-          }
-          cardData['type'] ??= CardType.ENTITIES;
-          return CardData.parse(cardData);
-          break;
-        case CardType.GAUGE:
-          return GaugeCardData(rawData);
-          break;
-        case CardType.GLANCE:
-          return GlanceCardData(rawData);
-          break;
-        case CardType.HORIZONTAL_STACK:
-          return HorizontalStackCardData(rawData);
-          break;
-        case CardType.VERTICAL_STACK:
-          return VerticalStackCardData(rawData);
-          break;
-        case CardType.MARKDOWN:
-          return MarkdownCardData(rawData);
-          break;
-        case CardType.MEDIA_CONTROL:
-          return MediaControlCardData(rawData);
-          break;
-        default:
-          if (rawData.containsKey('entities')) {
+          case CardType.ENTITIES:
             return EntitiesCardData(rawData);
-          } else if (rawData.containsKey('entity')) {
-            rawData['entities'] = [rawData['entity']];
-            return EntitiesCardData(rawData);
-          }
-          return CardData(rawData);
-      }
+            break;
+          case CardType.ALARM_PANEL:
+            return AlarmPanelCardData(rawData);
+            break;
+          case CardType.BUTTON:
+            return ButtonCardData(rawData);
+            break;
+          case CardType.ENTITY_BUTTON:
+            return ButtonCardData(rawData);
+            break;
+          case CardType.CONDITIONAL:
+            return CardData.parse(rawData['card']);
+            break;
+          case CardType.ENTITY_FILTER:
+            Map cardData = Map.from(rawData);
+            cardData.remove('type');
+            if (rawData.containsKey('card')) {
+              cardData.addAll(rawData['card']);
+            }
+            cardData['type'] ??= CardType.ENTITIES;
+            return CardData.parse(cardData);
+            break;
+          case CardType.GAUGE:
+            return GaugeCardData(rawData);
+            break;
+          case CardType.GLANCE:
+            return GlanceCardData(rawData);
+            break;
+          case CardType.HORIZONTAL_STACK:
+            return HorizontalStackCardData(rawData);
+            break;
+          case CardType.VERTICAL_STACK:
+            return VerticalStackCardData(rawData);
+            break;
+          case CardType.MARKDOWN:
+            return MarkdownCardData(rawData);
+            break;
+          case CardType.MEDIA_CONTROL:
+            return MediaControlCardData(rawData);
+            break;
+          default:
+            if (rawData.containsKey('entities')) {
+              return EntitiesCardData(rawData);
+            } else if (rawData.containsKey('entity')) {
+              rawData['entities'] = [rawData['entity']];
+              return EntitiesCardData(rawData);
+            }
+            return CardData(rawData);
+        }
     } catch (error, stacktrace) {
-      Logger.e('Parsing ${rawData['type']} card: $error', stacktrace: stacktrace);
+      Logger.e('Error parsing card $rawData: $error', stacktrace: stacktrace);
       return ErrorCardData(rawData);
     }
   }
 
-  CardData(Map<String, dynamic> rawData) {
-    if (rawData != null) {
+  CardData(rawData) {
+    if (rawData != null && rawData is Map) {
       type = rawData['type'] ?? CardType.ENTITIES;
       conditions = rawData['conditions'] ?? [];
       showEmpty = rawData['show_empty'] ?? true;
@@ -170,7 +170,7 @@ class EntitiesCardData extends CardData {
     return EntitiesCard(card: this);
   }
   
-  EntitiesCardData(Map<String, dynamic> rawData) : super(rawData) {
+  EntitiesCardData(rawData) : super(rawData) {
     //Parsing card data
     title = rawData["title"];
     icon = rawData['icon'];
@@ -260,7 +260,7 @@ class AlarmPanelCardData extends CardData {
     return AlarmPanelCard(card: this);
   }
   
-  AlarmPanelCardData(Map<String, dynamic> rawData) : super(rawData) {
+  AlarmPanelCardData(rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
     states = rawData['states'];
@@ -296,7 +296,7 @@ class ButtonCardData extends CardData {
     return EntityButtonCard(card: this);
   }
   
-  ButtonCardData(Map<String, dynamic> rawData) : super(rawData) {
+  ButtonCardData(rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
     icon = rawData['icon'];
@@ -359,7 +359,7 @@ class GaugeCardData extends CardData {
     return GaugeCard(card: this);
   }
   
-  GaugeCardData(Map<String, dynamic> rawData) : super(rawData) {
+  GaugeCardData(rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
     unit = rawData['unit'];
@@ -411,7 +411,7 @@ class GlanceCardData extends CardData {
     return GlanceCard(card: this);
   }
   
-  GlanceCardData(Map<String, dynamic> rawData) : super(rawData) {
+  GlanceCardData(rawData) : super(rawData) {
     //Parsing card data
     title = rawData["title"];
     showName = rawData['show_name'] ?? true;
@@ -459,7 +459,7 @@ class HorizontalStackCardData extends CardData {
     return HorizontalStackCard(card: this);
   }
   
-  HorizontalStackCardData(Map<String, dynamic> rawData) : super(rawData) {
+  HorizontalStackCardData(rawData) : super(rawData) {
     if (rawData.containsKey('cards')) {
       childCards = rawData['cards'].map<CardData>((childCard) {
         return CardData.parse(childCard);
@@ -480,7 +480,7 @@ class VerticalStackCardData extends CardData {
     return VerticalStackCard(card: this);
   }
   
-  VerticalStackCardData(Map<String, dynamic> rawData) : super(rawData) {
+  VerticalStackCardData(rawData) : super(rawData) {
     if (rawData.containsKey('cards')) {
       childCards = rawData['cards'].map<CardData>((childCard) {
         return CardData.parse(childCard);
@@ -502,7 +502,7 @@ class MarkdownCardData extends CardData {
     return MarkdownCard(card: this);
   }
   
-  MarkdownCardData(Map<String, dynamic> rawData) : super(rawData) {
+  MarkdownCardData(rawData) : super(rawData) {
     //Parsing card data
     title = rawData['title'];
     content = rawData['content'];
@@ -517,7 +517,7 @@ class MediaControlCardData extends CardData {
     return MediaControlsCard(card: this);
   }
 
-  MediaControlCardData(Map<String, dynamic> rawData) : super(rawData) {
+  MediaControlCardData(rawData) : super(rawData) {
     var entitiId = rawData["entity"];
     if (entitiId != null && entitiId is String) {
       if (HomeAssistant().entities.isExist(entitiId)) {
@@ -541,7 +541,7 @@ class ErrorCardData extends CardData {
     return ErrorCard(card: this);
   }
 
-  ErrorCardData(Map<String, dynamic> rawData) : super(rawData) {
+  ErrorCardData(rawData) : super(rawData) {
     cardConfig = '$rawData';
   }
 
