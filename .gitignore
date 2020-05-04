@@ -20,3 +20,4 @@ flutter_export_environment.sh
 key.properties
 .secrets.dart
 pubspec.lock
+google-services.json
