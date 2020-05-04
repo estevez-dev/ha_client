@@ -14,7 +14,7 @@ class StartupUserMessagesManager {
   bool _supportAppDevelopmentMessageShown;
   bool _whatsNewMessageShown;
   static final _supportAppDevelopmentMessageKey = "user-message-shown-support-development_3";
-  static final _whatsNewMessageKey = "user-message-shown-whats-new-1000";
+  static final _whatsNewMessageKey = "user-message-shown-whats-new-1006";
 
   void checkMessagesToShow() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
