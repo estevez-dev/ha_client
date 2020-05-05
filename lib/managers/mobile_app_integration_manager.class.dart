@@ -70,6 +70,7 @@ class MobileAppIntegrationManager {
         } else {
           Logger.e("Error registering the app: ${e?.toString()}");
         }
+        _showError();
       });
       return completer.future;
     } else {
@@ -105,8 +106,11 @@ class MobileAppIntegrationManager {
         if (e is http.Response && e.statusCode == 410) {
           Logger.w("MobileApp integration was removed");
           _askToRegisterApp();
+        } else if (e is http.Response) {
+          Logger.w("Error updating app registration: ${e.statusCode}: ${e.body}");
+          _showError();
         } else {
-          Logger.w("Error updating app registration: $e");
+          Logger.w("Error updating app registration: ${e?.toString()}");
           _showError();
         }
         completer.complete();
