@@ -86,7 +86,7 @@ class MobileAppIntegrationManager {
           registrationData = null;
         }
         if (registrationData == null || registrationData.isEmpty) {
-          Logger.e("No registration data in response. MobileApp integration was removed or broken");
+          Logger.w("No registration data in response. MobileApp integration was removed or broken");
           _askToRegisterApp();
         } else {
           if (INTEGRATION_VERSION > ConnectionManager().appIntegrationVersion) {
@@ -99,10 +99,10 @@ class MobileAppIntegrationManager {
         completer.complete();
       }).catchError((e) {
         if (e is http.Response && e.statusCode == 410) {
-          Logger.e("MobileApp integration was removed", skipCrashlytics: true);
+          Logger.w("MobileApp integration was removed");
           _askToRegisterApp();
         } else {
-          Logger.e("Error updating app registration: $e");
+          Logger.w("Error updating app registration: $e");
           _showError();
         }
         completer.complete();
