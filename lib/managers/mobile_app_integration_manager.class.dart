@@ -65,7 +65,11 @@ class MobileAppIntegrationManager {
         });
       }).catchError((e) {
         completer.complete();
-        Logger.e("Error registering the app: $e");
+        if (e is http.Response) {
+          Logger.e("Error registering the app: ${e.statusCode}: ${e.body}");
+        } else {
+          Logger.e("Error registering the app: ${e?.toString()}");
+        }
       });
       return completer.future;
     } else {
