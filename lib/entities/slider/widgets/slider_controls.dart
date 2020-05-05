@@ -40,7 +40,7 @@ class _SliderControlsWidgetState extends State<SliderControlsWidget> {
     } else {
       _changedHere = false;
     }
-    Widget slider = Slider(
+    Widget slider = UniversalSlider(
       min: entity.minValue * _multiplier,
       max: entity.maxValue * _multiplier,
       value: (_newValue <= entity.maxValue) &&

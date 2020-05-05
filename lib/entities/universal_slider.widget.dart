@@ -2,17 +2,20 @@ part of '../main.dart';
 
 class UniversalSlider extends StatefulWidget {
 
-  final onChanged;
-  final onChangeEnd;
+  final Function onChanged;
+  final Function onChangeEnd;
+  final Function onChangeStart;
   final Widget leading;
   final Widget closing;
   final String title;
   final double min;
+  final Color activeColor;
   final double max;
   final double value;
+  final int divisions;
   final EdgeInsets padding;
 
-  const UniversalSlider({Key key, this.onChanged, this.onChangeEnd, this.leading, this.closing, this.title, this.min, this.max, this.value, this.padding: const EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, 0.0)}) : super(key: key);
+  const UniversalSlider({Key key, this.onChanged, this.onChangeStart, this.activeColor, this.divisions, this.onChangeEnd, this.leading, this.closing, this.title, this.min, this.max, this.value, this.padding: const EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, 0.0)}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -35,6 +38,7 @@ class UniversalSliderState extends State<UniversalSlider> {
   @override
   Widget build(BuildContext context) {
     List <Widget> row = [];
+    List <Widget> col = [];
     if (widget.leading != null) {
       row.add(widget.leading);
     }
@@ -44,23 +48,26 @@ class UniversalSliderState extends State<UniversalSlider> {
           value: _value ?? math.max(widget.max ?? 100, _value ?? 0),
           min: widget.min ?? 0,
           max: widget.max ?? 100,
-          onChangeStart: (_) {
-            _changeStarted = true; 
+          activeColor: widget.activeColor,
+          onChangeStart: (value) {
+            _changeStarted = true;
+            widget.onChangeStart?.call(value); 
           },
+          divisions: widget.divisions,
           onChanged: (value) {
             setState(() {
               _value = value;
             });
-            widget.onChanged(value);
+            widget.onChanged?.call(value);
           },
           onChangeEnd: (value) {
             _changeStarted = false;
+            setState(() {
+              _value = value;
+            });
             Timer(Duration(milliseconds: 500), () {
               if (!_changeStarted) {
-                setState(() {
-                  _value = value;
-                });
-                widget.onChangeEnd(value);
+                widget.onChangeEnd?.call(value);
               }
             });
           }
@@ -70,20 +77,25 @@ class UniversalSliderState extends State<UniversalSlider> {
     if (widget.closing != null) {
       row.add(widget.closing);
     }
+    if (widget.title != null) {
+      col.addAll(<Widget>[
+        Container(height: Sizes.rowPadding,),
+        Text('${widget.title}'),
+      ]);
+    }
+    col.addAll(<Widget>[
+      Container(height: Sizes.rowPadding,),
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: row,
+      ),
+      Container(height: Sizes.rowPadding,)
+    ]);
     return Padding(
       padding: widget.padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(height: Sizes.rowPadding,),
-          Text('${widget.title}'),
-          Container(height: Sizes.rowPadding,),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: row,
-          ),
-          Container(height: Sizes.rowPadding,)
-        ],
+        children: col,
       ),
     );
   }

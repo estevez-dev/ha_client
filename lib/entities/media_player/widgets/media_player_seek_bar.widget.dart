@@ -83,8 +83,7 @@ class _MediaPlayerSeekBarState extends State<MediaPlayerSeekBar> {
                 Text("${Duration(seconds: entity.durationSeconds).toString().split(".")[0]}")
               ],
             ),
-            Container(height: 10,),
-            Slider(
+            UniversalSlider(
               min: 0,
               activeColor: Theme.of(context).accentColor,
               max: entity.durationSeconds.toDouble(),

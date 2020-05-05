@@ -191,7 +191,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
   Widget build(BuildContext context) {
     final entityModel = EntityModel.of(context);
     final ClimateEntity entity = entityModel.entityWrapper.entity;
-    Logger.d("[Climate widget build] changed here = $_changedHere");
     if (_changedHere) {
       //_showPending = (_tmpTemperature != entity.temperature || _tmpTargetHigh != entity.targetHigh || _tmpTargetLow != entity.targetLow);
       _changedHere = false;
@@ -353,15 +352,19 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
   }
 
   Widget _buildHumidityControls(ClimateEntity entity, BuildContext context) {
-    List<Widget> result = [];
     if (entity.supportTargetHumidity) {
-      result.addAll(<Widget>[
-        Text(
-          "$_tmpTargetHumidity%",
-          style: Theme.of(context).textTheme.display1,
-        ),
-        Expanded(
-          child: Slider(
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(top: Sizes.rowPadding),
+            child: Text("Target humidity", style: Theme.of(context).textTheme.body1),
+          ),
+          UniversalSlider(
+            leading: Text(
+              "$_tmpTargetHumidity%",
+              style: Theme.of(context).textTheme.display1,
+            ),
             value: _tmpTargetHumidity,
             max: entity.maxHumidity,
             min: entity.minHumidity,
@@ -372,22 +375,6 @@ class _ClimateControlWidgetState extends State<ClimateControlWidget> {
               });
             }),
             onChangeEnd: (double v) => _setTargetHumidity(entity, v),
-          ),
-        )
-      ]);
-    }
-    if (result.isNotEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-                0.0, Sizes.rowPadding, 0.0, Sizes.rowPadding),
-            child: Text("Target humidity", style: Theme.of(context).textTheme.body1),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: result,
           ),
           Container(
             height: Sizes.rowPadding,

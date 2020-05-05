@@ -62,11 +62,10 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.fromLTRB(
-                0.0, Sizes.rowPadding, 0.0, Sizes.rowPadding),
+            padding: EdgeInsets.only(top: Sizes.rowPadding),
             child: Text("Position"),
           ),
-          Slider(
+          UniversalSlider(
             value: _tmpPosition,
             min: 0.0,
             max: 100.0,
@@ -78,8 +77,7 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
               });
             },
             onChangeEnd: (double value) => _setNewPosition(entity, value),
-          ),
-          Container(height: Sizes.rowPadding,)
+          )
         ],
       );
     } else {
@@ -96,7 +94,7 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
     }
     if (entity.supportSetTiltPosition) {
       controls.addAll(<Widget>[
-        Slider(
+        UniversalSlider(
           value: _tmpTiltPosition,
           min: 0.0,
           max: 100.0,
@@ -115,7 +113,7 @@ class _CoverControlWidgetState extends State<CoverControlWidget> {
     if (controls.isNotEmpty) {
       controls.insert(0, Padding(
         padding: EdgeInsets.fromLTRB(
-            0.0, Sizes.rowPadding, 0.0, Sizes.rowPadding),
+            0.0, Sizes.rowPadding, 0.0, 0),
         child: Text("Tilt position"),
       ));
       return Column(
