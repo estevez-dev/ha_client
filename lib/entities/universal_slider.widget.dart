@@ -41,9 +41,9 @@ class UniversalSliderState extends State<UniversalSlider> {
     row.add(
       Flexible(
         child: Slider(
-          value: _value,
-          min: widget.min,
-          max: widget.max,
+          value: _value ?? math.max(widget.max ?? 100, _value ?? 0),
+          min: widget.min ?? 0,
+          max: widget.max ?? 100,
           onChangeStart: (_) {
             _changeStarted = true; 
           },
