@@ -31,12 +31,16 @@ class MobileAppIntegrationManager {
       Logger.d("Mobile app was not registered yet. Registering...");
       var registrationData = Map.from(_appRegistrationData);
       registrationData.addAll({
-        "device_id": "${DeviceInfoManager().unicDeviceId}",
         "app_id": "ha_client",
         "app_name": "$appName",
         "os_name": DeviceInfoManager().osName,
         "supports_encryption": false,
       });
+      if (ConnectionManager().haVersion >= 104) {
+        registrationData.addAll({
+          "device_id": "${DeviceInfoManager().unicDeviceId}"
+        });
+      }
       ConnectionManager().sendHTTPPost(
           endPoint: "/api/mobile_app/registrations",
           includeAuthHeader: true,

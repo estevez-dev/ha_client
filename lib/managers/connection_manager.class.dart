@@ -19,6 +19,7 @@ class ConnectionManager {
   String _tempToken;
   String oauthUrl;
   String webhookId;
+  double haVersion;
   String mobileAppDeviceName;
   bool settingsLoaded = false;
   int appIntegrationVersion;
@@ -154,7 +155,12 @@ class ConnectionManager {
                     if (!connecting.isCompleted) connecting.completeError(e);
                   });
                 } else if (data["type"] == "auth_ok") {
-                  Logger.d("[Received] <== ${data.toString()}");
+                  String v = data["ha_version"];
+                  if (v != null && v.isNotEmpty) {
+                    haVersion = double.tryParse(v.replaceFirst('0.','')) ?? 0;
+                  }
+                  Logger.d("Home assistant version: $v ($haVersion)");
+                  Crashlytics.instance.setString('ha_version', v);
                   Logger.d("[Connection] Subscribing to events");
                   sendSocketMessage(
                     type: "subscribe_events",
