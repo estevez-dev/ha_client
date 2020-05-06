@@ -140,9 +140,9 @@ class HomeAssistant {
 
   Future _getConfig(SharedPreferences sharedPrefs) async {
     _instanceConfig?.clear();
-    if (sharedPrefs != null) {
+    if (sharedPrefs != null && sharedPrefs.containsKey('cached_config')) {
       try {
-        var data = json.decode(sharedPrefs.getString('cached_config') ?? '{}');
+        var data = json.decode(sharedPrefs.getString('cached_config'));
         _parseConfig(data);
       } catch (e, stacktrace) {
        Logger.e('Error gettong config from cache: $e', stacktrace: stacktrace);
@@ -160,9 +160,9 @@ class HomeAssistant {
   }
 
   Future _getStates(SharedPreferences sharedPrefs) async {
-    if (sharedPrefs != null) {
+    if (sharedPrefs != null && sharedPrefs.containsKey('cached_states')) {
       try {
-        var data = json.decode(sharedPrefs.getString('cached_states') ?? '[]');
+        var data = json.decode(sharedPrefs.getString('cached_states'));
         _parseStates(data);
       } catch (e, stacktrace) {
         Logger.e('Error getting cached states: $e', stacktrace: stacktrace);
@@ -171,7 +171,7 @@ class HomeAssistant {
       await ConnectionManager().sendSocketMessage(type: "get_states").then(
               (data) => _parseStates(data)
       ).catchError((e) {
-       Logger.e('get_states error: $e');
+        Logger.e('get_states error: $e');
         throw HACException("Error getting states: $e");
       });
     }
@@ -183,9 +183,9 @@ class HomeAssistant {
   }
 
   Future _getLovelace(SharedPreferences sharedPrefs) {
-    if (sharedPrefs != null) {
+    if (sharedPrefs != null && sharedPrefs.containsKey('cached_lovelace')) {
       try {
-        var data = json.decode(sharedPrefs.getString('cached_lovelace') ?? '{}');
+        var data = json.decode(sharedPrefs.getString('cached_lovelace'));
         _rawLovelaceData = data;
       } catch (e) {
         autoUi = true;
@@ -221,9 +221,9 @@ class HomeAssistant {
 
   Future _getServices(SharedPreferences prefs) async {
     services?.clear();	
-    if (prefs != null) {
+    if (prefs != null && prefs.containsKey('cached_services')) {
       try {
-        var data = json.decode(prefs.getString('cached_services') ?? '{}');
+        var data = json.decode(prefs.getString('cached_services'));
         _parseServices(data);
       } catch (e, stacktrace) {
        Logger.e(e, stacktrace: stacktrace);  
@@ -240,9 +240,19 @@ class HomeAssistant {
 
   Future _getUserInfo(SharedPreferences sharedPrefs) async {
     _userName = null;
-    await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) => _parseUserInfo(data)).catchError((e) {
-      Logger.e('auth/current_user error: $e');
-    });
+    if (sharedPrefs != null && sharedPrefs.containsKey('cached_user')) {
+      try {
+        var data = json.decode(sharedPrefs.getString('cached_user'));
+        _parseUserInfo(data);
+      } catch (e, stacktrace) {
+        Logger.e('Error getting cached user info: $e', stacktrace: stacktrace);
+      }
+      return Future.value();
+    } else {
+      await ConnectionManager().sendSocketMessage(type: "auth/current_user").then((data) => _parseUserInfo(data)).catchError((e) {
+        Logger.e('auth/current_user error: $e');
+      });
+    }
   }
 
   void _parseUserInfo(data) {
@@ -251,9 +261,9 @@ class HomeAssistant {
   }
 
   Future _getPanels(SharedPreferences sharedPrefs) async {
-    if (sharedPrefs != null) {
+    if (sharedPrefs != null && sharedPrefs.containsKey('cached_panels')) {
       try {
-        var data = json.decode(sharedPrefs.getString('cached_panels') ?? '{}');
+        var data = json.decode(sharedPrefs.getString('cached_panels'));
         _parsePanels(data);
       } catch (e, stacktrace) {
         Logger.e(e, stacktrace: stacktrace);

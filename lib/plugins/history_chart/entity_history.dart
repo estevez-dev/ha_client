@@ -54,7 +54,7 @@ class _EntityHistoryWidgetState extends State<EntityHistoryWidget> {
           });
         }
       }).catchError((e) {
-        Logger.e("Error loading $entityId history: $e");
+        Logger.e("Error loading $entityId history: $e", skipCrashlytics: true);
         if (!_disposed) {
           setState(() {
             _history = [];
