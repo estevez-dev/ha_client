@@ -14,13 +14,13 @@ class StartupUserMessagesManager {
   bool _supportAppDevelopmentMessageShown;
   bool _whatsNewMessageShown;
   static final _supportAppDevelopmentMessageKey = "user-message-shown-support-development_3";
-  static final _whatsNewMessageKey = "user-message-shown-whats-new-1006";
+  static final _whatsNewMessageKey = "user-msg-whats-new-url";
 
   void checkMessagesToShow() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.reload();
     _supportAppDevelopmentMessageShown = prefs.getBool(_supportAppDevelopmentMessageKey) ?? false;
-    _whatsNewMessageShown = prefs.getBool(_whatsNewMessageKey) ?? false;
+    _whatsNewMessageShown = '${prefs.getString(_whatsNewMessageKey)}' == whatsNewUrl;
     if (!_whatsNewMessageShown) {
       _showWhatsNewMessage();
     } else if (!_supportAppDevelopmentMessageShown) {
@@ -52,7 +52,7 @@ class StartupUserMessagesManager {
 
   void _showWhatsNewMessage() {
     SharedPreferences.getInstance().then((prefs) {
-      prefs.setBool(_whatsNewMessageKey, true);
+      prefs.setString(_whatsNewMessageKey, whatsNewUrl);
       eventBus.fire(ShowPageEvent(path: "/whats-new"));
     });
   }

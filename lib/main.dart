@@ -157,10 +157,11 @@ part 'popups.dart';
 EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-const String appName = "HA Client";
-const appVersionNumber = "1.0.1";
-const appVersionAdd = "";
-const appVersion = "$appVersionNumber$appVersionAdd";
+const String appName = 'HA Client';
+const appVersionNumber = '1.0.1';
+final String appVersionAdd = secrets['version_type'] ?? '';
+final String appVersion = '$appVersionNumber${appVersionAdd.isNotEmpty ? '-' : ''}$appVersionAdd';
+const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.0.1.md';
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.
