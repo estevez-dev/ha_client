@@ -18,8 +18,8 @@ class Logger {
     print(data);
   }
 
-  static void e(String message, {dynamic stacktrace, bool skipCrashlytics: false}) {
-    _writeToLog(ErrorLevel.ERROR, message, stacktrace, skipCrashlytics);
+  static void e(dynamic message, {dynamic stacktrace, bool skipCrashlytics: false}) {
+    _writeToLog(ErrorLevel.ERROR, message.toString(), stacktrace, skipCrashlytics);
   }
 
   static void w(String message) {
