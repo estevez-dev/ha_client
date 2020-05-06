@@ -108,40 +108,47 @@ class LocationManager {
   }
 
   updateDeviceLocation() async {
-    Logger.d("[Foreground location] Started");
-    Geolocator geolocator = Geolocator();
-    var battery = Battery();
-    String webhookId = ConnectionManager().webhookId;
-    String httpWebHost = ConnectionManager().httpWebHost;
-    if (webhookId != null && webhookId.isNotEmpty) {
-        Logger.d("[Foreground location] Getting battery level...");
-        int batteryLevel = await battery.batteryLevel;
-        Logger.d("[Foreground location] Getting device location...");
-        Position position = await geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high,
-            locationPermissionLevel: GeolocationPermission.locationAlways
-          );
-        if (position != null) {
-          Logger.d("[Foreground location] Location: ${position.latitude} ${position.longitude}. Accuracy: ${position.accuracy}. (${position.timestamp})");
-          String url = "$httpWebHost/api/webhook/$webhookId";
-          Map data = {
-            "type": "update_location",
-            "data": {
-              "gps": [position.latitude, position.longitude],
-              "gps_accuracy": position.accuracy,
-              "battery": batteryLevel ?? 100
+    try {
+      Logger.d("[Foreground location] Started");
+      Geolocator geolocator = Geolocator();
+      var battery = Battery();
+      String webhookId = ConnectionManager().webhookId;
+      String httpWebHost = ConnectionManager().httpWebHost;
+      if (webhookId != null && webhookId.isNotEmpty) {
+          Logger.d("[Foreground location] Getting battery level...");
+          int batteryLevel = await battery.batteryLevel;
+          Logger.d("[Foreground location] Getting device location...");
+          Position position = await geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high,
+              locationPermissionLevel: GeolocationPermission.locationAlways
+            );
+          if (position != null) {
+            Logger.d("[Foreground location] Location: ${position.latitude} ${position.longitude}. Accuracy: ${position.accuracy}. (${position.timestamp})");
+            String url = "$httpWebHost/api/webhook/$webhookId";
+            Map data = {
+              "type": "update_location",
+              "data": {
+                "gps": [position.latitude, position.longitude],
+                "gps_accuracy": position.accuracy,
+                "battery": batteryLevel ?? 100
+              }
+            };
+            Logger.d("[Foreground location] Sending data home...");
+            http.Response response = await http.post(
+              url,
+              headers: {"Content-Type": "application/json"},
+              body: json.encode(data)
+            );
+            if (response.statusCode >= 300) {
+              Logger.e('Foreground location update error: ${response.body}');
             }
-          };
-          Logger.d("[Foreground location] Sending data home...");
-          var response = await http.post(
-            url,
-            headers: {"Content-Type": "application/json"},
-            body: json.encode(data)
-          );
-          Logger.d("[Foreground location] Got HTTP ${response.statusCode}");
-        } else {
-          Logger.d("[Foreground location] No location. Aborting.");
-        }
+            Logger.d("[Foreground location] Got HTTP ${response.statusCode}");
+          } else {
+            Logger.d("[Foreground location] No location. Aborting.");
+          }
+      }
+    } catch (e, stack) {
+      Logger.e('Foreground location error: ${e.toSTring()}', stacktrace: stack);
     }
   }
 
