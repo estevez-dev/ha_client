@@ -264,7 +264,7 @@ class HomeAssistant {
     if (sharedPrefs != null && sharedPrefs.containsKey('cached_panels')) {
       try {
         var data = json.decode(sharedPrefs.getString('cached_panels'));
-        _parsePanels(data);
+        _parsePanels(data ?? {});
       } catch (e, stacktrace) {
         Logger.e(e, stacktrace: stacktrace);
         panels.clear();
