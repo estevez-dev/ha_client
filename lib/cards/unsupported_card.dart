@@ -7,11 +7,6 @@ class UnsupportedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CardWrapper(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, Sizes.rowPadding),
-        child: Text("'${card.type}' card is not supported yet"),
-      )
-    );
+    return Container();
   }  
 }

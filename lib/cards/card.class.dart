@@ -13,6 +13,11 @@ class CardData {
 
   factory CardData.parse(rawData) {
     try {
+      if (rawData['type'] == null) {
+        rawData['type'] = CardType.ENTITIES;
+      } else if (!(rawData['type'] is String)) {
+        return CardData(null);
+      }
       switch (rawData['type']) {
           case CardType.ENTITIES:
             return EntitiesCardData(rawData);
@@ -56,14 +61,10 @@ class CardData {
           case CardType.MEDIA_CONTROL:
             return MediaControlCardData(rawData);
             break;
+          //TODO make all other official Lovelace cards as Entities
+          //All other cards should be unsupported and not shown
           default:
-            if (rawData.containsKey('entities')) {
-              return EntitiesCardData(rawData);
-            } else if (rawData.containsKey('entity')) {
-              rawData['entities'] = [rawData['entity']];
-              return EntitiesCardData(rawData);
-            }
-            return CardData(rawData);
+            return CardData(null);
         }
     } catch (error, stacktrace) {
       Logger.e('Error parsing card $rawData: $error', stacktrace: stacktrace);
@@ -73,7 +74,7 @@ class CardData {
 
   CardData(rawData) {
     if (rawData != null && rawData is Map) {
-      type = rawData['type'] ?? CardType.ENTITIES;
+      type = rawData['type'];
       conditions = rawData['conditions'] ?? [];
       showEmpty = rawData['show_empty'] ?? true;
       stateFilter = rawData['state_filter'] ?? [];
