@@ -379,7 +379,7 @@ class GaugeCardData extends CardData {
     }
     severity = rawData['severity'];
     //Parsing entity
-    var entitiId = rawData["entity"];
+    var entitiId = rawData["entity"] is List ? rawData["entity"][0] : rawData["entity"];
     if (entitiId != null && entitiId is String) {
       if (HomeAssistant().entities.isExist(entitiId)) {
         entities.add(EntityWrapper(
@@ -390,7 +390,7 @@ class GaugeCardData extends CardData {
         entities.add(EntityWrapper(entity: Entity.missed(entitiId)));
       }
     } else {
-      entities.add(EntityWrapper(entity: Entity.missed(entitiId)));
+      entities.add(EntityWrapper(entity: Entity.missed('$entitiId')));
     }
     
   }
