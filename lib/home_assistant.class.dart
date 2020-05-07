@@ -163,7 +163,7 @@ class HomeAssistant {
     if (sharedPrefs != null && sharedPrefs.containsKey('cached_states')) {
       try {
         var data = json.decode(sharedPrefs.getString('cached_states'));
-        _parseStates(data);
+        _parseStates(data ?? []);
       } catch (e, stacktrace) {
         Logger.e('Error getting cached states: $e', stacktrace: stacktrace);
       }
