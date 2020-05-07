@@ -224,7 +224,7 @@ class HomeAssistant {
     if (prefs != null && prefs.containsKey('cached_services')) {
       try {
         var data = json.decode(prefs.getString('cached_services'));
-        _parseServices(data);
+        _parseServices(data ?? {});
       } catch (e, stacktrace) {
        Logger.e(e, stacktrace: stacktrace);  
       }
@@ -243,7 +243,7 @@ class HomeAssistant {
     if (sharedPrefs != null && sharedPrefs.containsKey('cached_user')) {
       try {
         var data = json.decode(sharedPrefs.getString('cached_user'));
-        _parseUserInfo(data);
+        _parseUserInfo(data ?? {});
       } catch (e, stacktrace) {
         Logger.e('Error getting cached user info: $e', stacktrace: stacktrace);
       }
