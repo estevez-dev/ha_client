@@ -185,12 +185,12 @@ class EntitiesCardData extends CardData {
   
   EntitiesCardData(rawData) : super(rawData) {
     //Parsing card data
-    title = rawData["title"];
-    icon = rawData['icon'];
+    title = rawData['title'];
+    icon = '${rawData['icon']}';
     stateColor = rawData['state_color'] ?? false;
     showHeaderToggle = rawData['show_header_toggle'] ?? false;
     //Parsing entities
-    var rawEntities = rawData["entities"] ?? [];
+    var rawEntities = rawData['entities'] ?? [];
     rawEntities.forEach((rawEntity) {
       if (rawEntity is String) {
         if (HomeAssistant().entities.isExist(rawEntity)) {
@@ -312,7 +312,7 @@ class ButtonCardData extends CardData {
   ButtonCardData(rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
-    icon = rawData['icon'];
+    icon = '${rawData['icon']}';
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
     stateColor = rawData['state_color'] ?? true;
