@@ -11,7 +11,7 @@ window.externalApp.getExternalAuth = function(options) {
         setTimeout(function(){
             console.log("Calling a callback");
             window[options.callback](true, responseData);
-        }, 500);
+        }, 900);
     }
 };
 /*
