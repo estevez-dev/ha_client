@@ -113,6 +113,7 @@ class CardType {
   static const IFRAME = "iframe";
   static const GAUGE = "gauge";
   static const ENTITY_BUTTON = "entity-button";
+  static const ENTITY = "entity";
   static const BUTTON = "button";
   static const CONDITIONAL = "conditional";
   static const ALARM_PANEL = "alarm-panel";
@@ -120,6 +121,8 @@ class CardType {
   static const LIGHT = "light";
   static const ENTITY_FILTER = "entity-filter";
   static const UNKNOWN = "unknown";
+  static const HISTORY_GRAPH = "history-graph";
+  static const PICTURE_GLANCE = "picture-glance";
 }
 
 class Sizes {

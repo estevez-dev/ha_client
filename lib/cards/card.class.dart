@@ -20,15 +20,25 @@ class CardData {
       }
       switch (rawData['type']) {
           case CardType.ENTITIES:
+          case CardType.HISTORY_GRAPH:
+          case CardType.MAP:
+          case CardType.PICTURE_GLANCE:
+          case CardType.SENSOR:
+          case CardType.ENTITY:
+          case CardType.WEATHER_FORECAST:
+          case CardType.PLANT_STATUS:
+            if (rawData['entity'] != null) {
+              rawData['entities'] = [rawData['entity']];
+            }
             return EntitiesCardData(rawData);
             break;
           case CardType.ALARM_PANEL:
             return AlarmPanelCardData(rawData);
             break;
-          case CardType.BUTTON:
-            return ButtonCardData(rawData);
-            break;
           case CardType.ENTITY_BUTTON:
+          case CardType.LIGHT:
+          case CardType.BUTTON:
+          case CardType.PICTURE_ENTITY:
             return ButtonCardData(rawData);
             break;
           case CardType.CONDITIONAL:
@@ -47,6 +57,10 @@ class CardData {
             return GaugeCardData(rawData);
             break;
           case CardType.GLANCE:
+          case CardType.THERMOSTAT:
+            if (rawData['entity'] != null) {
+              rawData['entities'] = [rawData['entity']];
+            }
             return GlanceCardData(rawData);
             break;
           case CardType.HORIZONTAL_STACK:
@@ -61,8 +75,6 @@ class CardData {
           case CardType.MEDIA_CONTROL:
             return MediaControlCardData(rawData);
             break;
-          //TODO make all other official Lovelace cards as Entities
-          //All other cards should be unsupported and not shown
           default:
             return CardData(null);
         }
