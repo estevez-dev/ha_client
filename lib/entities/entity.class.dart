@@ -79,7 +79,8 @@ class Entity {
   );
 
   String get displayName =>
-      attributes["friendly_name"] ?? (attributes["name"] ?? entityId.split(".")[1].replaceAll("_", " "));
+      attributes["friendly_name"] ??
+      (attributes["name"] ?? (entityId != null && entityId.contains('.')) ? entityId.split(".")[1].replaceAll("_", " ") : "");
 
   bool get isView =>
       (domain == "group") &&
