@@ -30,10 +30,13 @@ class GlanceCard extends StatelessWidget {
           start, end
         ).map(
           (EntityWrapper entity){
-            return EntityModel(
-              entityWrapper: entity,
-              child: _buildEntityContainer(context, entity),
-              handleTap: true
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: Sizes.rowPadding),
+              child: EntityModel(
+                entityWrapper: entity,
+                child: _buildEntityContainer(context, entity),
+                handleTap: true
+              )
             );
           }
         ).toList()

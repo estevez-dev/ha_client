@@ -62,13 +62,16 @@ class EntityButtonCard extends StatelessWidget {
           onLongPress: () => entityWrapper.handleHold(),
           onDoubleTap: () => entityWrapper.handleDoubleTap(),
           child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                buttonIcon,
-                _buildName(context)
-              ],
+            child: Padding(
+              padding: EdgeInsets.only(top: 5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  buttonIcon,
+                  _buildName(context)
+                ],
+              )
             )
           ),
         ),
