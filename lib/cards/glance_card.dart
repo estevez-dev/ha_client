@@ -53,17 +53,22 @@ class GlanceCard extends StatelessWidget {
       );
     }
     return CardWrapper(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          CardHeader(name: card.title),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: Sizes.rowPadding),
-            child: Table(
-              children: rows
-            )
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: Sizes.rowPadding),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              CardHeader(
+                name: card.title,
+                emptyPadding: Sizes.rowPadding,
+              ),
+              Table(
+                children: rows
+              )
+            ],
           )
-        ],
+        )
       )
     );
   }
@@ -88,16 +93,14 @@ class GlanceCard extends StatelessWidget {
       result.add(_buildState());
     }
 
-    return Center(
-      child: InkResponse(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: result,
-        ),
-        onTap: () => entityWrapper.handleTap(),
-        onLongPress: () => entityWrapper.handleHold(),
-        onDoubleTap: () => entityWrapper.handleDoubleTap(),
+    return InkResponse(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: result,
       ),
+      onTap: () => entityWrapper.handleTap(),
+      onLongPress: () => entityWrapper.handleHold(),
+      onDoubleTap: () => entityWrapper.handleDoubleTap(),
     );
   }
 
