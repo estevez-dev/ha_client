@@ -26,11 +26,11 @@ class TimerEntity extends Entity {
               seconds: int.tryParse(durationList[2]) ?? 0
           );
         } else {
-          Logger.e("Strange $entityId duration format: $durationSource");
+          Logger.e("Strange timer duration format: $durationSource");
           duration = Duration(seconds: 0);
         }
       } catch (e, stacktrace) {
-        Logger.e("Error parsing duration for $entityId: $e", stacktrace: stacktrace);
+        Logger.e("Error parsing timer duration \'$durationSource\': $e", stacktrace: stacktrace);
         duration = Duration(seconds: 0);
       }
     } else {
