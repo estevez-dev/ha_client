@@ -312,7 +312,7 @@ class ButtonCardData extends CardData {
   ButtonCardData(rawData) : super(rawData) {
     //Parsing card data
     name = rawData['name'];
-    icon = '${rawData['icon']}';
+    icon = rawData['icon'] is String ? rawData['icon'] : null;
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
     stateColor = rawData['state_color'] ?? true;
