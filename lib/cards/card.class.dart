@@ -473,7 +473,7 @@ class HorizontalStackCardData extends CardData {
   }
   
   HorizontalStackCardData(rawData) : super(rawData) {
-    if (rawData.containsKey('cards')) {
+    if (rawData.containsKey('cards') && rawData['cards'] is List) {
       childCards = rawData['cards'].map<CardData>((childCard) {
         return CardData.parse(childCard);
       }).toList();
@@ -494,7 +494,7 @@ class VerticalStackCardData extends CardData {
   }
   
   VerticalStackCardData(rawData) : super(rawData) {
-    if (rawData.containsKey('cards')) {
+    if (rawData.containsKey('cards') && rawData['cards'] is List) {
       childCards = rawData['cards'].map<CardData>((childCard) {
         return CardData.parse(childCard);
       }).toList();
