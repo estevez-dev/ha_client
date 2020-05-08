@@ -14,6 +14,7 @@ window.externalApp.getExternalAuth = function(options) {
         }, 500);
     }
 };
+/*
 window.externalApp.externalBus = function(message) {
     console.log("External bus message: " + message);
     var messageObj = JSON.parse(message);
@@ -33,3 +34,4 @@ window.externalApp.externalBus = function(message) {
         HAClient.postMessage('show-settings');
     }
 };
+*/
