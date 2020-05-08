@@ -186,7 +186,7 @@ class EntitiesCardData extends CardData {
   EntitiesCardData(rawData) : super(rawData) {
     //Parsing card data
     title = rawData['title'];
-    icon = '${rawData['icon']}';
+    icon = rawData['icon'] is String ? rawData['icon'] : null;
     stateColor = rawData['state_color'] ?? false;
     showHeaderToggle = rawData['show_header_toggle'] ?? false;
     //Parsing entities
