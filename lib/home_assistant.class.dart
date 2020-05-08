@@ -194,7 +194,7 @@ class HomeAssistant {
     } else {
       Completer completer = Completer();
       var additionalData;
-      if (_lovelaceDashbordUrl != HomeAssistant.DEFAULT_DASHBOARD) {
+      if (ConnectionManager().haVersion >= 107 && _lovelaceDashbordUrl != HomeAssistant.DEFAULT_DASHBOARD) {
         additionalData = {
           'url_path': _lovelaceDashbordUrl
         };
