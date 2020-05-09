@@ -2,6 +2,7 @@ part of 'main.dart';
 
 class HAView {
   List<CardData> cards = [];
+  CardData badges;
   Entity linkedEntity;
   String name;
   String id;
@@ -16,10 +17,10 @@ class HAView {
     isPanel = rawData['panel'] ?? false;
 
     if (rawData['badges'] != null && !isPanel) {
-        cards.add(CardData.parse({
+        badges = CardData.parse({
           'type': CardType.BADGES,
           'badges': rawData['badges']
-        }));
+        });
       }
 
       (rawData['cards'] ?? []).forEach((rawCardData) {

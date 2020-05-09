@@ -57,72 +57,73 @@ class BadgeWidget extends StatelessWidget {
       onBadgeText = Container(width: 0.0, height: 0.0);
     } else {
       onBadgeText = Container(
-          padding: EdgeInsets.fromLTRB(6.0, 2.0, 6.0, 2.0),
-          child: Text("$onBadgeTextValue",
-              style: Theme.of(context).textTheme.overline.copyWith(
-                color: HAClientTheme().getOnBadgeTextColor()
-              ),
-              textAlign: TextAlign.center,
-              softWrap: false,
-              overflow: TextOverflow.fade),
-          decoration: new BoxDecoration(
-            color: iconColor,
-            borderRadius: BorderRadius.circular(9.0),
-          ));
+        constraints: BoxConstraints(maxWidth: 50),
+        padding: EdgeInsets.fromLTRB(6.0, 2.0, 6.0, 2.0),
+        child: Text("$onBadgeTextValue",
+            style: Theme.of(context).textTheme.overline.copyWith(
+              color: HAClientTheme().getOnBadgeTextColor()
+            ),
+            textAlign: TextAlign.center,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis
+          ),
+        decoration: new BoxDecoration(
+          color: iconColor,
+          borderRadius: BorderRadius.circular(9.0),
+        )
+      );
     }
     return GestureDetector(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Container(
-              //margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-              width: 45,
-              height: 45,
-              decoration: new BoxDecoration(
-                // Circle shape
-                shape: BoxShape.circle,
-                color: Theme.of(context).cardColor,
-                // The border you want
-                border: new Border.all(
-                  width: 2.0,
-                  color: iconColor,
-                ),
-              ),
-              child: Stack(
-                overflow: Overflow.visible,
-                children: <Widget>[
-                  Positioned(
-                    width: 45,
-                    height: 45,
-                    top: 0.0,
-                    left: 0.0,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      alignment: Alignment.center,
-                      child: badgeIcon,
+            Stack(
+              overflow: Overflow.visible,
+              alignment: Alignment.center,
+              children: <Widget>[
+                Container(
+                  width: 45,
+                  height: 45,
+                  decoration: new BoxDecoration(
+                    // Circle shape
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).cardColor,
+                    // The border you want
+                    border: Border.all(
+                      width: 2.0,
+                      color: iconColor,
                     ),
                   ),
-                  Positioned(
-                    bottom: -9.0,
-                    left: -10.0,
-                    right: -10.0,
-                    child: Center(
-                      child: onBadgeText,
-                    )
+                ),
+                SizedBox(
+                  width: 38,
+                  height: 26,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
+                    child: badgeIcon,
                   )
-                ],
-              ),
+                ),
+                Positioned(
+                  bottom: -6,
+                  child: onBadgeText
+                )
+              ],
             ),
             Container(
-              width: 60.0,
+              constraints: BoxConstraints(maxWidth: 45),
+              padding: EdgeInsets.only(top: 10),
               child: Text(
                 "${entityModel.entityWrapper.displayName}",
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.caption.copyWith(
+                  fontSize: 10
+                ),
                 softWrap: true,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-            ),
+            )
           ],
         ),
         onTap: () => entityModel.entityWrapper.handleTap(),

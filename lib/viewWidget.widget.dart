@@ -18,6 +18,12 @@ class ViewWidget extends StatelessWidget {
       );
     } else {
       Widget cardsContainer;
+      Widget badgesContainer;
+      if (this.view.badges != null && this.view.badges is BadgesData) {
+        badgesContainer = this.view.badges.buildCardWidget();
+      } else {
+        badgesContainer = Container(width: 0, height: 0);
+      }
       if (this.view.cards.isNotEmpty) {
         cardsContainer = DynamicMultiColumnLayout(
           minColumnWidth: Sizes.minViewColumnWidth,
@@ -45,9 +51,14 @@ class ViewWidget extends StatelessWidget {
         cardsContainer = Container();
       }
       return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
           padding: EdgeInsets.all(0),
-          child: cardsContainer
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              badgesContainer,
+              cardsContainer
+            ],
+          ),
       );
     }
   }

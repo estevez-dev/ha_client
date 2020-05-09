@@ -20,6 +20,7 @@ class ConnectionManager {
   String oauthUrl;
   String webhookId;
   double haVersion;
+  bool scrollBadges;
   String mobileAppDeviceName;
   bool settingsLoaded = false;
   int appIntegrationVersion;
@@ -48,6 +49,7 @@ class ConnectionManager {
       webhookId = prefs.getString('app-webhook-id');
       appIntegrationVersion = prefs.getInt('app-integration-version') ?? 0;
       mobileAppDeviceName = prefs.getString('app-integration-device-name');
+      scrollBadges = prefs.getBool('scroll-badges') ?? true;
       displayHostname = "$_domain:$_port";
       _webSocketAPIEndpoint =
       "${prefs.getString('hassio-protocol')}://$_domain:$_port/api/websocket";

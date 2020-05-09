@@ -12,7 +12,7 @@ class LookAndFeelSettingsPage extends StatefulWidget {
 class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
 
   AppTheme _currentTheme;
-  bool _changed = false;
+  bool _scrollBadges = false;
 
   @override
   void initState() {
@@ -26,18 +26,26 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         _currentTheme = AppTheme.values[prefs.getInt("app-theme") ?? AppTheme.defaultTheme.index];
+        _scrollBadges = prefs.getBool('scroll-badges') ?? true;
       });
     });
   }
 
-  _saveSettings(AppTheme theme) {
+  _saveTheme(AppTheme theme) {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setInt('app-theme', theme.index);
+      prefs.setBool('scroll-badges', _scrollBadges);
       setState(() {
         _currentTheme = theme;
         eventBus.fire(ChangeThemeEvent(_currentTheme));
       });
     });
+  }
+
+  Future _saveOther() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    ConnectionManager().scrollBadges = _scrollBadges;
+    await prefs.setBool('scroll-badges', _scrollBadges);
   }
 
   Map appThemeName = {
@@ -59,15 +67,35 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
             iconSize: 30.0,
             isExpanded: true,
             style: Theme.of(context).textTheme.title,
-            //hint: Text("Select ${caption.toLowerCase()}"),
             items: AppTheme.values.map((value) {
               return new DropdownMenuItem<AppTheme>(
                 value: value,
                 child: Text('${appThemeName[value]}'),
               );
             }).toList(),
-            onChanged: (theme) => _saveSettings(theme),
-          )
+            onChanged: (theme) => _saveTheme(theme),
+          ),
+          Container(height: Sizes.doubleRowPadding),
+          Text("Badges display:", style: Theme.of(context).textTheme.body2),
+          Container(height: Sizes.rowPadding),
+          DropdownButton<bool>(
+            value: _scrollBadges,
+            iconSize: 30.0,
+            isExpanded: true,
+            style: Theme.of(context).textTheme.title,
+            items: [true, false].map((value) {
+              return new DropdownMenuItem<bool>(
+                value: value,
+                child: Text('${value ? 'Horizontal scroll' : 'In rows'}'),
+              );
+            }).toList(),
+            onChanged: (val) {
+              setState(() {
+                _scrollBadges = val;
+              });
+              _saveOther();
+            },
+          ),
         ]
       );
   }

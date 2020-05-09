@@ -10,17 +10,43 @@ class Badges extends StatelessWidget {
     List<EntityWrapper> entitiesToShow = badges.getEntitiesToShow();
     
     if (entitiesToShow.isNotEmpty) {
-      return Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 10.0,
-        runSpacing: 1.0,
-        children: entitiesToShow.map((entity) =>
-            EntityModel(
-              entityWrapper: entity,
-              child: BadgeWidget(),
-              handleTap: true,
-            )).toList(),
-      );
+      if (ConnectionManager().scrollBadges) {
+        return ConstrainedBox(
+          constraints: BoxConstraints.tightFor(height: 112),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: entitiesToShow.map((entity) =>
+                EntityModel(
+                  entityWrapper: entity,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+                    child: BadgeWidget(),
+                  ),
+                  handleTap: true,
+                )).toList()
+            ),
+          )
+        );
+      } else {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10.0,
+            runSpacing: 5,
+            children: entitiesToShow.map((entity) =>
+                EntityModel(
+                  entityWrapper: entity,
+                  child: BadgeWidget(),
+                  handleTap: true,
+                )).toList(),
+          )
+        );
+      }
     }
     return Container(height: 0.0, width: 0.0,);
   }
