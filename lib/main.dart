@@ -58,7 +58,6 @@ part 'entities/fan/fan_entity.class.dart';
 part 'entities/automation/automation_entity.class.dart';
 part 'entities/camera/camera_entity.class.dart';
 part 'entities/alarm_control_panel/alarm_control_panel_entity.class.dart';
-part 'entities/badge.widget.dart';
 part 'entities/entity_model.widget.dart';
 part 'entities/default_entity_container.widget.dart';
 part 'entities/missed_entity.widget.dart';

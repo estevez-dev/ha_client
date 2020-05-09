@@ -3,10 +3,12 @@ part of '../main.dart';
 class EntityIcon extends StatelessWidget {
 
   final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry iconPadding;
+  final EdgeInsetsGeometry imagePadding;
   final double size;
   final Color color;
 
-  const EntityIcon({Key key, this.color, this.size: Sizes.iconSize, this.padding: const EdgeInsets.all(0.0)}) : super(key: key);
+  const EntityIcon({Key key, this.color, this.size: Sizes.iconSize, this.padding: const EdgeInsets.all(0.0), this.iconPadding, this.imagePadding}) : super(key: key);
 
   int getDefaultIconByEntityId(String entityId, String deviceClass, String state) {
     if (entityId == null) {
@@ -26,76 +28,6 @@ class EntityIcon extends StatelessWidget {
     }
   }
 
-  Widget buildIcon(BuildContext context, EntityWrapper data, Color color) {
-    Widget result;
-    if (data == null) {
-      return null;
-    }
-    if (data.entityPicture != null) {
-      result = Container(
-        height: size+12,
-        width: size+12,
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              fit:BoxFit.cover,
-              image: CachedNetworkImageProvider(
-                "${data.entityPicture}"
-              ),
-            )
-        ),
-      );
-    } else {
-      String iconName = data.icon;
-      int iconCode = 0;
-      if (iconName.length > 0) {
-        iconCode = MaterialDesignIcons.getIconCodeByIconName(iconName);
-      } else {
-        iconCode = getDefaultIconByEntityId(data.entity.entityId,
-            data.entity.deviceClass, data.entity.state); //
-      }
-      result = Icon(
-        IconData(iconCode, fontFamily: 'Material Design Icons'),
-        size: size,
-        color: color,
-      );
-      if (data.entity is LightEntity &&
-        (data.entity as LightEntity).supportColor &&
-        (data.entity as LightEntity).color != null
-        ) {
-        Color lightColor = (data.entity as LightEntity).color.toColor();
-        if (lightColor == Colors.white) {
-          return result;
-        }  
-        result = Stack(
-          children: <Widget>[
-            result,
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                width: size / 3,
-                height: size / 3,
-                decoration: BoxDecoration(
-                  color: lightColor,
-                  shape: BoxShape.circle,
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      spreadRadius: 0,
-                      blurRadius: 0,
-                      offset: Offset(0.3, 0.3)
-                    )
-                  ]
-                ),
-              ),
-            )
-          ],
-        );
-      }
-    }
-    return result;
-  }
-
   @override
   Widget build(BuildContext context) {
     final EntityWrapper entityWrapper = EntityModel.of(context).entityWrapper;
@@ -107,13 +39,92 @@ class EntityIcon extends StatelessWidget {
     } else {
       iconColor = HAClientTheme().getOffStateColor(context);
     }
+    Widget iconWidget;
+    bool isPicture = false;
+    if (entityWrapper == null) {
+      iconWidget = Container(
+        width: size,
+        height: size,
+      );
+    } else {
+      if (entityWrapper.entityPicture != null) {
+        iconWidget = Container(
+          height: size+12,
+          width: size+12,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                fit:BoxFit.cover,
+                image: CachedNetworkImageProvider(
+                  "${entityWrapper.entityPicture}"
+                ),
+              )
+          ),
+        );
+        isPicture = true;
+      } else {
+        String iconName = entityWrapper.icon;
+        int iconCode = 0;
+        if (iconName.length > 0) {
+          iconCode = MaterialDesignIcons.getIconCodeByIconName(iconName);
+        } else {
+          iconCode = getDefaultIconByEntityId(entityWrapper.entity.entityId,
+              entityWrapper.entity.deviceClass, entityWrapper.entity.state); //
+        }
+        if (entityWrapper.entity is LightEntity &&
+          (entityWrapper.entity as LightEntity).supportColor &&
+          (entityWrapper.entity as LightEntity).color != null &&
+          (entityWrapper.entity as LightEntity).color.toColor() != Colors.white
+          ) {
+          Color lightColor = (entityWrapper.entity as LightEntity).color.toColor();  
+          iconWidget = Stack(
+            children: <Widget>[
+              Icon(
+                IconData(iconCode, fontFamily: 'Material Design Icons'),
+                size: size,
+                color: iconColor,
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  width: size / 3,
+                  height: size / 3,
+                  decoration: BoxDecoration(
+                    color: lightColor,
+                    shape: BoxShape.circle,
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        spreadRadius: 0,
+                        blurRadius: 0,
+                        offset: Offset(0.3, 0.3)
+                      )
+                    ]
+                  ),
+                ),
+              )
+            ],
+          );
+        } else {
+          iconWidget = Icon(
+            IconData(iconCode, fontFamily: 'Material Design Icons'),
+            size: size,
+            color: iconColor,
+          );
+        }
+      }
+    }
+    EdgeInsetsGeometry computedPadding;
+    if (isPicture && imagePadding != null) {
+      computedPadding = imagePadding;
+    } else if (!isPicture && iconPadding != null) {
+      computedPadding = iconPadding;
+    } else {
+      computedPadding = padding;
+    }
     return Padding(
-      padding: padding,
-      child: buildIcon(
-        context,
-        entityWrapper,
-        iconColor 
-      ),
+      padding: computedPadding,
+      child: iconWidget,
     );
   }
 }
