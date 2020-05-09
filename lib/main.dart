@@ -153,6 +153,7 @@ part 'entities/media_player/widgets/media_player_progress_bar.widget.dart';
 part 'pages/whats_new.page.dart';
 part 'pages/fullscreen.page.dart';
 part 'popups.dart';
+part 'cards/badges.dart';
 
 EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();

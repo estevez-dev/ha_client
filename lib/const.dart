@@ -63,6 +63,7 @@ class CardType {
   static const UNKNOWN = "unknown";
   static const HISTORY_GRAPH = "history-graph";
   static const PICTURE_GLANCE = "picture-glance";
+  static const BADGES = "badges";
 }
 
 class Sizes {

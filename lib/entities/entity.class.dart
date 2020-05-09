@@ -210,14 +210,6 @@ class Entity {
     );
   }
 
-  Widget buildBadgeWidget(BuildContext context) {
-    return EntityModel(
-      entityWrapper: EntityWrapper(entity: this),
-      child: BadgeWidget(),
-      handleTap: true,
-    );
-  }
-
   String getAttribute(String attributeName) {
     if (attributes != null) {
       return attributes["$attributeName"].toString();

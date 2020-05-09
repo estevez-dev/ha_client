@@ -44,13 +44,10 @@ class ViewWidget extends StatelessWidget {
       } else {
         cardsContainer = Container();
       }
-      return ListView(
-          shrinkWrap: true,
+      return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           padding: EdgeInsets.all(0),
-          children: <Widget>[
-            _buildBadges(context),
-            cardsContainer
-          ]
+          child: cardsContainer
       );
     }
   }
@@ -60,20 +57,6 @@ class ViewWidget extends StatelessWidget {
       return this.view.cards[0].buildCardWidget();
     } else {
       return Container(width: 0, height: 0);
-    }
-  }
-
-  Widget _buildBadges(BuildContext context) {
-    if (this.view.badges.isNotEmpty) {
-      return Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 10.0,
-        runSpacing: 1.0,
-        children: this.view.badges.map((badge) =>
-            badge.buildBadgeWidget(context)).toList(),
-      );
-    } else {
-      return Container(width: 0, height: 0,);
     }
   }
 

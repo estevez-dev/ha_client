@@ -4,7 +4,6 @@ class BadgeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final entityModel = EntityModel.of(context);
-    double iconSize = 26.0;
     Widget badgeIcon;
     String onBadgeTextValue;
     Color iconColor = HAClientTheme().getBadgeColor(entityModel.entityWrapper.entity.domain);
@@ -14,11 +13,9 @@ class BadgeWidget extends StatelessWidget {
           badgeIcon = entityModel.entityWrapper.entity.state == "below_horizon"
               ? Icon(
             MaterialDesignIcons.getIconDataFromIconCode(0xf0dc),
-            size: iconSize,
           )
               : Icon(
             MaterialDesignIcons.getIconDataFromIconCode(0xf5a8),
-            size: iconSize,
           );
           break;
         }
@@ -28,7 +25,6 @@ class BadgeWidget extends StatelessWidget {
         {
           badgeIcon = EntityIcon(
             padding: EdgeInsets.all(0.0),
-            size: iconSize,
             color: Theme.of(context).textTheme.body1.color
           );
           break;
@@ -38,7 +34,6 @@ class BadgeWidget extends StatelessWidget {
         {
           badgeIcon = EntityIcon(
               padding: EdgeInsets.all(0.0),
-              size: iconSize,
               color: Theme.of(context).textTheme.body1.color
           );
           onBadgeTextValue = entityModel.entityWrapper.entity.displayState;
@@ -46,27 +41,13 @@ class BadgeWidget extends StatelessWidget {
         }
       default:
         {
-          double stateFontSize;
-          if (entityModel.entityWrapper.entity.displayState.length <= 3) {
-            stateFontSize = 18.0;
-          } else if (entityModel.entityWrapper.entity.displayState.length <= 4) {
-            stateFontSize = 15.0;
-          } else if (entityModel.entityWrapper.entity.displayState.length <= 6) {
-            stateFontSize = 10.0;
-          } else if (entityModel.entityWrapper.entity.displayState.length <= 10) {
-            stateFontSize = 8.0;
-          }
           onBadgeTextValue = entityModel.entityWrapper.unitOfMeasurement;
-          badgeIcon = Center(
-            child: Text(
-              "${entityModel.entityWrapper.entity.displayState}",
-              overflow: TextOverflow.fade,
-              softWrap: false,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.body1.copyWith(
-                fontSize: stateFontSize
-              )
-            ),
+          badgeIcon = Text(
+            "${entityModel.entityWrapper.entity.displayState}",
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.body1
           );
           break;
         }
@@ -85,8 +66,6 @@ class BadgeWidget extends StatelessWidget {
               softWrap: false,
               overflow: TextOverflow.fade),
           decoration: new BoxDecoration(
-            // Circle shape
-            //shape: BoxShape.circle,
             color: iconColor,
             borderRadius: BorderRadius.circular(9.0),
           ));
@@ -95,9 +74,9 @@ class BadgeWidget extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-              width: 50.0,
-              height: 50.0,
+              //margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+              width: 45,
+              height: 45,
               decoration: new BoxDecoration(
                 // Circle shape
                 shape: BoxShape.circle,
@@ -112,20 +91,24 @@ class BadgeWidget extends StatelessWidget {
                 overflow: Overflow.visible,
                 children: <Widget>[
                   Positioned(
-                    width: 46.0,
-                    height: 46.0,
+                    width: 45,
+                    height: 45,
                     top: 0.0,
                     left: 0.0,
-                    child: badgeIcon,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                      child: badgeIcon,
+                    ),
                   ),
                   Positioned(
-                    //width: 50.0,
-                      bottom: -9.0,
-                      left: -10.0,
-                      right: -10.0,
-                      child: Center(
-                        child: onBadgeText,
-                      ))
+                    bottom: -9.0,
+                    left: -10.0,
+                    right: -10.0,
+                    child: Center(
+                      child: onBadgeText,
+                    )
+                  )
                 ],
               ),
             ),
@@ -142,7 +125,9 @@ class BadgeWidget extends StatelessWidget {
             ),
           ],
         ),
-        onTap: () =>
-            eventBus.fire(new ShowEntityPageEvent(entityId: entityModel.entityWrapper.entity.entityId)));
+        onTap: () => entityModel.entityWrapper.handleTap(),
+        onDoubleTap: () => entityModel.entityWrapper.handleDoubleTap(),
+        onLongPress: () => entityModel.entityWrapper.handleHold(),
+    );
   }
 }

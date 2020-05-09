@@ -2,7 +2,6 @@ part of 'main.dart';
 
 class HAView {
   List<CardData> cards = [];
-  List<Entity> badges = [];
   Entity linkedEntity;
   String name;
   String id;
@@ -16,28 +15,16 @@ class HAView {
     iconName = rawData['icon'];
     isPanel = rawData['panel'] ?? false;
 
-    if (rawData['badges'] != null && rawData['badges'] is List) {
-        rawData['badges'].forEach((entity) {
-          if (entity is String) {
-            if (HomeAssistant().entities.isExist(entity)) {
-              Entity e = HomeAssistant().entities.get(entity);
-              badges.add(e);
-            }
-          } else {
-            String eId = '${entity['entity']}';
-            if (HomeAssistant().entities.isExist(eId)) {
-              Entity e = HomeAssistant().entities.get(eId);
-              badges.add(e);
-            }
-          }
-        });
+    if (rawData['badges'] != null && !isPanel) {
+        cards.add(CardData.parse({
+          'type': CardType.BADGES,
+          'badges': rawData['badges']
+        }));
       }
 
-      (rawData["cards"] ?? []).forEach((rawCardData) {
+      (rawData['cards'] ?? []).forEach((rawCardData) {
         cards.add(CardData.parse(rawCardData));
       });
-
-      //cards.addAll(_createLovelaceCards(rawData["cards"] ?? [], 1));
   }
 
   Widget buildTab() {

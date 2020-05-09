@@ -75,6 +75,9 @@ class CardData {
           case CardType.MEDIA_CONTROL:
             return MediaControlCardData(rawData);
             break;
+          case CardType.BADGES:
+            return BadgesData(rawData);
+            break;
           default:
             return CardData(null);
         }
@@ -168,6 +171,64 @@ class CardData {
       }
       return showByFilter;
     }).toList();
+  }
+
+}
+
+class BadgesData extends CardData {
+
+  String title;
+  String icon;
+  bool showHeaderToggle;
+
+  @override
+  Widget buildCardWidget() {
+    return Badges(badges: this);
+  }
+  
+  BadgesData(rawData) : super(rawData) {
+    if (rawData['badges'] is List) {
+      rawData['badges'].forEach((dynamic rawBadge) {
+        if (rawBadge is String && HomeAssistant().entities.isExist(rawBadge)) {  
+          entities.add(EntityWrapper(entity: HomeAssistant().entities.get(rawBadge)));
+        } else if (rawBadge is Map && rawBadge.containsKey('entity') && HomeAssistant().entities.isExist(rawBadge['entity'])) {
+          entities.add(
+            EntityWrapper(
+              entity: HomeAssistant().entities.get(rawBadge['entity']),
+              overrideName: rawBadge["name"],
+              overrideIcon: rawBadge["icon"],
+            )
+          );
+        } else if (rawBadge is Map && rawBadge.containsKey('entities')) {
+          _parseEntities(rawBadge);
+        }
+      });    
+    }
+  }
+
+  void _parseEntities(rawData) {
+    var rawEntities = rawData['entities'] ?? [];
+    rawEntities.forEach((rawEntity) {
+      if (rawEntity is String) {
+        if (HomeAssistant().entities.isExist(rawEntity)) {
+          entities.add(EntityWrapper(
+            entity: HomeAssistant().entities.get(rawEntity),
+            stateFilter: rawData['state_filter'] ?? [],
+          ));
+        }
+      } else if (HomeAssistant().entities.isExist('${rawEntity['entity']}')) {
+        Entity e = HomeAssistant().entities.get(rawEntity["entity"]);
+        entities.add(
+          EntityWrapper(
+              entity: e,
+              overrideName: rawEntity["name"],
+              overrideIcon: rawEntity["icon"],
+              stateFilter: rawEntity['state_filter'] ?? (rawData['state_filter'] ?? []),
+              uiAction: EntityUIAction(rawEntityData: rawEntity)
+          )
+        );
+      }
+    });
   }
 
 }
