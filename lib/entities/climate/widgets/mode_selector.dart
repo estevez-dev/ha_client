@@ -11,7 +11,7 @@ class ModeSelectorWidget extends StatelessWidget {
   ModeSelectorWidget({
     Key key,
     @required this.caption,
-    @required this.options,
+    this.options: const [],
     this.value,
     @required this.onChange,
     this.padding: const EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, 0.0),
