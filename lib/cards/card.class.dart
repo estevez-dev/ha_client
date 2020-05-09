@@ -18,6 +18,9 @@ class CardData {
       } else if (!(rawData['type'] is String)) {
         return CardData(null);
       }
+      if (rawData['state_filter'] is Map) {
+        rawData['state_filter'] = (rawData['state_filter'] as Map).keys.toList();
+      }
       switch (rawData['type']) {
           case CardType.ENTITIES:
           case CardType.HISTORY_GRAPH:
@@ -92,7 +95,7 @@ class CardData {
       type = rawData['type'];
       conditions = rawData['conditions'] ?? [];
       showEmpty = rawData['show_empty'] ?? true;
-      stateFilter = rawData['state_filter'] ?? [];
+      stateFilter = rawData['state_filter']  ?? [];
     } else {
       type = CardType.UNKNOWN;
       conditions = [];
