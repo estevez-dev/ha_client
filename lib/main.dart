@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:isolate';
+import 'dart:ui';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
@@ -23,8 +25,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
 import 'plugins/spoiler_card.dart';
-import 'package:workmanager/workmanager.dart' as workManager;
-import 'package:geolocator/geolocator.dart';
+//import 'package:workmanager/workmanager.dart' as workManager;
+//import 'package:geolocator/geolocator.dart';
+import 'package:background_locator/background_locator.dart';
+import 'package:background_locator/location_dto.dart';
+import 'package:background_locator/location_settings.dart';
 import 'package:battery/battery.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standaloneWebview;
@@ -213,9 +218,12 @@ class _HAClientAppState extends State<HAClientApp> {
   StreamSubscription<List<PurchaseDetails>> _purchaseUpdateSubscription;
   StreamSubscription _themeChangeSubscription;
   AppTheme _currentTheme = AppTheme.defaultTheme;
+
+  ReceivePort port = ReceivePort();
   
   @override
   void initState() {
+
     InAppPurchaseConnection.enablePendingPurchases();
     final Stream purchaseUpdates =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
@@ -228,11 +236,18 @@ class _HAClientAppState extends State<HAClientApp> {
         _currentTheme = event.theme;
       });
     });
+    /*
     workManager.Workmanager.initialize(
       updateDeviceLocationIsolate,
       isInDebugMode: false
     );
+    */
     super.initState();
+    IsolateNameServer.registerPortWithName(port.sendPort, LocationManager.isolateName);
+    port.listen((dynamic data) {
+      // do something with data
+    });
+    initPlatformState();
   }
 
   void _handlePurchaseUpdates(purchase) {
@@ -251,6 +266,10 @@ class _HAClientAppState extends State<HAClientApp> {
     } else {
       Logger.e("Something wrong with purchase handling. Got: $purchase");
     }
+  }
+
+  Future<void> initPlatformState() async {
+    await BackgroundLocator.initialize();
   }
 
   // This widget is the root of your application.

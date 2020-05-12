@@ -26,7 +26,7 @@ class LocationManager {
         defaultUpdateIntervalMinutes);
     _isRunning = prefs.getBool("location-enabled") ?? false;
     if (_isRunning) {
-      await _startLocationService();
+      //await _startLocationService();
     }
   }
 
@@ -57,6 +57,20 @@ class LocationManager {
   }
 
   _startLocationService() async {
+    Logger.d('Starting location tracking');
+    BackgroundLocator.registerLocationUpdate(
+        locationCallback,
+        //optional
+        androidNotificationCallback: locationNotificationCallback,
+        settings: LocationSettings(
+            notificationTitle: "HA Client location tracking",
+            notificationMsg: "HA Client is updating your device location",
+            wakeLockTime: 20,
+            autoStop: false,
+            interval: 10
+        ),
+    );
+    /*
     String webhookId = ConnectionManager().webhookId;
     String httpWebHost = ConnectionManager().httpWebHost;
     if (webhookId != null && webhookId.isNotEmpty) {
@@ -100,14 +114,81 @@ class LocationManager {
         );
       }
     }
+    */
   }
 
   _stopLocationService() async {
-    Logger.d("Canceling previous schedule if any...");
-    await workManager.Workmanager.cancelAll();
+    Logger.d('Stopping location tracking');
+    IsolateNameServer.removePortNameMapping(isolateName);
+    BackgroundLocator.unRegisterLocationUpdate();
+    /*Logger.d("Canceling previous schedule if any...");
+    await workManager.Workmanager.cancelAll();*/
+  }
+
+  static const String isolateName = "HAClientLocatorIsolate";
+
+  static void locationCallback(LocationDto locationDto) async {
+    print('[Background location] Got location: $locationDto');
+    sendLocationData(locationDto);
+    final SendPort send = IsolateNameServer.lookupPortByName(isolateName);
+    send?.send(locationDto);
+  }
+
+  static Future<void> sendLocationData(LocationDto location) async {
+    print('[Background location] Loading settings...');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String domain = prefs.getString('hassio-domain');
+    String port = prefs.getString('hassio-port');
+    String webhookId = prefs.getString('app-webhook-id');
+    String httpWebHost =
+      "${prefs.getString('hassio-res-protocol')}://$domain:$port";
+    if (webhookId != null && webhookId.isNotEmpty) {
+      String url = "$httpWebHost/api/webhook/$webhookId";
+      Map<String, String> headers = {};
+      headers["Content-Type"] = "application/json";
+      Map data = {
+        "type": "update_location",
+        "data": {
+          "gps": [],
+          "gps_accuracy": 0,
+          "battery": 100
+        }
+      };
+      try {
+        if (location.longitude != null && location.latitude != null) {
+          data["data"]["gps"] = [location.latitude, location.longitude];
+          data["data"]["gps_accuracy"] = location.accuracy;
+          print('[Background location] Sending...');
+          try {
+            http.Response response = await http.post(
+                url,
+                headers: headers,
+                body: json.encode(data)
+            );
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+              print('[Background location] Success!');
+            } else {
+              print('[Background location] Error sending data: ${response.statusCode}');
+            }
+          } catch(e) {
+            print('[Background location] Error sending data: $e');
+          }
+        } else {
+          print('[Background location] Error. Location is null');
+        }
+      } catch (e) {
+        print('[Background location] Error: $e');
+      }
+    }
+  }
+
+
+  static void locationNotificationCallback() {
+    print('[Background location] User clicked on the notification');
   }
 
   updateDeviceLocation() async {
+    /*
     try {
       Logger.d("[Foreground location] Started");
       Geolocator geolocator = Geolocator();
@@ -150,10 +231,12 @@ class LocationManager {
     } catch (e, stack) {
       Logger.e('Foreground location error: ${e.toSTring()}', stacktrace: stack);
     }
+    */
   }
 
 }
 
+/*
 void updateDeviceLocationIsolate() {
   workManager.Workmanager.executeTask((backgroundTask, data) async {
     //print("[Background $backgroundTask] Started");
@@ -242,3 +325,4 @@ void updateDeviceLocationIsolate() {
     return true;
   });
 }
+*/
