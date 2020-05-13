@@ -10,25 +10,11 @@ class ConnectionManager {
 
   ConnectionManager._internal();
 
-  String _domain;
-  String _port;
-  String displayHostname;
-  String _webSocketAPIEndpoint;
-  String httpWebHost;
-  String _token;
-  String _tempToken;
-  String oauthUrl;
-  String webhookId;
-  double haVersion;
-  bool scrollBadges;
-  String mobileAppDeviceName;
-  bool settingsLoaded = false;
-  int appIntegrationVersion;
-  bool get isAuthenticated => _token != null;
   StreamSubscription _socketSubscription;
   Duration connectTimeout = Duration(seconds: 15);
 
   bool isConnected = false;
+  bool settingsLoaded = false;
 
   var onStateChangeCallback;
   var onLovelaceUpdatedCallback;
@@ -38,70 +24,23 @@ class ConnectionManager {
   int _currentMessageId = 0;
   Map<String, Completer> _messageResolver = {};
 
-  Future init({bool loadSettings, bool forceReconnect: false}) async {
+  Future init({bool loadSettings, bool forceReconnect: false}) {
     Completer completer = Completer();
-    bool stopInit = false;
-    if (loadSettings) {
-      Logger.d("Loading settings...");
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      _domain = prefs.getString('hassio-domain');
-      _port = prefs.getString('hassio-port');
-      webhookId = prefs.getString('app-webhook-id');
-      appIntegrationVersion = prefs.getInt('app-integration-version') ?? 0;
-      mobileAppDeviceName = prefs.getString('app-integration-device-name');
-      scrollBadges = prefs.getBool('scroll-badges') ?? true;
-      displayHostname = "$_domain:$_port";
-      _webSocketAPIEndpoint =
-      "${prefs.getString('hassio-protocol')}://$_domain:$_port/api/websocket";
-      httpWebHost =
-      "${prefs.getString('hassio-res-protocol')}://$_domain:$_port";
-      Logger.d('$_domain$_port');
-      if (_domain == null && _port == null && webhookId == null && mobileAppDeviceName == null) {
+    AppSettings().load(loadSettings).then((_) {
+      if (AppSettings().isNotConfigured()) {
         completer.completeError(HACNotSetUpException());
-        stopInit = true;
-      } else if ((_domain == null) || (_port == null) ||
-          (_domain.isEmpty) || (_port.isEmpty)) {
+      } else if (AppSettings().isSomethingMissed()) {
         completer.completeError(HACException.checkConnectionSettings());
-        stopInit = true;
-      } else {
-        final storage = new FlutterSecureStorage();
-        try {
-          _token = await storage.read(key: "hacl_llt");
-          Logger.d("Long-lived token read successful");
-          oauthUrl = "$httpWebHost/auth/authorize?client_id=${Uri.encodeComponent(
-              'https://ha-client.app')}&redirect_uri=${Uri
-              .encodeComponent(
-              'https://ha-client.app/service/auth_callback.html')}";
-          settingsLoaded = true;
-        } catch (e, stacktrace) {
-          completer.completeError(HACException("Error reading login details", actions: [HAErrorAction.tryAgain(type: HAErrorActionType.FULL_RELOAD), HAErrorAction.loginAgain()]));
-          Logger.e("Error reading secure storage: $e", stacktrace: stacktrace);
-          stopInit = true;
-        }
-      }
-    } else {
-      if ((_domain == null) || (_port == null) ||
-          (_domain.isEmpty) || (_port.isEmpty)) {
-        completer.completeError(HACException.checkConnectionSettings());
-        stopInit = true;
-      }
-    }
-
-    if (!stopInit) {
-      if (_token == null) {
-        AuthManager().start(
-            oauthUrl: oauthUrl
-        ).then((token) {
-          Logger.d("Token from AuthManager recived");
-          _tempToken = token;
+      } else if (!AppSettings().isAuthenticated) {
+        AppSettings().startAuth().then((_) {
           _doConnect(completer: completer, forceReconnect: forceReconnect);
         }).catchError((e) {
           completer.completeError(e);
         });
       } else {
         _doConnect(completer: completer, forceReconnect: forceReconnect);
-      }
-    }
+      }  
+    });
 
     return completer.future;
   }
@@ -143,7 +82,7 @@ class ConnectionManager {
         Logger.d("Socket connecting...");
         try {
           _socket = IOWebSocketChannel.connect(
-            _webSocketAPIEndpoint, pingInterval: Duration(seconds: 15));
+            AppSettings().webSocketAPIEndpoint, pingInterval: Duration(seconds: 15));
           _socketSubscription = _socket.stream.listen(
                   (message) {
                 isConnected = true;
@@ -159,9 +98,9 @@ class ConnectionManager {
                 } else if (data["type"] == "auth_ok") {
                   String v = data["ha_version"];
                   if (v != null && v.isNotEmpty) {
-                    haVersion = double.tryParse(v.replaceFirst('0.','')) ?? 0;
+                    AppSettings().haVersion = double.tryParse(v.replaceFirst('0.','')) ?? 0;
                   }
-                  Logger.d("Home assistant version: $v ($haVersion)");
+                  Logger.d("Home assistant version: $v (${AppSettings().haVersion})");
                   Crashlytics.instance.setString('ha_version', v);
                   Logger.d("[Connection] Subscribing to events");
                   sendSocketMessage(
@@ -174,7 +113,7 @@ class ConnectionManager {
                   ).whenComplete((){
                     _messageResolver["auth"]?.complete();
                     _messageResolver.remove("auth");
-                    if (_token != null) {
+                    if (AppSettings().isAuthenticated) {
                       if (!connecting.isCompleted) connecting.complete();
                     }
                   });
@@ -268,7 +207,7 @@ class ConnectionManager {
 
   Future _authenticate() {
     Completer completer = Completer();
-    if (_token != null) {
+    if (AppSettings().isAuthenticated) {
       Logger.d( "Long-lived token exist");
       Logger.d( "[Sending] ==> auth request");
       sendSocketMessage(

@@ -153,6 +153,7 @@ part 'pages/whats_new.page.dart';
 part 'pages/fullscreen.page.dart';
 part 'popups.dart';
 part 'cards/badges.dart';
+part 'managers/app_settings.dart';
 
 EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
