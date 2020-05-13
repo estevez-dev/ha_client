@@ -61,7 +61,7 @@ class EntityWrapper {
       case EntityUIAction.navigate: {
         if (uiAction.tapService != null && uiAction.tapService.startsWith("/")) {
           //TODO handle local urls
-          Launcher.launchURLInBrowser('${ConnectionManager().httpWebHost}${uiAction.tapService}');
+          Launcher.launchURLInBrowser('${AppSettings().httpWebHost}${uiAction.tapService}');
         } else {
           Launcher.launchURLInBrowser(uiAction.tapService);
         }
@@ -101,7 +101,7 @@ class EntityWrapper {
         case EntityUIAction.navigate: {
           if (uiAction.holdService != null && uiAction.holdService.startsWith("/")) {
             //TODO handle local urls
-            Launcher.launchURLInBrowser('${ConnectionManager().httpWebHost}${uiAction.holdService}');
+            Launcher.launchURLInBrowser('${AppSettings().httpWebHost}${uiAction.holdService}');
           } else {
             Launcher.launchURLInBrowser(uiAction.holdService);
           }
@@ -141,7 +141,7 @@ class EntityWrapper {
         case EntityUIAction.navigate: {
           if (uiAction.doubleTapService != null && uiAction.doubleTapService.startsWith("/")) {
             //TODO handle local urls
-            Launcher.launchURLInBrowser('${ConnectionManager().httpWebHost}${uiAction.doubleTapService}');
+            Launcher.launchURLInBrowser('${AppSettings().httpWebHost}${uiAction.doubleTapService}');
           } else {
             Launcher.launchURLInBrowser(uiAction.doubleTapService);
           }

@@ -63,7 +63,7 @@ class HomeAssistant {
     _fetchCompleter = Completer();
     List<Future> futures = [];
     if (!uiOnly) {
-      if (entities == null) entities = EntityCollection(ConnectionManager().httpWebHost);
+      if (entities == null) entities = EntityCollection(AppSettings().httpWebHost);
       futures.add(_getStates(null));
       futures.add(_getConfig(null));
       futures.add(_getUserInfo(null));
@@ -92,7 +92,7 @@ class HomeAssistant {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool cached = prefs.getBool('cached');
     if (cached != null && cached) {
-      if (entities == null) entities = EntityCollection(ConnectionManager().httpWebHost);
+      if (entities == null) entities = EntityCollection(AppSettings().httpWebHost);
       try {
         _getStates(prefs);
         if (!autoUi) {
@@ -194,7 +194,7 @@ class HomeAssistant {
     } else {
       Completer completer = Completer();
       var additionalData;
-      if (ConnectionManager().haVersion >= 107 && _lovelaceDashbordUrl != HomeAssistant.DEFAULT_DASHBOARD) {
+      if (AppSettings().haVersion >= 107 && _lovelaceDashbordUrl != HomeAssistant.DEFAULT_DASHBOARD) {
         additionalData = {
           'url_path': _lovelaceDashbordUrl
         };

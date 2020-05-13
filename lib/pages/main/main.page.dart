@@ -246,7 +246,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 
   void _showOAuth() {
     _preventAppRefresh = true;
-    Navigator.of(context).pushNamed("/auth", arguments: {"url": ConnectionManager().oauthUrl});
+    Navigator.of(context).pushNamed("/auth", arguments: {"url": AppSettings().oauthUrl});
   }
 
   _setErrorState(HACException e) {
@@ -463,7 +463,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       child: new Text("Reload"),
       value: "reload",
     ));
-    if (ConnectionManager().isAuthenticated) {
+    if (AppSettings().isAuthenticated) {
       _showLoginButton = false;
       serviceMenuItems.add(
           PopupMenuItem<String>(

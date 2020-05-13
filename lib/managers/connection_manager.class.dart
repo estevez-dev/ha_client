@@ -212,16 +212,16 @@ class ConnectionManager {
       Logger.d( "[Sending] ==> auth request");
       sendSocketMessage(
           type: "auth",
-          additionalData: {"access_token": "$_token"},
+          additionalData: {"access_token": "${AppSettings().longLivedToken}"},
           auth: true
       ).then((_) {
         completer.complete();
       }).catchError((e) => completer.completeError(e));
-    } else if (_tempToken != null) {
+    } else if (AppSettings().isTempAuthenticated != null) {
       Logger.d("We have temp token. Loging in...");
       sendSocketMessage(
           type: "auth",
-          additionalData: {"access_token": "$_tempToken"},
+          additionalData: {"access_token": "${AppSettings().tempToken}"},
           auth: true
       ).then((_) {
         Logger.d("Requesting long-lived token...");
@@ -239,35 +239,17 @@ class ConnectionManager {
     return completer.future;
   }
 
-  Future logout() {
+  Future logout() async {
     Logger.d("Logging out");
-    Completer completer = Completer();
-    _disconnect().whenComplete(() {
-      _token = null;
-      _tempToken = null;
-      final storage = new FlutterSecureStorage();
-      storage.delete(key: "hacl_llt").whenComplete((){
-        completer.complete();
-      });
-    });
-    return completer.future;
+    await _disconnect();
+    await AppSettings().clearTokens();
   }
 
   Future _getLongLivedToken() {
     Completer completer = Completer();
     sendSocketMessage(type: "auth/long_lived_access_token", additionalData: {"client_name": "HA Client app ${DateTime.now().millisecondsSinceEpoch}", "lifespan": 365}).then((data) {
       Logger.d("Got long-lived token.");
-      _token = data;
-      _tempToken = null;
-      final storage = new FlutterSecureStorage();
-      storage.write(key: "hacl_llt", value: "$_token").then((_) {
-        SharedPreferences.getInstance().then((prefs) {
-          prefs.setBool("oauth-used", true);
-          completer.complete();
-        });
-      }).catchError((e) {
-        throw e;
-      });
+      AppSettings().saveLongLivedToken(data);
     }).catchError((e) {
       completer.completeError(HACException("Authentication error: $e", actions: [HAErrorAction.reload(title: "Retry"), HAErrorAction.loginAgain(title: "Relogin")]));
     });
@@ -339,11 +321,11 @@ class ConnectionManager {
     DateTime now = DateTime.now();
     //String endTime = formatDate(now, [yyyy, '-', mm, '-', dd, 'T', HH, ':', nn, ':', ss, z]);
     String startTime = formatDate(now.subtract(Duration(hours: 24)), [yyyy, '-', mm, '-', dd, 'T', HH, ':', nn, ':', ss, z]);
-    String url = "$httpWebHost/api/history/period/$startTime?&filter_entity_id=$entityId";
+    String url = "${AppSettings().httpWebHost}/api/history/period/$startTime?&filter_entity_id=$entityId";
     Logger.d("[Sending] ==> HTTP /api/history/period/$startTime?&filter_entity_id=$entityId");
     http.Response historyResponse;
     historyResponse = await http.get(url, headers: {
-      "authorization": "Bearer $_token",
+      "authorization": "Bearer ${AppSettings().longLivedToken}",
       "Content-Type": "application/json"
     });
     var history = json.decode(historyResponse.body);
@@ -357,14 +339,14 @@ class ConnectionManager {
 
   Future sendHTTPPost({String endPoint, String data, String contentType: "application/json", bool includeAuthHeader: true}) async {
     Completer completer = Completer();
-    String url = "$httpWebHost$endPoint";
+    String url = "${AppSettings().httpWebHost}$endPoint";
     Logger.d("[Sending] ==> HTTP $endPoint");
     Map<String, String> headers = {};
     if (contentType != null) {
       headers["Content-Type"] = contentType;
     }
     if (includeAuthHeader) {
-      headers["authorization"] = "Bearer $_token";
+      headers["authorization"] = "Bearer ${AppSettings().longLivedToken}";
     }
     http.post(
         url,

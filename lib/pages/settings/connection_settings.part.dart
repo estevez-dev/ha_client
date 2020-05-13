@@ -31,7 +31,7 @@ class _ConnectionSettingsPageState extends State<ConnectionSettingsPage> {
   }
 
   _loadSettings() async {
-    _includeDeviceName = widget.quickStart || ConnectionManager().webhookId == null;
+    _includeDeviceName = widget.quickStart || AppSettings().webhookId == null;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String domain = prefs.getString('hassio-domain')?? '';
     String port = prefs.getString('hassio-port') ?? '';

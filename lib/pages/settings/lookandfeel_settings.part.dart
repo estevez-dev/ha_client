@@ -44,7 +44,7 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
 
   Future _saveOther() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    ConnectionManager().scrollBadges = _scrollBadges;
+    AppSettings().scrollBadges = _scrollBadges;
     await prefs.setBool('scroll-badges', _scrollBadges);
   }
 

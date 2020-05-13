@@ -13,68 +13,53 @@ class LocationManager {
     init();
   }
 
-  final int defaultUpdateIntervalMinutes = 20;
   final String backgroundTaskId = "haclocationtask0";
   final String backgroundTaskTag = "haclocation";
-  Duration _updateInterval;
-  bool _isRunning;
 
   void init() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.reload();
-    _updateInterval = Duration(minutes: prefs.getInt("location-interval") ??
-        defaultUpdateIntervalMinutes);
-    _isRunning = prefs.getBool("location-enabled") ?? false;
-    if (_isRunning) {
+    if (AppSettings().locationTrackingEnabled) {
       await _startLocationService();
     }
   }
 
   setSettings(bool enabled, int interval) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (interval != _updateInterval.inMinutes) {
-      prefs.setInt("location-interval", interval);
-      _updateInterval = Duration(minutes: interval);
-      if (_isRunning) {
-        Logger.d("Stopping location tracking...");
-        _isRunning = false;
-        await _stopLocationService();
-      }
+    if (interval != AppSettings().locationUpdateInterval.inMinutes) {
+      await _stopLocationService();
     }
-    if (enabled && !_isRunning) {
+    AppSettings().save({
+      'location-interval': interval,
+      'location-enabled': enabled
+    });
+    AppSettings().locationUpdateInterval = Duration(minutes: interval);
+    AppSettings().locationTrackingEnabled = enabled;
+    if (enabled && !AppSettings().locationTrackingEnabled) {
       Logger.d("Starting location tracking");
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool("location-enabled", enabled);
-      _isRunning = true;
       await _startLocationService();
-    } else if (!enabled && _isRunning) {
+    } else if (!enabled && AppSettings().locationTrackingEnabled) {
       Logger.d("Stopping location tracking...");
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool("location-enabled", enabled);
-      _isRunning = false;
       await _stopLocationService();
     }
   }
 
   _startLocationService() async {
-    String webhookId = ConnectionManager().webhookId;
-    String httpWebHost = ConnectionManager().httpWebHost;
+    String webhookId = AppSettings().webhookId;
+    String httpWebHost = AppSettings().httpWebHost;
     if (webhookId != null && webhookId.isNotEmpty) {
       Duration interval;
       int delayFactor;
       int taskCount;
-      Logger.d("Starting location update for every ${_updateInterval
+      Logger.d("Starting location update for every ${AppSettings().locationUpdateInterval
         .inMinutes} minutes...");
-      if (_updateInterval.inMinutes == 10) {
+      if (AppSettings().locationUpdateInterval.inMinutes == 10) {
         interval = Duration(minutes: 20);
         taskCount = 2;
         delayFactor = 10;
-      } else if (_updateInterval.inMinutes == 5) {
+      } else if (AppSettings().locationUpdateInterval.inMinutes == 5) {
         interval = Duration(minutes: 15);
         taskCount = 3;
         delayFactor = 5;
       } else {
-        interval = _updateInterval;
+        interval = AppSettings().locationUpdateInterval;
         taskCount = 1;
         delayFactor = 0;
       }
@@ -112,8 +97,8 @@ class LocationManager {
       Logger.d("[Foreground location] Started");
       Geolocator geolocator = Geolocator();
       var battery = Battery();
-      String webhookId = ConnectionManager().webhookId;
-      String httpWebHost = ConnectionManager().httpWebHost;
+      String webhookId = AppSettings().webhookId;
+      String httpWebHost = AppSettings().httpWebHost;
       if (webhookId != null && webhookId.isNotEmpty) {
           Logger.d("[Foreground location] Getting battery level...");
           int batteryLevel = await battery.batteryLevel;

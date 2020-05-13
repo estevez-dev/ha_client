@@ -25,9 +25,9 @@ class MobileAppIntegrationManager {
 
   static Future checkAppRegistration() {
     Completer completer = Completer();
-    _appRegistrationData["device_name"] = ConnectionManager().mobileAppDeviceName ?? getDefaultDeviceName();
+    _appRegistrationData["device_name"] = AppSettings().mobileAppDeviceName ?? getDefaultDeviceName();
     (_appRegistrationData["app_data"] as Map)["push_token"] = "${HomeAssistant().fcmToken}";
-    if (ConnectionManager().webhookId == null) {
+    if (AppSettings().webhookId == null) {
       Logger.d("Mobile app was not registered yet. Registering...");
       var registrationData = Map.from(_appRegistrationData);
       registrationData.addAll({
@@ -36,7 +36,7 @@ class MobileAppIntegrationManager {
         "os_name": DeviceInfoManager().osName,
         "supports_encryption": false,
       });
-      if (ConnectionManager().haVersion >= 104) {
+      if (AppSettings().haVersion >= 104) {
         registrationData.addAll({
           "device_id": "${DeviceInfoManager().unicDeviceId}"
         });
@@ -48,12 +48,12 @@ class MobileAppIntegrationManager {
       ).then((response) {
         Logger.d("Processing registration responce...");
         var responseObject = json.decode(response);
-        ConnectionManager().webhookId = responseObject["webhook_id"];
-        ConnectionManager().appIntegrationVersion = INTEGRATION_VERSION;
-        SharedPreferences.getInstance().then((prefs) {
-          prefs.setString("app-webhook-id", responseObject["webhook_id"]);
-          prefs.setInt('app-integration-version', INTEGRATION_VERSION);
-
+        AppSettings().webhookId = responseObject["webhook_id"];
+        AppSettings().appIntegrationVersion = INTEGRATION_VERSION;
+        AppSettings().save({
+          'app-webhook-id': responseObject["webhook_id"],
+          'app-integration-version': INTEGRATION_VERSION
+        }).then((prefs) {
           completer.complete();
           eventBus.fire(ShowPopupEvent(
             popup: Popup(
@@ -84,7 +84,7 @@ class MobileAppIntegrationManager {
         "data": _appRegistrationData
       };
       ConnectionManager().sendHTTPPost(
-          endPoint: "/api/webhook/${ConnectionManager().webhookId}",
+          endPoint: "/api/webhook/${AppSettings().webhookId}",
           includeAuthHeader: false,
           data: json.encode(updateData)
       ).then((response) {
@@ -98,7 +98,7 @@ class MobileAppIntegrationManager {
           Logger.w("No registration data in response. MobileApp integration was removed or broken");
           _askToRegisterApp();
         } else {
-          if (INTEGRATION_VERSION > ConnectionManager().appIntegrationVersion) {
+          if (INTEGRATION_VERSION > AppSettings().appIntegrationVersion) {
             Logger.d('App registration needs to be updated');
             _askToRemoveAndRegisterApp();
           } else {

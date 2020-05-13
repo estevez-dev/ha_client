@@ -10,7 +10,7 @@ class Badges extends StatelessWidget {
     List<EntityWrapper> entitiesToShow = badges.getEntitiesToShow();
     
     if (entitiesToShow.isNotEmpty) {
-      if (ConnectionManager().scrollBadges) {
+      if (AppSettings().scrollBadges) {
         return ConstrainedBox(
           constraints: BoxConstraints.tightFor(height: 112),
           child: SingleChildScrollView(

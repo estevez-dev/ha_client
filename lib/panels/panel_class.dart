@@ -38,7 +38,7 @@ class Panel {
         eventBus.fire(ReloadUIEvent());
       });
     } else {
-      Launcher.launchAuthenticatedWebView(context: context, url: "${ConnectionManager().httpWebHost}/$urlPath", title: "${this.title}");
+      Launcher.launchAuthenticatedWebView(context: context, url: "${AppSettings().httpWebHost}/$urlPath", title: "${this.title}");
     }
   }
 

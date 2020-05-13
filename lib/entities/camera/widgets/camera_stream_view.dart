@@ -42,7 +42,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
           _jsMessageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
             rootBundle.loadString('assets/html/cameraLiveView.html').then((file) {
               _webViewHtml = Uri.dataFromString(
-                  file.replaceFirst('{{stream_url}}', '${ConnectionManager().httpWebHost}${data["url"]}').replaceFirst('{{message_channel}}', _jsMessageChannelName),
+                  file.replaceFirst('{{stream_url}}', '${AppSettings().httpWebHost}${data["url"]}').replaceFirst('{{message_channel}}', _jsMessageChannelName),
                   mimeType: 'text/html',
                   encoding: Encoding.getByName('utf-8')
               ).toString();
@@ -69,7 +69,7 @@ class _CameraStreamViewState extends State<CameraStreamView> {
   }
 
   Future _loadMJPEG() async {
-    _streamUrl = '${ConnectionManager().httpWebHost}/api/camera_proxy_stream/${_entity
+    _streamUrl = '${AppSettings().httpWebHost}/api/camera_proxy_stream/${_entity
         .entityId}?token=${_entity.attributes['access_token']}';
     _jsMessageChannelName = 'HA_${_entity.entityId.replaceAll('.', '_')}';
     var file = await rootBundle.loadString('assets/html/cameraView.html');

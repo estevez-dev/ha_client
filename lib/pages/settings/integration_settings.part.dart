@@ -11,7 +11,7 @@ class IntegrationSettingsPage extends StatefulWidget {
 
 class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
-  int _locationInterval = LocationManager().defaultUpdateIntervalMinutes;
+  int _locationInterval = AppSettings().defaultLocationUpdateIntervalMinutes;
   bool _locationTrackingEnabled = false;
   bool _wait = false;
 
@@ -28,7 +28,8 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         _locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
-        _locationInterval = prefs.getInt("location-interval") ?? LocationManager().defaultUpdateIntervalMinutes;
+        _locationInterval = prefs.getInt("location-interval") ??
+          AppSettings().defaultLocationUpdateIntervalMinutes;
         if (_locationInterval % 5 != 0) {
           _locationInterval = 5 * (_locationInterval ~/ 5);
         }

@@ -39,7 +39,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
       _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:network'), 'Connection settings', AppSettingsSection.connectionSettings),
       _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:brush'), 'Look and feel', AppSettingsSection.lookAndFeel),
     ];
-    if (ConnectionManager().webhookId != null) {
+    if (AppSettings().webhookId != null) {
       items.insert(1, _buildMenuItem(context, MaterialDesignIcons.getIconDataFromIconName('mdi:cellphone-android'), 'Integration settings', AppSettingsSection.integrationSettings));
     }
     return ListView(

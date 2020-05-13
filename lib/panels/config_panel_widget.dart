@@ -20,7 +20,7 @@ class _ConfigPanelWidgetState extends State<ConfigPanelWidget> {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        LinkToWebConfig(name: "Home Assistant configuration", url: ConnectionManager().httpWebHost+"/config"),
+        LinkToWebConfig(name: "Home Assistant configuration", url: AppSettings().httpWebHost+"/config"),
       ],
     );
   }

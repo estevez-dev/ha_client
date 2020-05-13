@@ -153,14 +153,14 @@ class RegisterAppPopup extends Popup {
                   Padding(
                     padding: EdgeInsets.all(20),
                       child: TextFormField(
-                        initialValue: ConnectionManager().mobileAppDeviceName ?? MobileAppIntegrationManager.getDefaultDeviceName(),
+                        initialValue: AppSettings().mobileAppDeviceName ?? MobileAppIntegrationManager.getDefaultDeviceName(),
                         onSaved: (newValue) {
                           String deviceName =  newValue?.trim();
                           SharedPreferences.getInstance().then((prefs) {
                             prefs.remove("app-webhook-id");
                             prefs.setString('app-integration-device-name', deviceName);
-                            ConnectionManager().webhookId = null;
-                            ConnectionManager().mobileAppDeviceName = deviceName;
+                            AppSettings().webhookId = null;
+                            AppSettings().mobileAppDeviceName = deviceName;
                             Navigator.of(context).pop();
                             MobileAppIntegrationManager.checkAppRegistration();
                           });

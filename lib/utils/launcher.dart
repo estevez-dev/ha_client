@@ -45,7 +45,7 @@ class Launcher {
       if (viewState.type == standaloneWebview.WebViewState.startLoad) {
         Logger.d("[WebView] Injecting external auth JS");
         rootBundle.loadString('assets/js/externalAuth.js').then((js){
-          flutterWebViewPlugin.evalJavascript(js.replaceFirst("[token]", ConnectionManager()._token));
+          flutterWebViewPlugin.evalJavascript(js.replaceFirst("[token]", AppSettings().longLivedToken));
         });
       }
     });

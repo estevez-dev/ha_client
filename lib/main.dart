@@ -187,12 +187,11 @@ void main() async {
   };
 
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  AppTheme theme = AppTheme.values[prefs.getInt('app-theme') ?? AppTheme.defaultTheme.index];
+  AppSettings().loadAppTheme();
 
   runZoned(() {
       runApp(new HAClientApp(
-        theme: theme,
+        theme: AppSettings().appTheme,
       ));
   }, onError: (error, stack) {
     _reportError(error, stack);
@@ -287,7 +286,7 @@ class _HAClientAppState extends State<HAClientApp> {
         "/quick-start": (context) => QuickStartPage(),
         "/haclient_zha": (context) => ZhaPage(),
         "/auth": (context) => new standaloneWebview.WebviewScaffold(
-          url: "${ConnectionManager().oauthUrl}",
+          url: "${AppSettings().oauthUrl}",
           appBar: new AppBar(
             leading: IconButton(
               icon: Icon(Icons.help),
