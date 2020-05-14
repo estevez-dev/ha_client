@@ -11,19 +11,27 @@ class StartupUserMessagesManager {
 
   StartupUserMessagesManager._internal();
 
-  bool _supportAppDevelopmentMessageShown;
+  bool _needToshowDonateMessage;
   bool _whatsNewMessageShown;
-  static final _supportAppDevelopmentMessageKey = "user-message-shown-support-development_3";
+  static final _donateMsgTimerKey = "user-msg-donate-timer";
+  static final _donateMsgShownKey = "user-msg-donate-shpown";
   static final _whatsNewMessageKey = "user-msg-whats-new-url";
 
   void checkMessagesToShow() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.reload();
-    _supportAppDevelopmentMessageShown = prefs.getBool(_supportAppDevelopmentMessageKey) ?? false;
+    var tInt = prefs.getInt(_donateMsgTimerKey);
+    if (tInt == null) {
+      prefs.setInt(_donateMsgTimerKey, DateTime.now().millisecondsSinceEpoch);
+      _needToshowDonateMessage = false;
+    } else {
+      bool wasShown = prefs.getBool(_donateMsgShownKey) ?? false;
+      _needToshowDonateMessage = (DateTime.now().millisecondsSinceEpoch - tInt >= 1209600000) && !wasShown; //14 days
+    }
     _whatsNewMessageShown = '${prefs.getString(_whatsNewMessageKey)}' == whatsNewUrl;
     if (!_whatsNewMessageShown) {
       _showWhatsNewMessage();
-    } else if (!_supportAppDevelopmentMessageShown) {
+    } else if (_needToshowDonateMessage) {
       _showSupportAppDevelopmentMessage();
     }
   }
@@ -34,16 +42,16 @@ class StartupUserMessagesManager {
         title: "Hi!",
         body: "As you may have noticed this app contains no ads. Also all app features are available for you for free. I'm not planning to change this in nearest future, but still you can support this application development materially. There is one-time payment available as well as several subscription options. Thanks.",
         positiveText: "Show options",
-        negativeText: "Cancel",
+        negativeText: "Later",
         onPositive: () {
           SharedPreferences.getInstance().then((prefs) {
-            prefs.setBool(_supportAppDevelopmentMessageKey, true);
+            prefs.setBool(_donateMsgShownKey, true);
             eventBus.fire(ShowPageEvent(path: "/putchase"));
           });
         },
         onNegative: () {
           SharedPreferences.getInstance().then((prefs) {
-            prefs.setBool(_supportAppDevelopmentMessageKey, true);
+            prefs.setInt(_donateMsgTimerKey, DateTime.now().millisecondsSinceEpoch);
           });
         }
       )
