@@ -34,12 +34,14 @@ class ConnectionManager {
       } else if (AppSettings().isSomethingMissed()) {
         completer.completeError(HACException.checkConnectionSettings());
       } else if (!AppSettings().isAuthenticated) {
+        settingsLoaded = true;
         AppSettings().startAuth().then((_) {
           _doConnect(completer: completer, forceReconnect: forceReconnect);
         }).catchError((e) {
           completer.completeError(e);
         });
       } else {
+        settingsLoaded = true;
         _doConnect(completer: completer, forceReconnect: forceReconnect);
       }  
     });
