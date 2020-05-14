@@ -3,7 +3,7 @@ part of '../main.dart';
 class EntityWrapper {
 
   String overrideName;
-  final String overrideIcon;
+  String overrideIcon;
   final bool stateColor;
   EntityUIAction uiAction;
   Entity entity;

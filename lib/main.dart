@@ -142,6 +142,7 @@ part 'cards/horizontal_srack_card.dart';
 part 'cards/markdown_card.dart';
 part 'cards/media_control_card.dart';
 part 'cards/unsupported_card.dart';
+part 'cards/light_card.dart';
 part 'cards/error_card.dart';
 part 'cards/vertical_stack_card.dart';
 part 'cards/glance_card.dart';

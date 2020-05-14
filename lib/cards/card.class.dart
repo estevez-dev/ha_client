@@ -35,8 +35,10 @@ class CardData {
           case CardType.ALARM_PANEL:
             return AlarmPanelCardData(rawData);
             break;
-          case CardType.ENTITY_BUTTON:
           case CardType.LIGHT:
+            return LightCardData(rawData);
+            break;
+          case CardType.ENTITY_BUTTON:
           case CardType.BUTTON:
           case CardType.PICTURE_ENTITY:
             return ButtonCardData(rawData);
@@ -354,6 +356,39 @@ class AlarmPanelCardData extends CardData {
     
   }
 
+}
+
+class LightCardData extends CardData {
+
+  String name;
+  String icon;
+  
+  @override
+  Widget buildCardWidget() {
+    return LightCard(card: this);
+  }
+  
+  LightCardData(rawData) : super(rawData) {
+    //Parsing card data
+    name = rawData['name'];
+    icon = rawData['icon'] is String ? rawData['icon'] : null;
+    //Parsing entity
+    var entitiId = rawData["entity"];
+    if (entitiId != null && entitiId is String) {
+      if (HomeAssistant().entities.isExist(entitiId)) {
+        entities.add(EntityWrapper(
+            entity: HomeAssistant().entities.get(entitiId),
+            overrideName: name,
+            overrideIcon: icon,
+            uiAction: EntityUIAction()
+        ));
+      } else {
+        entities.add(EntityWrapper(entity: Entity.missed(entitiId)));
+      }
+    } else {
+      entities.add(EntityWrapper(entity: Entity.missed('$entitiId')));
+    }
+  }
 }
 
 class ButtonCardData extends CardData {
