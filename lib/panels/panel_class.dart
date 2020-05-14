@@ -31,7 +31,8 @@ class Panel {
     if (componentName.startsWith('haclient')) {
       Navigator.of(context).pushNamed(urlPath);
     } else if (componentName == 'lovelace') {
-      HomeAssistant().lovelaceDashboardUrl = this.urlPath;
+      HomeAssistant().currentDashboardPath = this.urlPath;
+      Logger.d('Switching to dashboard: ${this.urlPath}');
       HomeAssistant().autoUi = false;
       SharedPreferences.getInstance().then((prefs) {
         prefs.setString('lovelace_dashboard_url', this.urlPath);

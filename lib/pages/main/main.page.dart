@@ -99,7 +99,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _subscribe().then((_) {
       ConnectionManager().init(loadSettings: true, forceReconnect: true).then((__){
         SharedPreferences.getInstance().then((prefs) {
-          HomeAssistant().lovelaceDashboardUrl = prefs.getString('lovelace_dashboard_url') ?? HomeAssistant.DEFAULT_DASHBOARD;
+          HomeAssistant().currentDashboardPath = prefs.getString('lovelace_dashboard_url') ?? HomeAssistant.DEFAULT_DASHBOARD;
           _fetchData(useCache: true);
           LocationManager();
           StartupUserMessagesManager().checkMessagesToShow();
@@ -603,7 +603,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                           context: context,
                           items: serviceMenuItems
                       ).then((String val) {
-                        HomeAssistant().lovelaceDashboardUrl = HomeAssistant.DEFAULT_DASHBOARD;
+                        HomeAssistant().currentDashboardPath = HomeAssistant.DEFAULT_DASHBOARD;
                         if (val == "reload") {
                           
                           _quickLoad();

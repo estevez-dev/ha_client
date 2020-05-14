@@ -14,7 +14,7 @@ class HomeAssistant {
   HomeAssistantUI ui;
   Map _instanceConfig = {};
   String _userName;
-  String _lovelaceDashbordUrl;
+  String currentDashboardPath;
   HSVColor savedColor;
   int savedPlayerPosition;
   String sendToPlayerId;
@@ -28,8 +28,6 @@ class HomeAssistant {
   var _rawStates;
   var _rawUserInfo;
   var _rawPanels;
-
-  set lovelaceDashboardUrl(String val) => _lovelaceDashbordUrl = val;
 
   List<Panel> panels = [];
 
@@ -194,9 +192,9 @@ class HomeAssistant {
     } else {
       Completer completer = Completer();
       var additionalData;
-      if (AppSettings().haVersion >= 107 && _lovelaceDashbordUrl != HomeAssistant.DEFAULT_DASHBOARD) {
+      if (AppSettings().haVersion >= 107 && currentDashboardPath != HomeAssistant.DEFAULT_DASHBOARD) {
         additionalData = {
-          'url_path': _lovelaceDashbordUrl
+          'url_path': currentDashboardPath
         };
       }
       ConnectionManager().sendSocketMessage(

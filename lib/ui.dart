@@ -16,7 +16,7 @@ class HomeAssistantUI {
     int viewCounter = 0;
     Logger.d("--Views count: ${rawLovelaceConfig['views'].length}");
     rawLovelaceConfig["views"].forEach((rawView){
-      Logger.d("----view id: ${rawView['id']}");
+      Logger.d("----view: ${rawView['path'] ?? viewCounter}");
       HAView view = HAView(
           count: viewCounter,
           rawData: rawView

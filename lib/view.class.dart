@@ -6,6 +6,7 @@ class HAView {
   Entity linkedEntity;
   String name;
   String id;
+  String path;
   String iconName;
   final int count;
   bool isPanel;
@@ -15,6 +16,7 @@ class HAView {
     name = rawData['title'];
     iconName = rawData['icon'];
     isPanel = rawData['panel'] ?? false;
+    path = rawData['path'] ?? '$count';
 
     if (rawData['badges'] != null && !isPanel) {
         badges = CardData.parse({
