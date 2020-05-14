@@ -28,10 +28,10 @@ class UniversalSliderState extends State<UniversalSlider> {
 
   double _value;
   bool _changeStarted = false;
+  bool _changedHere = false;
 
   @override
   void initState() {
-    _value = widget.value;
     super.initState();
   }
 
@@ -39,6 +39,11 @@ class UniversalSliderState extends State<UniversalSlider> {
   Widget build(BuildContext context) {
     List <Widget> row = [];
     List <Widget> col = [];
+    if (!_changedHere) {
+      _value = widget.value;
+    } else {
+      _changedHere = false;
+    }
     if (widget.leading != null) {
       row.add(widget.leading);
     }
@@ -57,6 +62,7 @@ class UniversalSliderState extends State<UniversalSlider> {
           onChanged: (value) {
             setState(() {
               _value = value;
+              _changedHere = true;
             });
             widget.onChanged?.call(value);
           },
@@ -64,6 +70,7 @@ class UniversalSliderState extends State<UniversalSlider> {
             _changeStarted = false;
             setState(() {
               _value = value;
+              _changedHere = true;
             });
             Timer(Duration(milliseconds: 500), () {
               if (!_changeStarted) {

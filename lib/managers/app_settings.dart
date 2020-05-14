@@ -36,8 +36,9 @@ class AppSettings {
     appTheme = AppTheme.values[prefs.getInt('app-theme') ?? AppTheme.defaultTheme.index];
   }
 
-  Future load(bool quick) async {
-    if (!quick) {
+  Future load(bool full) async {
+    if (full) {
+      Logger.d('Loading settings...');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _domain = prefs.getString('hassio-domain');
       _port = prefs.getString('hassio-port');
@@ -53,6 +54,7 @@ class AppSettings {
       locationUpdateInterval = Duration(minutes: prefs.getInt("location-interval") ??
         defaultLocationUpdateIntervalMinutes);
       locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
+      Logger.d('Done. $_domain:$_port');
       try {
         final storage = new FlutterSecureStorage();
         longLivedToken = await storage.read(key: "hacl_llt");

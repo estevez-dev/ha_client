@@ -27,7 +27,9 @@ class ConnectionManager {
   Future init({bool loadSettings, bool forceReconnect: false}) {
     Completer completer = Completer();
     AppSettings().load(loadSettings).then((_) {
+      Logger.d('Checking config...');
       if (AppSettings().isNotConfigured()) {
+        Logger.d('This is first start');
         completer.completeError(HACNotSetUpException());
       } else if (AppSettings().isSomethingMissed()) {
         completer.completeError(HACException.checkConnectionSettings());
