@@ -380,7 +380,7 @@ class LightCardData extends CardData {
             entity: HomeAssistant().entities.get(entitiId),
             overrideName: name,
             overrideIcon: icon,
-            uiAction: EntityUIAction()
+            uiAction: EntityUIAction()..tapAction = EntityUIAction.toggle
         ));
       } else {
         entities.add(EntityWrapper(entity: Entity.missed(entitiId)));

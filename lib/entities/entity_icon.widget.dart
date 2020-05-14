@@ -7,8 +7,9 @@ class EntityIcon extends StatelessWidget {
   final EdgeInsetsGeometry imagePadding;
   final double size;
   final Color color;
+  final bool showBadge;
 
-  const EntityIcon({Key key, this.color, this.size: Sizes.iconSize, this.padding: const EdgeInsets.all(0.0), this.iconPadding, this.imagePadding}) : super(key: key);
+  const EntityIcon({Key key, this.color, this.showBadge: true, this.size: Sizes.iconSize, this.padding: const EdgeInsets.all(0.0), this.iconPadding, this.imagePadding}) : super(key: key);
 
   int getDefaultIconByEntityId(String entityId, String deviceClass, String state) {
     if (entityId == null) {
@@ -71,7 +72,7 @@ class EntityIcon extends StatelessWidget {
           iconCode = getDefaultIconByEntityId(entityWrapper.entity.entityId,
               entityWrapper.entity.deviceClass, entityWrapper.entity.state); //
         }
-        if (entityWrapper.entity is LightEntity &&
+        if (showBadge && entityWrapper.entity is LightEntity &&
           (entityWrapper.entity as LightEntity).supportColor &&
           (entityWrapper.entity as LightEntity).color != null &&
           (entityWrapper.entity as LightEntity).color.toColor() != Colors.white
