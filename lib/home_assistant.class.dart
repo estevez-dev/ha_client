@@ -75,7 +75,6 @@ class HomeAssistant {
       if (isComponentEnabled('mobile_app')) {
         _createUI();
         _fetchCompleter.complete();
-        if (!uiOnly) MobileAppIntegrationManager.checkAppRegistration();
       } else {
         _fetchCompleter.completeError(HACException("Mobile app component not found", actions: [HAErrorAction.tryAgain(), HAErrorAction(type: HAErrorActionType.URL ,title: "Help",url: "http://ha-client.app/docs#mobile-app-integration")]));
       }

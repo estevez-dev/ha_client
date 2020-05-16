@@ -103,6 +103,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           _fetchData(useCache: true);
           LocationManager();
           StartupUserMessagesManager().checkMessagesToShow();
+          MobileAppIntegrationManager.checkAppRegistration();
         });
       }, onError: (e) {
         if (e is HACNotSetUpException) {
