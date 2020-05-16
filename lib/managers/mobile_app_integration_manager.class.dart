@@ -12,7 +12,7 @@ class MobileAppIntegrationManager {
     "os_version": DeviceInfoManager().osVersion,
     "app_data": {
       "push_token": "",
-      "push_url": "https://us-central1-ha-client-c73c4.cloudfunctions.net/sendPushNotification"
+      "push_url": "https://us-central1-ha-client-c73c4.cloudfunctions.net/pushNotifyV2"
     }
   };
 
