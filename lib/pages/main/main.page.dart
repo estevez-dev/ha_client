@@ -576,6 +576,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             SliverAppBar(
               floating: true,
               pinned: true,
+              snap: false,
               primary: true,
               title: Text(HomeAssistant().locationName ?? ""),
               actions: <Widget>[
@@ -622,6 +623,31 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                 onPressed: () {
                   _scaffoldKey.currentState.openDrawer();
                 },
+              ),
+              expandedHeight: 130,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Padding(
+                  padding: EdgeInsets.only(bottom: 15),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        color: Colors.white,
+                        onPressed: () {
+                          Logger.d('First');
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        color: Colors.white,
+                        onPressed: () {
+                          Logger.d('First');
+                        },
+                      )
+                    ],
+                  )                ),
+                centerTitle: true,
               ),
               bottom: empty ? null : TabBar(
                 controller: _viewsTabController,
