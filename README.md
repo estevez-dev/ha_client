@@ -4,7 +4,7 @@
 
 Visit [ha-client.app](http://ha-client.app/) for more info.
 
-Download the app from [Google Play](https://play.google.com/apps/testing/com.keyboardcrumbs.haclient)
+Download the app from [Google Play](https://play.google.com/store/apps/details?id=com.keyboardcrumbs.haclient)
 
 Discuss it on [Discord](https://discord.gg/u9vq7QE) or at [Home Assistant community](https://community.home-assistant.io/c/mobile-apps/ha-client-android)
 
