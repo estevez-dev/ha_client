@@ -450,8 +450,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Widget _buildScaffoldBody(bool empty) {
-    List<PopupMenuItem<String>> serviceMenuItems = [];
-    List<PopupMenuItem<String>> mediaMenuItems = [];
+    List<Entity> activePlayers = [];
+    List<Entity> activeLights = [];
+    Color mediaMenuIconColor;
+    Color lightMenuIconColor;
 
     int currentViewCount = HomeAssistant().ui?.views?.length ?? 0;
     if (_previousViewCount != currentViewCount) {
@@ -460,72 +462,22 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       _previousViewCount = currentViewCount;
     }
 
-    serviceMenuItems.add(PopupMenuItem<String>(
-      child: new Text("Reload"),
-      value: "reload",
-    ));
-    if (AppSettings().isAuthenticated) {
-      _showLoginButton = false;
-      serviceMenuItems.add(
-          PopupMenuItem<String>(
-            child: new Text("Logout"),
-            value: "logout",
-          ));
-    }
-    Widget mediaMenuIcon;
-    int playersCount = 0;
+    _showLoginButton = !AppSettings().isAuthenticated;
+    
     if (!empty && !HomeAssistant().entities.isEmpty) {
-      List<Entity> activePlayers = HomeAssistant().entities.getByDomains(includeDomains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing, EntityState.idle]);
-      playersCount = activePlayers.length;
-      mediaMenuItems.addAll(
-          activePlayers.map((entity) => PopupMenuItem<String>(
-            child: Text(
-                "${entity.displayName}",
-              style: Theme.of(context).textTheme.body1.copyWith(
-                color: HAClientTheme().getColorByEntityState(entity.state, context)
-              )
-            ),
-            value: "${entity.entityId}",
-          )).toList()
-      );
+      activePlayers = HomeAssistant().entities.getByDomains(includeDomains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing, EntityState.idle]);
+      activeLights = HomeAssistant().entities.getByDomains(includeDomains: ["light"], stateFiler: [EntityState.on]);
     }
-    mediaMenuItems.addAll([
-      PopupMenuItem<String>(
-        child: new Text("Play media..."),
-        value: "play_media",
-      )
-    ]);
-    if (playersCount > 0) {
-      mediaMenuIcon = Stack(
-        overflow: Overflow.visible,
-        children: <Widget>[
-          Icon(MaterialDesignIcons.getIconDataFromIconName(
-              "mdi:television"), color: Colors.white,),
-          Positioned(
-            bottom: -4,
-            right: -4,
-            child: Container(
-              height: 16,
-              width: 16,
-              decoration: new BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  "$playersCount",
-                  style: Theme.of(context).textTheme.caption.copyWith(
-                    color: Colors.white
-                  )
-                ),
-              ),
-            ),
-          )
-        ],
-      );
+    
+    if (activePlayers.isNotEmpty) {
+      mediaMenuIconColor = Theme.of(context).accentColor;
     } else {
-      mediaMenuIcon = Icon(MaterialDesignIcons.getIconDataFromIconName(
-          "mdi:television"), color: Colors.white,);
+      mediaMenuIconColor = Theme.of(context).primaryIconTheme.color;
+    }
+    if (activeLights.isNotEmpty) {
+      lightMenuIconColor = Theme.of(context).accentColor;
+    } else {
+      lightMenuIconColor = Theme.of(context).primaryIconTheme.color;
     }
     Widget mainScrollBody;
     if (empty) {
@@ -580,43 +532,30 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
               primary: true,
               title: Text(HomeAssistant().locationName ?? ""),
               actions: <Widget>[
-                IconButton(
-                    icon: mediaMenuIcon,
-                    onPressed: () {
-                      showMenu(
-                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, MediaQuery.of(context).padding.top + Sizes.iconSize + 20, 50, 0),
-                          context: context,
-                          items: mediaMenuItems
-                      ).then((String val) {
-                        if (val == "play_media") {
-                          Navigator.pushNamed(context, "/play-media", arguments: {"url": ""});
-                        } else if (val != null)  {
-                          _showEntityPage(val);
-                        }
-                      });
+                PopupMenuButton(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: Icon(MaterialDesignIcons.getIconDataFromIconName(
+                        "mdi:dots-vertical"), color: Theme.of(context).primaryIconTheme.color)
+                  ),
+                  itemBuilder: (BuildContext context) {
+                    List<PopupMenuEntry<String>> result = [
+                      PopupMenuItem<String>(
+                        child: new Text("Reload"),
+                        value: "reload",
+                      )
+                    ];
+                    if (AppSettings().isAuthenticated) {
+                      result.addAll([
+                          PopupMenuDivider(),
+                          PopupMenuItem<String>(
+                            child: new Text("Logout"),
+                            value: "logout",
+                          )]);
                     }
+                    return result;
+                  },      
                 ),
-                IconButton(
-                    icon: Icon(MaterialDesignIcons.getIconDataFromIconName(
-                        "mdi:dots-vertical"), color: Colors.white,),
-                    onPressed: () {
-                      showMenu(
-                          position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, MediaQuery.of(context).padding.top + Sizes.iconSize + 20, 0.0, 0.0),
-                          context: context,
-                          items: serviceMenuItems
-                      ).then((String val) {
-                        HomeAssistant().currentDashboardPath = HomeAssistant.DEFAULT_DASHBOARD;
-                        if (val == "reload") {
-                          
-                          _quickLoad();
-                        } else if (val == "logout") {
-                          HomeAssistant().logout().then((_) {
-                            _quickLoad();
-                          });
-                        }
-                      });
-                    }
-                )
               ],
               leading: IconButton(
                 icon: Icon(Icons.menu),
@@ -631,19 +570,87 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        color: Colors.white,
-                        onPressed: () {
-                          Logger.d('First');
+                      PopupMenuButton<String>(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          child: Icon(
+                            MaterialDesignIcons.getIconDataFromIconName("mdi:television"),
+                            color: mediaMenuIconColor,
+                            size: 20,
+                          )
+                        ),
+                        onSelected: (String val) {
+                          if (val == "play_media") {
+                            Navigator.pushNamed(context, "/play-media", arguments: {"url": ""});
+                          } else if (val != null)  {
+                            _showEntityPage(val);
+                          }
                         },
+                        itemBuilder: (BuildContext context) {
+                          List<PopupMenuEntry<String>> result = [
+                            PopupMenuDivider(),
+                            PopupMenuItem<String>(
+                              child: new Text("Play media..."),
+                              value: "play_media",
+                            )
+                          ];
+                          if (activePlayers.isNotEmpty) {
+                            result.insertAll(0,
+                              activePlayers.map((entity) => PopupMenuItem<String>(
+                                child: Text(
+                                    "${entity.displayName}",
+                                  style: Theme.of(context).textTheme.body1.copyWith(
+                                    color: HAClientTheme().getColorByEntityState(entity.state, context)
+                                  )
+                                ),
+                                value: "${entity.entityId}",
+                              )).toList()
+                            );
+                          } else {
+                            result.insert(0, PopupMenuItem<String>(
+                              child: new Text("No active players"),
+                              value: "_",
+                              enabled: false,
+                            ));
+                          }
+                          return result;
+                        }
                       ),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        color: Colors.white,
-                        onPressed: () {
-                          Logger.d('First');
+                      PopupMenuButton<String>(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          child: Icon(
+                            MaterialDesignIcons.getIconDataFromIconName("mdi:lightbulb-outline"),
+                            color: lightMenuIconColor,
+                            size: 20
+                          )
+                        ),
+                        onSelected: (String val) {
+                          if (val == 'turn_off_all') {
+                              ConnectionManager().callService(
+                                service: 'turn_off',
+                                domain: 'light',
+                                entityId: 'all'
+                              );
+                            } else if (val == 'turn_on_all') {
+                              ConnectionManager().callService(
+                                service: 'turn_on',
+                                domain: 'light',
+                                entityId: 'all'
+                              );
+                            }
                         },
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              child: new Text("Turn on all lights"),
+                              value: "turn_on_all",
+                            ),
+                            PopupMenuItem<String>(
+                              child: new Text("Turn off all ligts"),
+                              value: "turn_off_all",
+                              enabled: activeLights.isNotEmpty,
+                            )
+                          ],
                       )
                     ],
                   )                ),
