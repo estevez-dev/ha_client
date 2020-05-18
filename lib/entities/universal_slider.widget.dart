@@ -13,9 +13,10 @@ class UniversalSlider extends StatefulWidget {
   final double max;
   final double value;
   final int divisions;
+  final String label;
   final EdgeInsets padding;
 
-  const UniversalSlider({Key key, this.onChanged, this.onChangeStart, this.activeColor, this.divisions, this.onChangeEnd, this.leading, this.closing, this.title, this.min, this.max, this.value, this.padding: const EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, 0.0)}) : super(key: key);
+  const UniversalSlider({Key key, this.onChanged, this.label, this.onChangeStart, this.activeColor, this.divisions, this.onChangeEnd, this.leading, this.closing, this.title, this.min, this.max, this.value, this.padding: const EdgeInsets.fromLTRB(Sizes.leftWidgetPadding, Sizes.rowPadding, Sizes.rightWidgetPadding, 0.0)}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -54,6 +55,7 @@ class UniversalSliderState extends State<UniversalSlider> {
           min: widget.min ?? 0,
           max: widget.max ?? 100,
           activeColor: widget.activeColor,
+          label: widget.label,
           onChangeStart: (value) {
             _changeStarted = true;
             widget.onChangeStart?.call(value); 

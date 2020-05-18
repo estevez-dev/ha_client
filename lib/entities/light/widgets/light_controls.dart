@@ -134,8 +134,10 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
             _tmpBrightness = value.round();
           });
         },
-        min: 1.0,
-        max: 255.0,
+        min: 1,
+        max: 255,
+        divisions: 254,
+        label: '${val?.toInt() ?? ''}',
         onChangeEnd: (value) => _setBrightness(entity, value),
         value: val,
         leading: Icon(Icons.brightness_5),
@@ -155,10 +157,12 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
             _tmpWhiteValue = value.round();
           });
         },
-        min: 0.0,
-        max: 255.0,
+        min: 0,
+        max: 255,
+        divisions: 255,
+        label: '$_tmpWhiteValue',
         onChangeEnd: (value) => _setWhiteValue(entity, value),
-        value: _tmpWhiteValue == null ? 0.0 : _tmpWhiteValue.toDouble(),
+        value: _tmpWhiteValue?.toDouble() ?? 0.0,
         leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:file-word-box")),
         title: "White",
       );
@@ -188,6 +192,8 @@ class _LightControlsWidgetState extends State<LightControlsWidget> {
         onChangeEnd: (value) => _setColorTemp(entity, value),
         max: entity.maxMireds,
         min: entity.minMireds,
+        divisions: (entity.maxMireds - entity.minMireds).toInt(),
+        label: '$_tmpColorTemp',
         onChanged: (value) {
           setState(() {
             _changedHere = true;
