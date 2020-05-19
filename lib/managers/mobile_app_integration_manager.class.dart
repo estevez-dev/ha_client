@@ -128,14 +128,11 @@ class MobileAppIntegrationManager {
       popup: Popup(
         title: "App integration is not working properly",
         body: "Something wrong with HA Client integration on your Home Assistant server. Please report this issue. You can try to remove Mobile App integration from Home Assistant and restart server to fix this issue.",
-        positiveText: "Report to GitHub",
-        negativeText: "Report to Discord",
+        positiveText: "Report issue",
+        negativeText: "Close",
         onPositive: () {
           Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
-        },
-        onNegative: () {
-          Launcher.launchURLInBrowser("https://discord.gg/u9vq7QE");
-        },
+        }
       )
     ));
   }
