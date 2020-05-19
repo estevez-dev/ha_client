@@ -462,7 +462,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       _previousViewCount = currentViewCount;
     }
 
-    _showLoginButton = !AppSettings().isAuthenticated;
+    if (AppSettings().isAuthenticated) {
+      _showLoginButton = false;
+    }
+     
     
     if (!empty && !HomeAssistant().entities.isEmpty) {
       activePlayers = HomeAssistant().entities.getByDomains(includeDomains: ["media_player"], stateFiler: [EntityState.paused, EntityState.playing, EntityState.idle]);
