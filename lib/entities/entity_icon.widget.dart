@@ -49,7 +49,21 @@ class EntityIcon extends StatelessWidget {
       );
     } else {
       if (entityWrapper.entityPicture != null) {
-        iconWidget = Container(
+        iconWidget = ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: '${entityWrapper.entityPicture}',
+            width: size+12,
+            fit: BoxFit.cover,
+            height: size+12,
+            errorWidget: (context, str, dyn) {
+              return Padding(
+                padding: iconPadding ?? padding,
+                child: _buildIcon(entityWrapper, iconColor)
+              );
+            },
+          ),
+        );
+        /*iconWidget = Container(
           height: size+12,
           width: size+12,
           decoration: BoxDecoration(
@@ -57,62 +71,14 @@ class EntityIcon extends StatelessWidget {
               image: DecorationImage(
                 fit:BoxFit.cover,
                 image: CachedNetworkImageProvider(
-                  "${entityWrapper.entityPicture}"
+                  "${entityWrapper.entityPicture}",
                 ),
               )
           ),
-        );
+        );*/
         isPicture = true;
       } else {
-        String iconName = entityWrapper.icon;
-        int iconCode = 0;
-        if (iconName.length > 0) {
-          iconCode = MaterialDesignIcons.getIconCodeByIconName(iconName);
-        } else {
-          iconCode = getDefaultIconByEntityId(entityWrapper.entity.entityId,
-              entityWrapper.entity.deviceClass, entityWrapper.entity.state); //
-        }
-        if (showBadge && entityWrapper.entity is LightEntity &&
-          (entityWrapper.entity as LightEntity).supportColor &&
-          (entityWrapper.entity as LightEntity).color != null &&
-          (entityWrapper.entity as LightEntity).color.toColor() != Colors.white
-          ) {
-          Color lightColor = (entityWrapper.entity as LightEntity).color.toColor();  
-          iconWidget = Stack(
-            children: <Widget>[
-              Icon(
-                IconData(iconCode, fontFamily: 'Material Design Icons'),
-                size: size,
-                color: iconColor,
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  width: size / 3,
-                  height: size / 3,
-                  decoration: BoxDecoration(
-                    color: lightColor,
-                    shape: BoxShape.circle,
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        spreadRadius: 0,
-                        blurRadius: 0,
-                        offset: Offset(0.3, 0.3)
-                      )
-                    ]
-                  ),
-                ),
-              )
-            ],
-          );
-        } else {
-          iconWidget = Icon(
-            IconData(iconCode, fontFamily: 'Material Design Icons'),
-            size: size,
-            color: iconColor,
-          );
-        }
+        iconWidget = _buildIcon(entityWrapper, iconColor);
       }
     }
     EdgeInsetsGeometry computedPadding;
@@ -127,5 +93,59 @@ class EntityIcon extends StatelessWidget {
       padding: computedPadding,
       child: iconWidget,
     );
+  }
+
+  Widget _buildIcon(EntityWrapper entityWrapper, Color iconColor) {
+    Widget iconWidget;
+    String iconName = entityWrapper.icon;
+    int iconCode = 0;
+    if (iconName.length > 0) {
+      iconCode = MaterialDesignIcons.getIconCodeByIconName(iconName);
+    } else {
+      iconCode = getDefaultIconByEntityId(entityWrapper.entity.entityId,
+          entityWrapper.entity.deviceClass, entityWrapper.entity.state); //
+    }
+    if (showBadge && entityWrapper.entity is LightEntity &&
+      (entityWrapper.entity as LightEntity).supportColor &&
+      (entityWrapper.entity as LightEntity).color != null &&
+      (entityWrapper.entity as LightEntity).color.toColor() != Colors.white
+      ) {
+      Color lightColor = (entityWrapper.entity as LightEntity).color.toColor();  
+      iconWidget = Stack(
+        children: <Widget>[
+          Icon(
+            IconData(iconCode, fontFamily: 'Material Design Icons'),
+            size: size,
+            color: iconColor,
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              width: size / 3,
+              height: size / 3,
+              decoration: BoxDecoration(
+                color: lightColor,
+                shape: BoxShape.circle,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    spreadRadius: 0,
+                    blurRadius: 0,
+                    offset: Offset(0.3, 0.3)
+                  )
+                ]
+              ),
+            ),
+          )
+        ],
+      );
+    } else {
+      iconWidget = Icon(
+        IconData(iconCode, fontFamily: 'Material Design Icons'),
+        size: size,
+        color: iconColor,
+      );
+    }
+    return iconWidget;
   }
 }
