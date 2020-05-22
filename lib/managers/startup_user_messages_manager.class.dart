@@ -26,7 +26,7 @@ class StartupUserMessagesManager {
       _needToshowDonateMessage = false;
     } else {
       bool wasShown = prefs.getBool(_donateMsgShownKey) ?? false;
-      _needToshowDonateMessage = (DateTime.now().millisecondsSinceEpoch - tInt >= 1209600000) && !wasShown; //14 days
+      _needToshowDonateMessage = (Duration(milliseconds: DateTime.now().millisecondsSinceEpoch - tInt).inDays >= 14) && !wasShown;
     }
     _whatsNewMessageShown = '${prefs.getString(_whatsNewMessageKey)}' == whatsNewUrl;
     if (!_whatsNewMessageShown) {

@@ -163,7 +163,7 @@ const String appName = 'HA Client';
 const appVersionNumber = '1.1.0';
 final String appVersionAdd = secrets['version_type'] ?? '';
 final String appVersion = '$appVersionNumber${appVersionAdd.isNotEmpty ? '-' : ''}$appVersionAdd';
-const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.0.1.md';
+const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.1.0.md';
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.

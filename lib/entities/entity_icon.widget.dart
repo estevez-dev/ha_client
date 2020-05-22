@@ -63,19 +63,6 @@ class EntityIcon extends StatelessWidget {
             },
           ),
         );
-        /*iconWidget = Container(
-          height: size+12,
-          width: size+12,
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                fit:BoxFit.cover,
-                image: CachedNetworkImageProvider(
-                  "${entityWrapper.entityPicture}",
-                ),
-              )
-          ),
-        );*/
         isPicture = true;
       } else {
         iconWidget = _buildIcon(entityWrapper, iconColor);
