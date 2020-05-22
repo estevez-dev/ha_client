@@ -14,8 +14,8 @@ class LightCard extends StatefulWidget {
 
 class _LightCardState extends State<LightCard> {
 
-  double _newBrightness;
   double _actualBrightness;
+  double _newBrightness;
   bool _changedHere = false;
 
   @override
@@ -51,8 +51,9 @@ class _LightCardState extends State<LightCard> {
         entityWrapper.displayName;
     entityWrapper.overrideIcon = widget.card.icon ??
         entityWrapper.icon;
-    _actualBrightness = (entity.brightness ?? 0).toDouble();
+    
     if (!_changedHere) {
+      _actualBrightness = (entity.brightness ?? 0).toDouble();
       _newBrightness = _actualBrightness;
     } else {
       _changedHere = false;
@@ -62,8 +63,9 @@ class _LightCardState extends State<LightCard> {
     if (lightColor != null && lightColor != Colors.white) {
       color = lightColor;
     } else {
-      color = HAClientTheme().getOnStateColor(context);
+      color = Theme.of(context).accentColor;
     }
+
     return CardWrapper(
       padding: EdgeInsets.all(4),
       child: EntityModel(

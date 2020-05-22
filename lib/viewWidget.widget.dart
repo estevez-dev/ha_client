@@ -10,15 +10,12 @@ class ViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget cardsContainer;
+    Widget badgesContainer;
     if (this.view.isPanel) {
-      return FractionallySizedBox(
-        widthFactor: 1,
-        heightFactor: 1,
-        child: _buildPanelChild(context),
-      );
+      cardsContainer = _buildPanelChild(context);
+      badgesContainer = Container(width: 0, height: 0);
     } else {
-      Widget cardsContainer;
-      Widget badgesContainer;
       if (this.view.badges != null && this.view.badges is BadgesData) {
         badgesContainer = this.view.badges.buildCardWidget();
       } else {
@@ -50,17 +47,17 @@ class ViewWidget extends StatelessWidget {
       } else {
         cardsContainer = Container();
       }
-      return SingleChildScrollView(
-          padding: EdgeInsets.all(0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              badgesContainer,
-              cardsContainer
-            ],
-          ),
-      );
     }
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          badgesContainer,
+          cardsContainer
+        ],
+      ),
+    );
   }
 
   Widget _buildPanelChild(BuildContext context) {
