@@ -160,9 +160,7 @@ EventBus eventBus = new EventBus();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = 'HA Client';
-const appVersionNumber = '1.1.0';
-final String appVersionAdd = secrets['version_type'] ?? '';
-const String appVersion = String.fromEnvironment('VERSION_NAME', defaultValue: '1.1.0');
+const String appVersion = String.fromEnvironment('versionName', defaultValue: '0.0.0');
 const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.1.0.md';
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
