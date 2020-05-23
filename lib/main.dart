@@ -252,7 +252,6 @@ class _HAClientAppState extends State<HAClientApp> {
     }
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
