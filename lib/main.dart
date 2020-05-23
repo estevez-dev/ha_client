@@ -162,7 +162,7 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLoc
 const String appName = 'HA Client';
 const appVersionNumber = '1.1.0';
 final String appVersionAdd = secrets['version_type'] ?? '';
-final String appVersion = '$appVersionNumber${appVersionAdd.isNotEmpty ? '-' : ''}$appVersionAdd';
+const String appVersion = String.fromEnvironment('VERSION_NAME', defaultValue: '1.1.0');
 const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.1.0.md';
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
