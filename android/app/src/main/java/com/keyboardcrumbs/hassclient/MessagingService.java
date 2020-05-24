@@ -1,6 +1,10 @@
 package com.keyboardcrumbs.hassclient;
 
 import java.util.Map;
+import java.net.URL;
+import java.net.URLConnection;
+import java.io.IOException;
+import java.io.InputStream;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,8 +20,9 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.webkit.URLUtil;
 
 
 public class MessagingService extends FirebaseMessagingService {
@@ -31,14 +36,7 @@ public class MessagingService extends FirebaseMessagingService {
         if (data.size() > 0) {
            Log.d(TAG, "Message data payload: " + data);
            if (data.containsKey("body") || data.containsKey("title")) {
-                sendNotification(
-                    data.get("body"),
-                    data.get("title"),
-                    data.get("channelId"),
-                    data.get("action1"),
-                    data.get("action2"),
-                    data.get("action3")
-                    );
+                sendNotification(data);
            }
         }
     }
@@ -49,22 +47,31 @@ public class MessagingService extends FirebaseMessagingService {
         //TODO update token
     }
 
-    private void executeAction() {
-        OneTimeWorkRequest work = new OneTimeWorkRequest.Builder(NotificationActionWorker.class)
-                .build();
-        WorkManager.getInstance().beginWith(work).enqueue();
-    }
-
-    private void sendNotification(String messageBody, String messageTitle, String channelId, String action1, String action2, String action3) {
-        if (channelId == null) {
+    private void sendNotification(Map<String, String> data) {
+        String channelId, messageBody, messageTitle, imageUrl;
+        String nTag;
+        if (!data.containsKey("channelId")) {
             channelId = "ha_notify";
+        } else {
+            channelId = data.get("channelId");
         }
-        if (messageBody == null) {
+        if (!data.containsKey("body")) {
             messageBody = "";
+        } else {
+            messageBody = data.get("body");
         }
-        if (messageTitle == null) {
+        if (!data.containsKey("title")) {
             messageTitle = "HA Client";
+        } else {
+            messageTitle = data.get("title");
         }
+        if (!data.containsKey("tag")) {
+            nTag = String.valueOf(System.currentTimeMillis());
+        } else {
+            nTag = data.get("tag");
+        }
+        Log.d(TAG, "Notification tag: " + nTag);
+        imageUrl = data.get("image");
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -75,10 +82,26 @@ public class MessagingService extends FirebaseMessagingService {
                         .setSmallIcon(R.drawable.mini_icon)
                         .setContentTitle(messageTitle)
                         .setContentText(messageBody)
-                        .setAutoCancel(false)
+                        .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
-
+        if (URLUtil.isValidUrl(imageUrl)) {
+            Bitmap image = getBitmapFromURL(imageUrl);
+            if (image != null) {
+                notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image).bigLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.blank_icon)));
+                notificationBuilder.setLargeIcon(image);
+            }
+        }
+        for (int i = 1; i <= 3; i++) {
+            if (data.containsKey("action" + i)) {
+                Intent broadcastIntent = new Intent(this, NotificationActionReceiver.class);
+                Log.d(TAG, "Putting a tag to the action: " + nTag);
+                broadcastIntent.putExtra("tag", nTag);
+                broadcastIntent.putExtra("actionData", data.get("action" + i + "_data"));
+                PendingIntent actionIntent = PendingIntent.getBroadcast(this, i, broadcastIntent, 0);
+                notificationBuilder.addAction(R.drawable.mini_icon, data.get("action" + i), actionIntent);
+            }   
+        }
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -90,6 +113,19 @@ public class MessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(nTag, 0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    private Bitmap getBitmapFromURL(String imageUrl) {
+        try {
+            URL url = new URL(imageUrl);
+            URLConnection connection = url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            return BitmapFactory.decodeStream(input);
+        } catch (IOException e) {
+            return null;
+        }
     }
 }
