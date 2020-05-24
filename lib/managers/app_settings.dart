@@ -20,6 +20,7 @@ class AppSettings {
   String tempToken;
   String oauthUrl;
   String webhookId;
+  String fcmToken;
   double haVersion;
   bool scrollBadges;
   int appIntegrationVersion;
@@ -40,6 +41,7 @@ class AppSettings {
     if (full) {
       Logger.d('Loading settings...');
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      fcmToken = prefs.getString('fcm-token');
       _domain = prefs.getString('hassio-domain');
       _port = prefs.getString('hassio-port');
       webhookId = prefs.getString('app-webhook-id');

@@ -12,7 +12,7 @@ class MobileAppIntegrationManager {
     "os_version": DeviceInfoManager().osVersion,
     "app_data": {
       "push_token": "",
-      "push_url": "https://us-central1-ha-client-c73c4.cloudfunctions.net/pushNotifyV2"
+      "push_url": "https://us-central1-ha-client-c73c4.cloudfunctions.net/pushNotifyV3"
     }
   };
 
@@ -26,7 +26,7 @@ class MobileAppIntegrationManager {
   static Future checkAppRegistration() {
     Completer completer = Completer();
     _appRegistrationData["device_name"] = AppSettings().mobileAppDeviceName ?? getDefaultDeviceName();
-    (_appRegistrationData["app_data"] as Map)["push_token"] = "${HomeAssistant().fcmToken}";
+    (_appRegistrationData["app_data"] as Map)["push_token"] = "${AppSettings().fcmToken}";
     if (AppSettings().webhookId == null) {
       Logger.d("Mobile app was not registered yet. Registering...");
       var registrationData = Map.from(_appRegistrationData);
