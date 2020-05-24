@@ -33,34 +33,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    _firebaseMessaging.configure(
-        onLaunch: (data) {
-          Logger.d("Notification [onLaunch]: $data");
-          return Future.value();
-        },
-        onMessage: (data) {
-          Logger.d("Notification [onMessage]: $data");
-          return _showNotification(title: data["notification"]["title"], text: data["notification"]["body"]);
-        },
-        onResume: (data) {
-          Logger.d("Notification [onResume]: $data");
-          return Future.value();
-        }
-    );
-
     _bottomInfoBarController = BottomInfoBarController();
-
-    _firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
-
-    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-    var initializationSettingsAndroid =
-    new AndroidInitializationSettings('mini_icon');
-    var initializationSettingsIOS = new IOSInitializationSettings(
-        onDidReceiveLocalNotification: null);
-    var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: onSelectNotification);
 
     _settingsSubscription = eventBus.on<SettingsChangedEvent>().listen((event) {
       Logger.d("Settings change event: reconnect=${event.reconnect}");
@@ -73,31 +46,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     _fullLoad();
   }
 
-  Future onSelectNotification(String payload) async {
-    if (payload != null) {
-      Logger.d('Notification clicked: ' + payload);
-    }
-  }
-
-  Future _showNotification({String title, String text}) async {
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'ha_notify', 'Home Assistant notifications', 'Notifications from Home Assistant notify service',
-        importance: Importance.Max, priority: Priority.High);
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-        0,
-        title ?? appName,
-        text,
-        platformChannelSpecifics
-    );
-  }
-
   void _fullLoad() {
     _bottomInfoBarController.showInfoBottomBar(progress: true,);
+    Logger.d('[loading] fullLoad');
     _subscribe().then((_) {
+      Logger.d('[loading] subscribed');
       ConnectionManager().init(loadSettings: true, forceReconnect: true).then((__){
+        Logger.d('[loading] COnnection manager initialized');
         SharedPreferences.getInstance().then((prefs) {
           HomeAssistant().currentDashboardPath = prefs.getString('lovelace_dashboard_url') ?? HomeAssistant.DEFAULT_DASHBOARD;
           _fetchData(useCache: true);
@@ -155,9 +110,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
     }
   }
 
-  Future _subscribe() {
-    Completer completer = Completer();
-
+  Future _subscribe() async {
     if (_stateSubscription == null) {
       _stateSubscription = eventBus.on<StateChangedEvent>().listen((event) {
         if (event.needToRebuildUI) {
@@ -238,11 +191,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       });
     }
 
-    _firebaseMessaging.getToken().then((String token) {
+    /*_firebaseMessaging.getToken().then((String token) {
       HomeAssistant().fcmToken = token;
       completer.complete();
-    });
-    return completer.future;
+    });*/
   }
 
   void _showOAuth() {

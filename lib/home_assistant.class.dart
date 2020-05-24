@@ -22,8 +22,6 @@ class HomeAssistant {
   Map services;
   bool autoUi = false;
 
-  String fcmToken;
-
   Map _rawLovelaceData;
   var _rawStates;
   var _rawUserInfo;
