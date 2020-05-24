@@ -48,15 +48,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-<!--
+
         <service
-            android:name=".java.MyFirebaseMessagingService"
+            android:name=".MessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-    -->
+    
         <service
             android:name="io.flutter.plugins.androidalarmmanager.AlarmService"
             android:permission="android.permission.BIND_JOB_SERVICE"
