@@ -21,25 +21,21 @@ class MobileAppIntegrationManager {
     return '${HomeAssistant().userName}\'s ${DeviceInfoManager().model}';
   }
 
+  static const platform = const MethodChannel('com.keyboardcrumbs.hassclient/native');
+
   static Future checkAppRegistration() async {
-    int attempts = 1;
-    bool done = false;
-    Logger.d("[MobileAppIntegrationManager] Stratring mobile app integration check...");
-    while (attempts <= 5 && !done) {
-      Logger.d("[MobileAppIntegrationManager] check attempt $attempts");
-      String fcmToken = await AppSettings().loadSingle('notification-token');
-      if (fcmToken != null) {
-        Logger.d("[MobileAppIntegrationManager] token exist");
+    String fcmToken = await AppSettings().loadSingle('npush-token');
+    if (fcmToken != null) {
+      Logger.d("[MobileAppIntegrationManager] token exist");
+      await _doCheck(fcmToken);
+    } else {
+      Logger.d("[MobileAppIntegrationManager] no fcm token. Requesting...");
+      try {
+        fcmToken = await platform.invokeMethod('getFCMToken');
         await _doCheck(fcmToken);
-        done = true;
-      } else {
-        Logger.d("[MobileAppIntegrationManager] no fcm token. Retry in 5 seconds");
-        attempts++;
-        await Future.delayed(Duration(seconds: 5));
+      } on PlatformException catch (e) {
+        Logger.e('[MobileAppIntegrationManager] Failed to get FCM token from native: ${e.message}');
       }
-    }
-    if (!done) {
-      Logger.e("[MobileAppIntegrationManager] No FCM token");
     }
   }
 

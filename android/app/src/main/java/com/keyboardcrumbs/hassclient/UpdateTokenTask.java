@@ -38,7 +38,7 @@ public class UpdateTokenTask extends AsyncTask<String, String, String> {
             String token = params[0];
             SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("flutter.notification-token", token);
+            editor.putString("flutter.npush-token", token);
             editor.commit();
         }
         return null;
