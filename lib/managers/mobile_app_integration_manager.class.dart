@@ -2,8 +2,6 @@ part of '../main.dart';
 
 class MobileAppIntegrationManager {
 
-  static const INTEGRATION_VERSION = 3;
-
   static final _appRegistrationData = {
     "device_name": "",
     "app_version": "$appVersion",
@@ -49,10 +47,8 @@ class MobileAppIntegrationManager {
         Logger.d("Processing registration responce...");
         var responseObject = json.decode(response);
         AppSettings().webhookId = responseObject["webhook_id"];
-        AppSettings().appIntegrationVersion = INTEGRATION_VERSION;
         AppSettings().save({
-          'app-webhook-id': responseObject["webhook_id"],
-          'app-integration-version': INTEGRATION_VERSION
+          'app-webhook-id': responseObject["webhook_id"]
         }).then((prefs) {
           completer.complete();
           eventBus.fire(ShowPopupEvent(
@@ -98,12 +94,7 @@ class MobileAppIntegrationManager {
           Logger.w("No registration data in response. MobileApp integration was removed or broken");
           _askToRegisterApp();
         } else {
-          if (INTEGRATION_VERSION > AppSettings().appIntegrationVersion) {
-            Logger.d('App registration needs to be updated');
-            _askToRemoveAndRegisterApp();
-          } else {
-            Logger.d('App registration works fine');
-          }
+          Logger.d('App registration works fine');
         }
         completer.complete();
       }).catchError((e) {
@@ -133,20 +124,6 @@ class MobileAppIntegrationManager {
         onPositive: () {
           Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
         }
-      )
-    ));
-  }
-
-  static void _askToRemoveAndRegisterApp() {
-    eventBus.fire(ShowPopupEvent(
-      popup: Popup(
-        title: "Mobile app integration needs to be updated",
-        body: "You need to update HA Client integration to continue using notifications and location tracking. Please remove 'Mobile App' integration for this device from your Home Assistant and restart Home Assistant. Then go back to HA Client to create app integration again.",
-        positiveText: "Ok",
-        negativeText: "Report an issue",
-        onNegative: () {
-          Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
-        },
       )
     ));
   }

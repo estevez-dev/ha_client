@@ -23,7 +23,6 @@ class AppSettings {
   String fcmToken;
   double haVersion;
   bool scrollBadges;
-  int appIntegrationVersion;
   AppTheme appTheme;
   final int defaultLocationUpdateIntervalMinutes = 20;
   Duration locationUpdateInterval;
@@ -46,7 +45,6 @@ class AppSettings {
       _port = prefs.getString('hassio-port');
       webhookId = prefs.getString('app-webhook-id');
       mobileAppDeviceName = prefs.getString('app-integration-device-name');
-      appIntegrationVersion = prefs.getInt('app-integration-version') ?? 0;
       scrollBadges = prefs.getBool('scroll-badges') ?? true;
       displayHostname = "$_domain:$_port";
       webSocketAPIEndpoint =
