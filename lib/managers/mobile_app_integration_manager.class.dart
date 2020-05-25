@@ -2,8 +2,6 @@ part of '../main.dart';
 
 class MobileAppIntegrationManager {
 
-  static const INTEGRATION_VERSION = 3;
-
   static final _appRegistrationData = {
     "device_name": "",
     "app_version": "$appVersion",
@@ -23,10 +21,28 @@ class MobileAppIntegrationManager {
     return '${HomeAssistant().userName}\'s ${DeviceInfoManager().model}';
   }
 
-  static Future checkAppRegistration() {
+  static const platform = const MethodChannel('com.keyboardcrumbs.hassclient/native');
+
+  static Future checkAppRegistration() async {
+    String fcmToken = await AppSettings().loadSingle('npush-token');
+    if (fcmToken != null) {
+      Logger.d("[MobileAppIntegrationManager] token exist");
+      await _doCheck(fcmToken);
+    } else {
+      Logger.d("[MobileAppIntegrationManager] no fcm token. Requesting...");
+      try {
+        fcmToken = await platform.invokeMethod('getFCMToken');
+        await _doCheck(fcmToken);
+      } on PlatformException catch (e) {
+        Logger.e('[MobileAppIntegrationManager] Failed to get FCM token from native: ${e.message}');
+      }
+    }
+  }
+
+  static Future _doCheck(String fcmToken) {
     Completer completer = Completer();
     _appRegistrationData["device_name"] = AppSettings().mobileAppDeviceName ?? getDefaultDeviceName();
-    (_appRegistrationData["app_data"] as Map)["push_token"] = "${AppSettings().fcmToken}";
+    (_appRegistrationData["app_data"] as Map)["push_token"] = "$fcmToken";
     if (AppSettings().webhookId == null) {
       Logger.d("Mobile app was not registered yet. Registering...");
       var registrationData = Map.from(_appRegistrationData);
@@ -49,10 +65,8 @@ class MobileAppIntegrationManager {
         Logger.d("Processing registration responce...");
         var responseObject = json.decode(response);
         AppSettings().webhookId = responseObject["webhook_id"];
-        AppSettings().appIntegrationVersion = INTEGRATION_VERSION;
         AppSettings().save({
-          'app-webhook-id': responseObject["webhook_id"],
-          'app-integration-version': INTEGRATION_VERSION
+          'app-webhook-id': responseObject["webhook_id"]
         }).then((prefs) {
           completer.complete();
           eventBus.fire(ShowPopupEvent(
@@ -76,7 +90,6 @@ class MobileAppIntegrationManager {
         }
         _showError();
       });
-      return completer.future;
     } else {
       Logger.d("App was previously registered. Checking...");
       var updateData = {
@@ -98,12 +111,7 @@ class MobileAppIntegrationManager {
           Logger.w("No registration data in response. MobileApp integration was removed or broken");
           _askToRegisterApp();
         } else {
-          if (INTEGRATION_VERSION > AppSettings().appIntegrationVersion) {
-            Logger.d('App registration needs to be updated');
-            _askToRemoveAndRegisterApp();
-          } else {
-            Logger.d('App registration works fine');
-          }
+          Logger.d('App registration works fine');
         }
         completer.complete();
       }).catchError((e) {
@@ -119,8 +127,8 @@ class MobileAppIntegrationManager {
         }
         completer.complete();
       });
-      return completer.future;
     }
+    return completer.future;
   }
 
   static void _showError() {
@@ -133,20 +141,6 @@ class MobileAppIntegrationManager {
         onPositive: () {
           Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
         }
-      )
-    ));
-  }
-
-  static void _askToRemoveAndRegisterApp() {
-    eventBus.fire(ShowPopupEvent(
-      popup: Popup(
-        title: "Mobile app integration needs to be updated",
-        body: "You need to update HA Client integration to continue using notifications and location tracking. Please remove 'Mobile App' integration for this device from your Home Assistant and restart Home Assistant. Then go back to HA Client to create app integration again.",
-        positiveText: "Ok",
-        negativeText: "Report an issue",
-        onNegative: () {
-          Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
-        },
       )
     ));
   }

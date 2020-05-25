@@ -20,10 +20,8 @@ class AppSettings {
   String tempToken;
   String oauthUrl;
   String webhookId;
-  String fcmToken;
   double haVersion;
   bool scrollBadges;
-  int appIntegrationVersion;
   AppTheme appTheme;
   final int defaultLocationUpdateIntervalMinutes = 20;
   Duration locationUpdateInterval;
@@ -41,12 +39,10 @@ class AppSettings {
     if (full) {
       Logger.d('Loading settings...');
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      fcmToken = prefs.getString('fcm-token');
       _domain = prefs.getString('hassio-domain');
       _port = prefs.getString('hassio-port');
       webhookId = prefs.getString('app-webhook-id');
       mobileAppDeviceName = prefs.getString('app-integration-device-name');
-      appIntegrationVersion = prefs.getInt('app-integration-version') ?? 0;
       scrollBadges = prefs.getBool('scroll-badges') ?? true;
       displayHostname = "$_domain:$_port";
       webSocketAPIEndpoint =
@@ -69,6 +65,11 @@ class AppSettings {
         Logger.e("Error reading secure storage: $e", stacktrace: stacktrace);
       }
     }
+  }
+
+  Future<dynamic> loadSingle(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('$key');
   }
 
   Future save(Map<String, dynamic> settings) async {

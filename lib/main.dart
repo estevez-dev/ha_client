@@ -16,10 +16,8 @@ import 'package:http/http.dart' as http;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:device_info/device_info.dart';
-//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
 import 'plugins/spoiler_card.dart';
@@ -161,7 +159,7 @@ EventBus eventBus = new EventBus();
 //FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = 'HA Client';
 const String appVersion = String.fromEnvironment('versionName', defaultValue: '0.0.0');
-const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.1.0.md';
+const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.1.0-b2.md';
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.
