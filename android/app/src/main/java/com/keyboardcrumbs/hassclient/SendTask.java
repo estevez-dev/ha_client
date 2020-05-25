@@ -26,7 +26,6 @@ public class SendTask extends AsyncTask<String, String, String> {
         String data = params[1];
 
         try {
-            Log.d(TAG, "Connecting and sending...");
             URL url = new URL(urlString);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("POST");
@@ -38,7 +37,6 @@ public class SendTask extends AsyncTask<String, String, String> {
 
             int responseCode = urlConnection.getResponseCode();
 
-            Log.d(TAG, "responseCode: " + responseCode);
             urlConnection.disconnect();
         } catch (Exception e) {
             Log.e(TAG, "Error sending data", e); 

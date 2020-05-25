@@ -22,7 +22,6 @@ public class NotificationActionReceiver extends BroadcastReceiver {
         String rawActionData = intent.getStringExtra("actionData");
         if (intent.hasExtra("tag")) {
             String notificationTag = intent.getStringExtra("tag");
-            Log.d(TAG, "Canceling notification by tag: " + notificationTag);
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(notificationTag, 0);
         }
@@ -36,7 +35,6 @@ public class NotificationActionReceiver extends BroadcastReceiver {
                     ":" +
                     prefs.getString("flutter.hassio-port", "") + "/api/webhook/" + webhookId;
                 JSONObject actionData = new JSONObject(rawActionData);
-                Log.d(TAG, "request url: " + requestUrl);
                 if (URLUtil.isValidUrl(requestUrl)) {
                     JSONObject dataToSend = new JSONObject();
                     JSONObject requestData = new JSONObject();
@@ -53,17 +51,16 @@ public class NotificationActionReceiver extends BroadcastReceiver {
                     }
                     dataToSend.put("data", requestData);
                     String stringRequest = dataToSend.toString();
-                    Log.d(TAG, "Data to send home: " + stringRequest);
                     SendTask sendTask = new SendTask();
                     sendTask.execute(requestUrl, stringRequest);
                 } else {
-                    Log.w(TAG, "Invalid url");
+                    Log.w(TAG, "Invalid HA url");
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error handling notification action", e);    
             }
         } else {
-            Log.d(TAG, "Webhook id not found");
+            Log.w(TAG, "Webhook id not found");
         }
     }
 }
