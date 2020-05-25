@@ -20,7 +20,6 @@ class AppSettings {
   String tempToken;
   String oauthUrl;
   String webhookId;
-  String fcmToken;
   double haVersion;
   bool scrollBadges;
   AppTheme appTheme;
@@ -40,7 +39,6 @@ class AppSettings {
     if (full) {
       Logger.d('Loading settings...');
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      fcmToken = prefs.getString('fcm-token');
       _domain = prefs.getString('hassio-domain');
       _port = prefs.getString('hassio-port');
       webhookId = prefs.getString('app-webhook-id');
@@ -67,6 +65,11 @@ class AppSettings {
         Logger.e("Error reading secure storage: $e", stacktrace: stacktrace);
       }
     }
+  }
+
+  Future<dynamic> loadSingle(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('$key');
   }
 
   Future save(Map<String, dynamic> settings) async {

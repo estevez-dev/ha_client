@@ -35,7 +35,7 @@ public class MainActivity extends FlutterActivity {
                         Context context = getActivity();
                         SharedPreferences.Editor editor = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).edit();
                         String token = task.getResult().getToken();
-                        editor.putString("flutter.fcm-token", token);
+                        editor.putString("flutter.push-token", token);
                         editor.commit();
                     }
                 }
