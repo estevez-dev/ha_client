@@ -26,7 +26,13 @@ class HAView {
       }
 
       (rawData['cards'] ?? []).forEach((rawCardData) {
-        cards.add(CardData.parse(rawCardData));
+        if (rawCardData != null) {
+          if (rawCardData is Map) {
+            cards.add(CardData.parse(rawCardData));
+          } else if (rawCardData is List && rawCardData.length == 1) {
+            cards.add(CardData.parse(rawCardData[0]));
+          }
+        }
       });
   }
 
