@@ -40,7 +40,8 @@ public class MessagingService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(String token) {
-        //TODO update token
+        UpdateTokenTask updateTokenTask = new UpdateTokenTask(this);
+        updateTokenTask.execute(token);
     }
 
     private void sendNotification(Map<String, String> data) {

@@ -33,10 +33,9 @@ public class MainActivity extends FlutterActivity {
                 public void onComplete(@NonNull Task<InstanceIdResult> task) {
                     if (task.isSuccessful()) {
                         Context context = getActivity();
-                        SharedPreferences.Editor editor = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).edit();
                         String token = task.getResult().getToken();
-                        editor.putString("flutter.push-token", token);
-                        editor.commit();
+                        UpdateTokenTask updateTokenTask = new UpdateTokenTask(context);
+                        updateTokenTask.execute(token);
                     }
                 }
             });
