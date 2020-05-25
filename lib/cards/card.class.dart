@@ -197,7 +197,7 @@ class BadgesData extends CardData {
           entities.add(
             EntityWrapper(
               entity: HomeAssistant().entities.get(rawBadge['entity']),
-              overrideName: rawBadge["name"],
+              overrideName: rawBadge["name"]?.toString(),
               overrideIcon: rawBadge["icon"],
             )
           );
@@ -223,7 +223,7 @@ class BadgesData extends CardData {
         entities.add(
           EntityWrapper(
               entity: e,
-              overrideName: rawEntity["name"],
+              overrideName: rawEntity["name"]?.toString(),
               overrideIcon: rawEntity["icon"],
               stateFilter: rawEntity['state_filter'] ?? (rawData['state_filter'] ?? []),
               uiAction: EntityUIAction(rawEntityData: rawEntity)
@@ -248,7 +248,7 @@ class EntitiesCardData extends CardData {
   
   EntitiesCardData(rawData) : super(rawData) {
     //Parsing card data
-    title = rawData['title'];
+    title = rawData['title']?.toString();
     icon = rawData['icon'] is String ? rawData['icon'] : null;
     stateColor = rawData['state_color'] ?? false;
     showHeaderToggle = rawData['show_header_toggle'] ?? false;
@@ -279,7 +279,7 @@ class EntitiesCardData extends CardData {
             EntityWrapper(
               entity: Entity.callService(
                 icon: rawEntity["icon"],
-                name: rawEntity["name"],
+                name: rawEntity["name"]?.toString(),
                 service: rawEntity["service"],
                 actionName: rawEntity["action_name"]
               ),
@@ -298,7 +298,7 @@ class EntitiesCardData extends CardData {
           entities.add(EntityWrapper(
               entity: Entity.weblink(
                   icon: rawEntity["icon"],
-                  name: rawEntity["name"],
+                  name: rawEntity["name"]?.toString(),
                   url: rawEntity["url"]
               ),
               stateColor: rawEntity["state_color"] ?? stateColor,
@@ -311,7 +311,7 @@ class EntitiesCardData extends CardData {
             EntityWrapper(
                 entity: e,
                 stateColor: rawEntity["state_color"] ?? stateColor,
-                overrideName: rawEntity["name"],
+                overrideName: rawEntity["name"]?.toString(),
                 overrideIcon: rawEntity["icon"],
                 stateFilter: rawEntity['state_filter'] ?? [],
                 uiAction: EntityUIAction(rawEntityData: rawEntity)
@@ -338,7 +338,7 @@ class AlarmPanelCardData extends CardData {
   
   AlarmPanelCardData(rawData) : super(rawData) {
     //Parsing card data
-    name = rawData['name'];
+    name = rawData['name']?.toString();
     states = rawData['states'];
     //Parsing entity
     var entitiId = rawData["entity"];
@@ -370,7 +370,7 @@ class LightCardData extends CardData {
   
   LightCardData(rawData) : super(rawData) {
     //Parsing card data
-    name = rawData['name'];
+    name = rawData['name']?.toString();
     icon = rawData['icon'] is String ? rawData['icon'] : null;
     //Parsing entity
     var entitiId = rawData["entity"];
@@ -407,7 +407,7 @@ class ButtonCardData extends CardData {
   
   ButtonCardData(rawData) : super(rawData) {
     //Parsing card data
-    name = rawData['name'];
+    name = rawData['name']?.toString();
     icon = rawData['icon'] is String ? rawData['icon'] : null;
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
@@ -470,7 +470,7 @@ class GaugeCardData extends CardData {
   
   GaugeCardData(rawData) : super(rawData) {
     //Parsing card data
-    name = rawData['name'];
+    name = rawData['name']?.toString();
     unit = rawData['unit'];
     if (rawData['min'] is int) {
       min = rawData['min'].toDouble();  
@@ -522,7 +522,7 @@ class GlanceCardData extends CardData {
   
   GlanceCardData(rawData) : super(rawData) {
     //Parsing card data
-    title = rawData["title"];
+    title = rawData["title"]?.toString();
     showName = rawData['show_name'] ?? true;
     showIcon = rawData['show_icon'] ?? true;
     showState = rawData['show_state'] ?? true;
@@ -544,7 +544,7 @@ class GlanceCardData extends CardData {
             EntityWrapper(
                 entity: e,
                 stateColor: stateColor,
-                overrideName: rawEntity["name"],
+                overrideName: rawEntity["name"]?.toString(),
                 overrideIcon: rawEntity["icon"],
                 stateFilter: rawEntity['state_filter'] ?? [],
                 uiAction: EntityUIAction(rawEntityData: rawEntity)
