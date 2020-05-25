@@ -48,6 +48,9 @@ public class NotificationActionReceiver extends BroadcastReceiver {
                     } else {
                         dataToSend.put("type", "fire_event");
                         requestData.put("event_type", "ha_client_event");
+                        JSONObject eventData = new JSONObject();
+                        eventData.put("action", actionData.getString("action"));
+                        requestData.put("event_data", eventData);
                     }
                     dataToSend.put("data", requestData);
                     String stringRequest = dataToSend.toString();
