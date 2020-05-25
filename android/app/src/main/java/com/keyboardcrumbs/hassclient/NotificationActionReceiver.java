@@ -20,11 +20,12 @@ public class NotificationActionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String rawActionData = intent.getStringExtra("actionData");
-        String notificationTag = intent.getStringExtra("tag");
-        Log.d(TAG, "Canceling notification by tag: " + notificationTag);
-        Log.d(TAG, "action data: " + rawActionData);
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(notificationTag, 0);
+        if (intent.hasExtra("tag")) {
+            String notificationTag = intent.getStringExtra("tag");
+            Log.d(TAG, "Canceling notification by tag: " + notificationTag);
+            NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(notificationTag, 0);
+        }
         SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
         String webhookId = prefs.getString("flutter.app-webhook-id", null);
         if (webhookId != null) {

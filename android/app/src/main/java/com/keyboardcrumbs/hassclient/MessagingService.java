@@ -50,6 +50,7 @@ public class MessagingService extends FirebaseMessagingService {
     private void sendNotification(Map<String, String> data) {
         String channelId, messageBody, messageTitle, imageUrl;
         String nTag;
+        boolean autoCancel;
         if (!data.containsKey("channelId")) {
             channelId = "ha_notify";
         } else {
@@ -71,6 +72,28 @@ public class MessagingService extends FirebaseMessagingService {
             nTag = data.get("tag");
         }
         Log.d(TAG, "Notification tag: " + nTag);
+        if (data.containsKey("dismiss")) {
+            try {
+                boolean dismiss = Boolean.parseBoolean(data.get("dismiss"));
+                if (dismiss) {
+                    NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancel(nTag, 0);
+                    return;
+                }
+            } catch (Exception e) {
+                //nope
+            }
+        }
+        if (data.containsKey("autoDismiss")) {
+            try {
+                autoCancel = Boolean.parseBoolean(data.get("autoDismiss"));
+            } catch (Exception e) {
+                autoCancel = true;
+            }
+        } else {
+            autoCancel = true;
+        }
         imageUrl = data.get("image");
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -82,7 +105,7 @@ public class MessagingService extends FirebaseMessagingService {
                         .setSmallIcon(R.drawable.mini_icon)
                         .setContentTitle(messageTitle)
                         .setContentText(messageBody)
-                        .setAutoCancel(true)
+                        .setAutoCancel(autoCancel)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
         if (URLUtil.isValidUrl(imageUrl)) {
@@ -95,8 +118,9 @@ public class MessagingService extends FirebaseMessagingService {
         for (int i = 1; i <= 3; i++) {
             if (data.containsKey("action" + i)) {
                 Intent broadcastIntent = new Intent(this, NotificationActionReceiver.class);
-                Log.d(TAG, "Putting a tag to the action: " + nTag);
-                broadcastIntent.putExtra("tag", nTag);
+                if (autoCancel) {
+                    broadcastIntent.putExtra("tag", nTag);
+                }
                 broadcastIntent.putExtra("actionData", data.get("action" + i + "_data"));
                 PendingIntent actionIntent = PendingIntent.getBroadcast(this, i, broadcastIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                 notificationBuilder.addAction(R.drawable.mini_icon, data.get("action" + i), actionIntent);
