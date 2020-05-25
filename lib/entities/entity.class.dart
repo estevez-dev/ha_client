@@ -78,9 +78,21 @@ class Entity {
     chartType: EntityHistoryWidgetType.simple
   );
 
-  String get displayName =>
-      attributes["friendly_name"] ??
-      (attributes["name"] ?? (entityId != null && entityId.contains('.')) ? entityId.split(".")[1].replaceAll("_", " ") : "");
+  String get displayName {
+    if (attributes.containsKey('friendly_name')) {
+      return attributes['friendly_name'];
+    }
+    if (attributes.containsKey('name')) { 
+      return attributes['name'];
+    }
+    if (entityId == null) {
+      return "";
+    }
+    if (entityId.contains(".")) {
+      return entityId.split(".")[1].replaceAll("_", " ");
+    }
+    return entityId;
+  }
 
   bool get isView =>
       (domain == "group") &&
