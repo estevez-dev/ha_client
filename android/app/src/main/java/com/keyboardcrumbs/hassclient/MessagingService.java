@@ -98,7 +98,7 @@ public class MessagingService extends FirebaseMessagingService {
                 Log.d(TAG, "Putting a tag to the action: " + nTag);
                 broadcastIntent.putExtra("tag", nTag);
                 broadcastIntent.putExtra("actionData", data.get("action" + i + "_data"));
-                PendingIntent actionIntent = PendingIntent.getBroadcast(this, i, broadcastIntent, 0);
+                PendingIntent actionIntent = PendingIntent.getBroadcast(this, i, broadcastIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                 notificationBuilder.addAction(R.drawable.mini_icon, data.get("action" + i), actionIntent);
             }   
         }

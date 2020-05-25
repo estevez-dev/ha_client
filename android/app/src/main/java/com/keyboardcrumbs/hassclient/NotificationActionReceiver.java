@@ -21,15 +21,14 @@ public class NotificationActionReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String rawActionData = intent.getStringExtra("actionData");
         String notificationTag = intent.getStringExtra("tag");
-        Log.d(TAG, "Has 'tag': " + intent.hasExtra("tag"));
         Log.d(TAG, "Canceling notification by tag: " + notificationTag);
+        Log.d(TAG, "action data: " + rawActionData);
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(notificationTag, 0);
         SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
         String webhookId = prefs.getString("flutter.app-webhook-id", null);
         if (webhookId != null) {
             try {
-                Log.d(TAG, "Got webhook id");
                 String requestUrl = prefs.getString("flutter.hassio-res-protocol", "") +
                     "://" +
                     prefs.getString("flutter.hassio-domain", "") +
