@@ -16,6 +16,8 @@ import io.flutter.plugin.common.MethodChannel;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -31,13 +33,14 @@ public class MainActivity extends FlutterActivity {
             new MethodChannel.MethodCallHandler() {
                 @Override
                 public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+                    Context context = getActivity();
                     if (call.method.equals("getFCMToken")) {
-                        FirebaseInstanceId.getInstance().getInstanceId()
+                        if (checkPlayServices()) {
+                            FirebaseInstanceId.getInstance().getInstanceId()
                             .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<InstanceIdResult> task) {
                                     if (task.isSuccessful()) {
-                                        Context context = getActivity();
                                         String token = task.getResult().getToken();
                                         UpdateTokenTask updateTokenTask = new UpdateTokenTask(context);
                                         updateTokenTask.execute(token);
@@ -47,10 +50,17 @@ public class MainActivity extends FlutterActivity {
                                     }
                                 }
                             });
+                        } else {
+                            result.error("google_play_service_error", "Google Play Services unavailable", null);
+                        }
                     }
                 }
             }
         );
+    }
+
+    private boolean checkPlayServices() {
+        return (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS);
     }
 
     @Override
