@@ -16,7 +16,8 @@ import 'package:http/http.dart' as http;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:device_info/device_info.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
@@ -184,7 +185,8 @@ void main() async {
   };
 
   WidgetsFlutterBinding.ensureInitialized();
-  AppSettings().loadAppTheme();
+  await AppSettings().loadAppTheme();
+  await Hive.initFlutter();
 
   runZoned(() {
       runApp(new HAClientApp(

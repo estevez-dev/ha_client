@@ -73,11 +73,9 @@ class TokenLoginPopup extends Popup {
                     padding: EdgeInsets.all(20),
                       child: TextFormField(
                       onSaved: (newValue) {
-                        final storage = new FlutterSecureStorage();
-                        storage.write(key: "hacl_llt", value: newValue.trim()).then((_) {
-                          Navigator.of(context).pop();
-                          eventBus.fire(SettingsChangedEvent(true));
-                        });
+                        Hive.box(AppSettings.DEFAULT_HIVE_BOX).put(AppSettings.AUTH_TOKEN_KEY, newValue.trim());
+                        Navigator.of(context).pop();
+                        eventBus.fire(SettingsChangedEvent(true));
                       },
                       decoration: InputDecoration(
                         hintText: 'Please enter long-lived token',

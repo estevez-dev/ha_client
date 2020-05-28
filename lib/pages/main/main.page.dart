@@ -654,6 +654,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    Hive.close();
     //final flutterWebviewPlugin = new FlutterWebviewPlugin();
     //flutterWebviewPlugin.dispose();
     _viewsTabController?.dispose();

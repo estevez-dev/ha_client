@@ -2,6 +2,10 @@ part of '../main.dart';
 
 class AppSettings {
 
+  static const DEFAULT_HIVE_BOX = 'defaultSettingsBox';
+
+  static const AUTH_TOKEN_KEY = 'llt';
+
   static final AppSettings _instance = AppSettings._internal();
 
   factory AppSettings() {
@@ -37,6 +41,7 @@ class AppSettings {
 
   Future load(bool full) async {
     if (full) {
+      await Hive.openBox(DEFAULT_HIVE_BOX);
       Logger.d('Loading settings...');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _domain = prefs.getString('hassio-domain');
@@ -52,18 +57,11 @@ class AppSettings {
       locationUpdateInterval = Duration(minutes: prefs.getInt("location-interval") ??
         defaultLocationUpdateIntervalMinutes);
       locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
-      Logger.d('Done. $_domain:$_port');
-      try {
-        final storage = new FlutterSecureStorage();
-        longLivedToken = await storage.read(key: "hacl_llt");
-        Logger.d("Long-lived token read successful");
-        oauthUrl = "$httpWebHost/auth/authorize?client_id=${Uri.encodeComponent(
-            'https://ha-client.app')}&redirect_uri=${Uri
-            .encodeComponent(
-            'https://ha-client.app/service/auth_callback.html')}";
-      } catch (e, stacktrace) {
-        Logger.e("Error reading secure storage: $e", stacktrace: stacktrace);
-      }
+      longLivedToken = Hive.box(DEFAULT_HIVE_BOX).get(AUTH_TOKEN_KEY);
+      oauthUrl = "$httpWebHost/auth/authorize?client_id=${Uri.encodeComponent(
+          'https://ha-client.app')}&redirect_uri=${Uri
+          .encodeComponent(
+          'https://ha-client.app/service/auth_callback.html')}";
     }
   }
 
@@ -103,25 +101,13 @@ class AppSettings {
   Future clearTokens() async {
     longLivedToken = null;
     tempToken = null;
-    try {
-      final storage = new FlutterSecureStorage();
-      await storage.delete(key: "hacl_llt");
-    } catch(e, stacktrace) {
-      Logger.e("Error clearing tokens: $e", stacktrace: stacktrace);
-    }
+    Hive.box(DEFAULT_HIVE_BOX).delete(AUTH_TOKEN_KEY);
   }
 
   Future saveLongLivedToken(token) async {
     longLivedToken = token;
     tempToken = null;
-    try {
-      final storage = new FlutterSecureStorage();
-      await storage.write(key: "hacl_llt", value: "$longLivedToken");
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool("oauth-used", true);
-    } catch(e, stacktrace) {
-      Logger.e("Error saving long-lived token: $e", stacktrace: stacktrace);
-    }
+    Hive.box(DEFAULT_HIVE_BOX).put(AUTH_TOKEN_KEY, longLivedToken);
   }
 
   bool isNotConfigured() {
