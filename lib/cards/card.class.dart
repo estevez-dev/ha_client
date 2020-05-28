@@ -38,6 +38,15 @@ class CardData {
           case CardType.LIGHT:
             return LightCardData(rawData);
             break;
+          case CardType.PICTURE_ELEMENTS:
+            //TODO temporary solution 
+            if (rawData.containsKey('camera_image')) {
+              rawData['entity'] = rawData['camera_image'];
+              return ButtonCardData(rawData);
+            } else {
+              return CardData(null);
+            }
+            break;
           case CardType.ENTITY_BUTTON:
           case CardType.BUTTON:
           case CardType.PICTURE_ENTITY:
