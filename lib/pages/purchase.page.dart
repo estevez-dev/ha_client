@@ -31,7 +31,7 @@ class _PurchasePageState extends State<PurchasePage> {
     } else {
       const Set<String> _kIds = {'one_time_support','just_few_bucks_per_year', 'app_fan_support_per_year', 'grateful_user_support_per_year'};
       final ProductDetailsResponse response = await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
-      if (!response.notFoundIDs.isEmpty) {
+      if (response.notFoundIDs.isNotEmpty) {
         Logger.d("Products not found: ${response.notFoundIDs}");
       }
       _products = response.productDetails;
@@ -90,22 +90,6 @@ class _PurchasePageState extends State<PurchasePage> {
     } else {
       body = _buildProducts();
     }
-    body.add(
-      Card(
-        child: Container(
-          height: 80,
-          child: InkWell(
-            child: Image.network('https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif'),
-            onTap: () {
-              Launcher.launchURLInCustomTab(
-                context: context,
-                url: 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ARWGETZD2D83Q&source=url'
-              );
-            },
-          )
-        ),
-      )
-    );
     return new Scaffold(
       appBar: new AppBar(
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
