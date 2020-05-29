@@ -301,7 +301,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         title: Text("Report an issue"),
         onTap: () {
           Navigator.of(context).pop();
-          Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
+          Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new/choose");
         },
       ),
       Divider(),

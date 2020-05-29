@@ -139,7 +139,7 @@ class MobileAppIntegrationManager {
         positiveText: "Report issue",
         negativeText: "Close",
         onPositive: () {
-          Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new");
+          Launcher.launchURLInBrowser("https://github.com/estevez-dev/ha_client/issues/new/choose");
         }
       )
     ));
