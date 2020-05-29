@@ -115,7 +115,7 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
             },
           ),
           Container(height: Sizes.doubleRowPadding),
-          Text("Fullscreen mode:", style: Theme.of(context).textTheme.body2),
+          Text("Display mode:", style: Theme.of(context).textTheme.body2),
           Container(height: Sizes.rowPadding),
           DropdownButton<DisplayMode>(
             value: _displayMode,
