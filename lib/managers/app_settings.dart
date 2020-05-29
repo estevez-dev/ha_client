@@ -1,5 +1,7 @@
 part of '../main.dart';
 
+enum DisplayMode {normal, fullscreen}
+
 class AppSettings {
 
   static const DEFAULT_HIVE_BOX = 'defaultSettingsBox';
@@ -26,6 +28,7 @@ class AppSettings {
   String webhookId;
   double haVersion;
   bool scrollBadges;
+  DisplayMode displayMode;
   AppTheme appTheme;
   final int defaultLocationUpdateIntervalMinutes = 20;
   Duration locationUpdateInterval;
@@ -34,9 +37,10 @@ class AppSettings {
   bool get isAuthenticated => longLivedToken != null;
   bool get isTempAuthenticated => tempToken != null;
 
-  loadAppTheme() async {
+  loadStartupSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     appTheme = AppTheme.values[prefs.getInt('app-theme') ?? AppTheme.defaultTheme.index];
+    displayMode = DisplayMode.values[prefs.getInt('display-mode') ?? DisplayMode.normal.index];
   }
 
   Future load(bool full) async {

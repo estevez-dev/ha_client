@@ -23,7 +23,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
 
   Widget _buildMenuItem(BuildContext context, IconData icon,String title, AppSettingsSection section) {
     return ListTile(
-      title: Text(title, style: Theme.of(context).textTheme.subhead),
+      title: Text(title),
       leading: Icon(icon),
       trailing: Icon(Icons.keyboard_arrow_right),
       onTap: () {

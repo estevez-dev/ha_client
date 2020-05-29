@@ -185,8 +185,13 @@ void main() async {
   };
 
   WidgetsFlutterBinding.ensureInitialized();
-  await AppSettings().loadAppTheme();
+  await AppSettings().loadStartupSettings();
   await Hive.initFlutter();
+  if (AppSettings().displayMode == DisplayMode.fullscreen) {
+    SystemChrome.setEnabledSystemUIOverlays([]);
+  } else {
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+  }
 
   runZoned(() {
       runApp(new HAClientApp(

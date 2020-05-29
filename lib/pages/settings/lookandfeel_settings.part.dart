@@ -13,6 +13,7 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
 
   AppTheme _currentTheme;
   bool _scrollBadges = false;
+  DisplayMode _displayMode;
 
   @override
   void initState() {
@@ -25,7 +26,8 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
     await prefs.reload();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
-        _currentTheme = AppTheme.values[prefs.getInt("app-theme") ?? AppTheme.defaultTheme.index];
+        _currentTheme = AppTheme.values[prefs.getInt('app-theme') ?? AppTheme.defaultTheme.index];
+        _displayMode = DisplayMode.values[prefs.getInt('display-mode') ?? DisplayMode.normal.index];
         _scrollBadges = prefs.getBool('scroll-badges') ?? true;
       });
     });
@@ -42,16 +44,32 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
     });
   }
 
-  Future _saveOther() async {
+  Future _saveBadgesSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     AppSettings().scrollBadges = _scrollBadges;
     await prefs.setBool('scroll-badges', _scrollBadges);
+  }
+
+  Future _saveDisplayMode(DisplayMode mode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    AppSettings().displayMode = mode;
+    await prefs.setInt('display-mode', mode.index);
+    if (mode == DisplayMode.fullscreen) {
+      SystemChrome.setEnabledSystemUIOverlays([]);
+    } else {
+      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    }
   }
 
   Map appThemeName = {
     AppTheme.defaultTheme: 'Default',
     AppTheme.haTheme: 'Home Assistant theme',
     AppTheme.darkTheme: 'Dark theme'
+  };
+
+  Map DisplayModeName = {
+    DisplayMode.normal: 'Normal',
+    DisplayMode.fullscreen: 'Fullscreen'
   };
 
   @override
@@ -93,7 +111,28 @@ class _LookAndFeelSettingsPageState extends State<LookAndFeelSettingsPage> {
               setState(() {
                 _scrollBadges = val;
               });
-              _saveOther();
+              _saveBadgesSettings();
+            },
+          ),
+          Container(height: Sizes.doubleRowPadding),
+          Text("Fullscreen mode:", style: Theme.of(context).textTheme.body2),
+          Container(height: Sizes.rowPadding),
+          DropdownButton<DisplayMode>(
+            value: _displayMode,
+            iconSize: 30.0,
+            isExpanded: true,
+            style: Theme.of(context).textTheme.title,
+            items: DisplayMode.values.map((value) {
+              return new DropdownMenuItem<DisplayMode>(
+                value: value,
+                child: Text('${DisplayModeName[value]}'),
+              );
+            }).toList(),
+            onChanged: (DisplayMode val) {
+              setState(() {
+                _displayMode = val;
+              });
+              _saveDisplayMode(val);
             },
           ),
         ]

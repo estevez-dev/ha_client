@@ -484,7 +484,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
               floating: true,
               pinned: true,
               snap: false,
-              primary: true,
+              primary: AppSettings().displayMode == DisplayMode.normal,
               title: Text(HomeAssistant().locationName ?? ""),
               actions: <Widget>[
                 PopupMenuButton(
@@ -645,10 +645,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             bottomNavigationBar: BottomInfoBar(
               controller: _bottomInfoBarController,
             ),
-            body: SafeArea(
-              top: false,
-              child: _buildScaffoldBody(true)
-            )
+            body: _buildScaffoldBody(true)
         );
       } else {
         return Scaffold(
@@ -658,10 +655,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           bottomNavigationBar: BottomInfoBar(
             controller: _bottomInfoBarController,
           ),
-          body: SafeArea(
-            top: false,
-            child: _buildScaffoldBody(false)
-          )
+          body: _buildScaffoldBody(false)
         );
       }
   }
