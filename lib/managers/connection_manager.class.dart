@@ -254,6 +254,7 @@ class ConnectionManager {
     sendSocketMessage(type: "auth/long_lived_access_token", additionalData: {"client_name": "HA Client app ${DateTime.now().millisecondsSinceEpoch}", "lifespan": 365}).then((data) {
       Logger.d("Got long-lived token.");
       AppSettings().saveLongLivedToken(data);
+      completer.complete();
     }).catchError((e) {
       completer.completeError(HACException("Authentication error: $e", actions: [HAErrorAction.reload(title: "Retry"), HAErrorAction.loginAgain(title: "Relogin")]));
     });

@@ -108,7 +108,7 @@ class AppSettings {
     Hive.box(DEFAULT_HIVE_BOX).delete(AUTH_TOKEN_KEY);
   }
 
-  Future saveLongLivedToken(token) async {
+  void saveLongLivedToken(token) {
     longLivedToken = token;
     tempToken = null;
     Hive.box(DEFAULT_HIVE_BOX).put(AUTH_TOKEN_KEY, longLivedToken);
