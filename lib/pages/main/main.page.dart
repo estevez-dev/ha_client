@@ -645,7 +645,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
             bottomNavigationBar: BottomInfoBar(
               controller: _bottomInfoBarController,
             ),
-            body: _buildScaffoldBody(true)
+            body: SafeArea(
+              top: false,
+              child: _buildScaffoldBody(true)
+            )
         );
       } else {
         return Scaffold(
@@ -655,7 +658,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
           bottomNavigationBar: BottomInfoBar(
             controller: _bottomInfoBarController,
           ),
-          body: _buildScaffoldBody(false)
+          body: SafeArea(
+            top: false,
+            child: _buildScaffoldBody(false)
+          )
         );
       }
   }
