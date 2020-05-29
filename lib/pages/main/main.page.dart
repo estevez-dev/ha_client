@@ -493,6 +493,15 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
                     child: Icon(MaterialDesignIcons.getIconDataFromIconName(
                         "mdi:dots-vertical"), color: Theme.of(context).primaryIconTheme.color)
                   ),
+                  onSelected: (String val) {
+                    if (val == "reload") {
+                      _quickLoad();
+                    } else if (val == "logout")  {
+                      HomeAssistant().logout().then((_) {
+                        _quickLoad();
+                      });
+                    }
+                  },
                   itemBuilder: (BuildContext context) {
                     List<PopupMenuEntry<String>> result = [
                       PopupMenuItem<String>(
