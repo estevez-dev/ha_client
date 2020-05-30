@@ -46,7 +46,7 @@ public class MainActivity extends FlutterActivity {
                                         updateTokenTask.execute(token);
                                         result.success(token);
                                     } else {
-                                        result.error("fcm_error", task.getException().getMessage(), task.getException());
+                                        result.error("fcm_error", task.getException().getMessage(), null);
                                     }
                                 }
                             });
