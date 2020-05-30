@@ -149,7 +149,7 @@ class EntityCollection {
   }
 
   bool isExist(String entityId) {
-    return _allEntities[entityId] != null;
+    return _allEntities.containsKey(entityId);
   }
 
   List<Entity> getByDomains({List<String> includeDomains: const [], List<String> excludeDomains: const [], List<String> stateFiler}) {
