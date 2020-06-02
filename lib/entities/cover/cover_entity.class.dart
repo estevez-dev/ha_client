@@ -40,8 +40,8 @@ class CoverEntity extends Entity {
       CoverEntity.SUPPORT_SET_TILT_POSITION);
 
 
-  double get currentPosition => _getDoubleAttributeValue('current_position');
-  double get currentTiltPosition => _getDoubleAttributeValue('current_tilt_position');
+  double get currentPosition => _getDoubleAttributeValue('current_position') ?? 0;
+  double get currentTiltPosition => _getDoubleAttributeValue('current_tilt_position') ?? 0;
   bool get canBeOpened => ((state != EntityState.opening) && (state != EntityState.open)) || (state == EntityState.open && currentPosition != null && currentPosition > 0.0 && currentPosition < 100.0);
   bool get canBeClosed => ((state != EntityState.closing) && (state != EntityState.closed));
   bool get canTiltBeOpened => currentTiltPosition < 100;
