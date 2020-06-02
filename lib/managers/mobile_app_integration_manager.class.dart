@@ -5,9 +5,9 @@ class MobileAppIntegrationManager {
   static final _appRegistrationData = {
     "device_name": "",
     "app_version": "$appVersion",
-    "manufacturer": DeviceInfoManager().manufacturer,
-    "model": DeviceInfoManager().model,
-    "os_version": DeviceInfoManager().osVersion,
+    "manufacturer": DeviceInfoManager().manufacturer ?? "unknown",
+    "model": DeviceInfoManager().model ?? "unknown",
+    "os_version": DeviceInfoManager().osVersion ?? "0",
     "app_data": {
       "push_token": "",
       "push_url": "https://us-central1-ha-client-c73c4.cloudfunctions.net/pushNotifyV3"
