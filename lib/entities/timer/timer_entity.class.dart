@@ -8,8 +8,8 @@ class TimerEntity extends Entity {
   @override
   void update(Map rawData, String webHost) {
     super.update(rawData, webHost);
-    String durationSource = "${attributes["duration"]}";
-    if (durationSource != null && durationSource.isNotEmpty) {
+    if (attributes.containsKey('duration')) {
+      String durationSource = "${attributes["duration"]}";
       try {
         List<String> durationList = durationSource.split(":");
         if (durationList.length == 1) {
