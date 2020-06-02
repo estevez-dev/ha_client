@@ -90,6 +90,12 @@ class CardData {
             return BadgesData(rawData);
             break;
           default:
+            if (rawData.containsKey('entity')) {
+              rawData['entities'] = [rawData['entity']]; 
+            }
+            if (rawData.containsKey('entities') && rawData['entities'] is List) {
+              return EntitiesCardData(rawData); 
+            }
             return CardData(null);
         }
     } catch (error, stacktrace) {
@@ -374,7 +380,13 @@ class LightCardData extends CardData {
   
   @override
   Widget buildCardWidget() {
-    return LightCard(card: this);
+    if (this.entity != null && this.entity.entity is LightEntity) {
+      return LightCard(card: this);
+    }
+    return ErrorCard(
+      errorText: 'Specify an entity from within the light domain.',
+      showReportButton: false,
+    );
   }
   
   LightCardData(rawData) : super(rawData) {
