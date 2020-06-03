@@ -109,7 +109,11 @@ class CardData {
       type = rawData['type'];
       conditions = rawData['conditions'] ?? [];
       showEmpty = rawData['show_empty'] ?? true;
-      stateFilter = rawData['state_filter']  ?? [];
+      if (rawData.containsKey('state_filter') && rawData['state_filter'] is List) {
+        stateFilter = rawData['state_filter'];
+      } else {
+        stateFilter = [];
+      }
     } else {
       type = CardType.UNKNOWN;
       conditions = [];
