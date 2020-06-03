@@ -145,7 +145,7 @@ public class MessagingService extends FirebaseMessagingService {
             connection.connect();
             InputStream input = connection.getInputStream();
             return BitmapFactory.decodeStream(input);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return null;
         }
     }
