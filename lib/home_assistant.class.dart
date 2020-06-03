@@ -221,7 +221,7 @@ class HomeAssistant {
         var data = json.decode(prefs.getString('cached_services'));
         _parseServices(data ?? {});
       } catch (e, stacktrace) {
-       Logger.e(e, stacktrace: stacktrace);  
+       Logger.e(e, stacktrace: stacktrace, skipCrashlytics: true);  
       }
     }
     await ConnectionManager().sendSocketMessage(type: "get_services").then((data) => _parseServices(data)).catchError((e) {	
@@ -261,7 +261,7 @@ class HomeAssistant {
         var data = json.decode(sharedPrefs.getString('cached_panels'));
         _parsePanels(data ?? {});
       } catch (e, stacktrace) {
-        Logger.e(e, stacktrace: stacktrace);
+        Logger.e(e, stacktrace: stacktrace, skipCrashlytics: true);
         panels.clear();
       }
     } else {
