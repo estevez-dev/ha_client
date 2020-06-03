@@ -25,7 +25,7 @@ dependencies:
   webview_flutter: ^0.3.19+7
   hive: ^1.4.1+1
   hive_flutter: ^0.3.0+2
-  device_info: ^0.4.1+4
+  device_info: ^0.4.2+4
   geolocator: ^5.3.1
   workmanager: ^0.2.2
   battery: ^1.0.0
