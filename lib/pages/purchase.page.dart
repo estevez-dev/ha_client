@@ -63,7 +63,18 @@ class _PurchasePageState extends State<PurchasePage> {
   }
 
   List<Widget> _buildProducts() {
-    List<Widget> productWidgets = [];
+    List<Widget> productWidgets = [
+      Card(
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Text(
+              'This will not unlock any additional functionality. This is only a donation to the HA Client open source project.',
+              style: Theme.of(context).textTheme.headline5,
+              textAlign: TextAlign.center,
+          )
+        )
+      )
+    ];
     for (ProductDetails product in _products) {
       productWidgets.add(
         ProductPurchase(

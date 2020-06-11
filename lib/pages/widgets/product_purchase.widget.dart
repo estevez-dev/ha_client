@@ -15,7 +15,7 @@ class ProductPurchase extends StatelessWidget {
     String buttonText = '';
     String buttonTextInactive = '';
     if (product.id.contains("year")) {
-      period += "/ year";
+      period += "once a year";
       buttonText = "Subscribe";
       buttonTextInactive = "Already";
       priceColor = Colors.amber;
