@@ -62,12 +62,13 @@ class MobileAppIntegrationManager {
           includeAuthHeader: true,
           data: json.encode(registrationData)
       ).then((response) {
-        Logger.d("Processing registration responce...");
+        Logger.d("Processing registration response...");
         var responseObject = json.decode(response);
         AppSettings().webhookId = responseObject["webhook_id"];
         AppSettings().save({
           'app-webhook-id': responseObject["webhook_id"]
-        }).then((prefs) {
+        }).then((_) {
+          _createNextAlarmSensor(true);
           completer.complete();
           eventBus.fire(ShowPopupEvent(
             popup: Popup(
@@ -112,6 +113,7 @@ class MobileAppIntegrationManager {
           _askToRegisterApp();
         } else {
           Logger.d('App registration works fine');
+          _createNextAlarmSensor(false);
         }
         completer.complete();
       }).catchError((e) {
@@ -129,6 +131,42 @@ class MobileAppIntegrationManager {
       });
     }
     return completer.future;
+  }
+
+  static _createNextAlarmSensor(bool force) {
+    if (AppSettings().nextAlarmSensorCreated && !force) {
+      Logger.d("Next alarm sensor was previously created");
+      return;
+    }
+    Logger.d("Creating next alarm sensor...");
+    ConnectionManager().sendHTTPPost(
+        endPoint: "/api/webhook/${AppSettings().webhookId}",
+        includeAuthHeader: false,
+        data: json.encode(
+            {
+              "data": {
+                "device_class": "timestamp",
+                "icon": "mdi:alarm",
+                "name": "Next Alarm",
+                "state": "",
+                "type": "sensor",
+                "unique_id": "next_alarm"
+              },
+              "type": "register_sensor"
+            }
+        )
+    ).then((_){
+      AppSettings().nextAlarmSensorCreated = true;
+      AppSettings().save({
+        'next-alarm-sensor-created': true
+      });
+    }).catchError((e) {
+      if (e is http.Response) {
+        Logger.e("Error creating next alarm sensor: ${e.statusCode}: ${e.body}");
+      } else {
+        Logger.e("Error creating next alarm sensor: ${e?.toString()}");
+      }
+    });
   }
 
   static void _showError() {

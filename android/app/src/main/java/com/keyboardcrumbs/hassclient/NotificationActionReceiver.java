@@ -1,7 +1,7 @@
 package com.keyboardcrumbs.hassclient;
 
+import android.app.AlarmManager;
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -19,6 +19,10 @@ public class NotificationActionReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
         String rawActionData = intent.getStringExtra("actionData");
         if (intent.hasExtra("tag")) {
             String notificationTag = intent.getStringExtra("tag");

@@ -13,6 +13,6 @@ Discuss it on [Discord](https://discord.gg/u9vq7QE) or at [Home Assistant commun
 #### Last release build status
 [![Codemagic build status](https://api.codemagic.io/apps/5da8bdab9f20ef798f7c2c65/5db1862025dc3f0b0288a57a/status_badge.svg)](https://codemagic.io/apps/5da8bdab9f20ef798f7c2c65/5db1862025dc3f0b0288a57a/latest_build)
 
-#### Special thanks to
-- [Crewski](https://github.com/Crewski) for his [HANotify](https://github.com/Crewski/HANotify)
-- [Home Assistant](https://github.com/home-assistant) for some support and [Home Assistant](https://www.home-assistant.io/)
+#### Projects used
+- [HANotify](https://github.com/Crewski/HANotify) by [Crewski](https://github.com/Crewski)
+- [hassalarm](https://github.com/Johboh/hassalarm) by [Johboh](https://github.com/Johboh)

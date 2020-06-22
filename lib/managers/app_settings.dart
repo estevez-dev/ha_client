@@ -28,6 +28,7 @@ class AppSettings {
   String webhookId;
   double haVersion;
   bool scrollBadges;
+  bool nextAlarmSensorCreated = false;
   DisplayMode displayMode;
   AppTheme appTheme;
   final int defaultLocationUpdateIntervalMinutes = 20;
@@ -61,6 +62,7 @@ class AppSettings {
       locationUpdateInterval = Duration(minutes: prefs.getInt("location-interval") ??
         defaultLocationUpdateIntervalMinutes);
       locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
+      nextAlarmSensorCreated = prefs.getBool("next-alarm-sensor-created") ?? false;
       longLivedToken = Hive.box(DEFAULT_HIVE_BOX).get(AUTH_TOKEN_KEY);
       oauthUrl = "$httpWebHost/auth/authorize?client_id=${Uri.encodeComponent(
           'https://ha-client.app')}&redirect_uri=${Uri
