@@ -20,7 +20,9 @@ import android.content.SharedPreferences;
 public class NextAlarmBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "NextAlarmReceiver";
-    private static final SimpleDateFormat DATE_FORMAT_LEGACY = new SimpleDateFormat("yyyy-MM-dd HH:mm:00", Locale.ENGLISH);
+    private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:00", Locale.ENGLISH);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:00", Locale.ENGLISH);
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -53,23 +55,29 @@ public class NextAlarmBroadcastReceiver extends BroadcastReceiver {
                         prefs.getString("flutter.hassio-port", "") + "/api/webhook/" + webhookId;
                 JSONObject dataToSend = new JSONObject();
                 if (URLUtil.isValidUrl(requestUrl)) {
-                    final String state;
+                    dataToSend.put("type", "update_sensor_states");
+                    JSONArray dataArray = new JSONArray();
+                    JSONObject sensorData = new JSONObject();
+                    JSONObject sensorAttrs = new JSONObject();
+                    sensorData.put("unique_id", "next_alarm");
+                    sensorData.put("type", "sensor");
                     final long triggerTimestamp;
                     if (alarmClockInfo != null) {
                         triggerTimestamp = alarmClockInfo.getTriggerTime();
                         final Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(triggerTimestamp);
-                        state = DATE_FORMAT_LEGACY.format(calendar.getTime());
+                        sensorData.put("state", DATE_TIME_FORMAT.format(calendar.getTime()));
+                        sensorAttrs.put("date", DATE_FORMAT.format(calendar.getTime()));
+                        sensorAttrs.put("time", TIME_FORMAT.format(calendar.getTime()));
+                        sensorAttrs.put("timestamp", triggerTimestamp);
                     } else {
-                        state = "";
+                        sensorData.put("state", "");
+                        sensorAttrs.put("date", "");
+                        sensorAttrs.put("time", "");
+                        sensorAttrs.put("timestamp", 0);
                     }
-                    Log.d(TAG, "Setting time to " + state);
-                    dataToSend.put("type", "update_sensor_states");
-                    JSONArray dataArray = new JSONArray();
-                    JSONObject sensorData = new JSONObject();
-                    sensorData.put("unique_id", "next_alarm");
-                    sensorData.put("type", "sensor");
-                    sensorData.put("state", state); //TEST DATA
+                    sensorData.put("icon", "mdi:alarm");
+                    sensorData.put("attributes", sensorAttrs);
                     dataArray.put(0, sensorData);
                     dataToSend.put("data", dataArray);
 

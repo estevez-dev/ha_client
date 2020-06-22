@@ -15,4 +15,4 @@ Discuss it on [Discord](https://discord.gg/u9vq7QE) or at [Home Assistant commun
 
 #### Projects used
 - [HANotify](https://github.com/Crewski/HANotify) by [Crewski](https://github.com/Crewski)
-- [hassalarm](https://github.com/Johboh/hassalarm) by [Johboh](https://github.com/Johboh)
+- [hassalarm](https://github.com/Johboh/hassalarm) by [Johboh](https://github.com/Johboh) distributed under [MIT License](https://github.com/Johboh/hassalarm/blob/master/LICENSE)
