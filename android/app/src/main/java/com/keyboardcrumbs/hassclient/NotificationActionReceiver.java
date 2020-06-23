@@ -15,7 +15,7 @@ import android.content.SharedPreferences;
 
 public class NotificationActionReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "NotificationActionReceiver";
+    private static final String TAG = "NotificationAction";
 
     @Override
     public void onReceive(Context context, Intent intent) {
