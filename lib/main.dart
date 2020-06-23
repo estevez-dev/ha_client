@@ -156,11 +156,9 @@ part 'cards/badges.dart';
 part 'managers/app_settings.dart';
 
 EventBus eventBus = new EventBus();
-//final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-//FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 const String appName = 'HA Client';
 const String appVersion = String.fromEnvironment('versionName', defaultValue: '0.0.0');
-const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.1.2.md';
+const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.2.0.md';
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.
