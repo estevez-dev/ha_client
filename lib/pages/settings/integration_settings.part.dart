@@ -11,8 +11,11 @@ class IntegrationSettingsPage extends StatefulWidget {
 
 class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
+  static const platform = const MethodChannel('com.keyboardcrumbs.hassclient/native');
+
   int _locationInterval = AppSettings().defaultLocationUpdateIntervalMinutes;
   bool _locationTrackingEnabled = false;
+  bool _foregroundLocationTrackingEnabled = false;
   bool _wait = false;
 
   @override
@@ -28,6 +31,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         _locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
+        _foregroundLocationTrackingEnabled = prefs.getBool("foreground-location-service") ?? false;
         _locationInterval = prefs.getInt("location-interval") ??
           AppSettings().defaultLocationUpdateIntervalMinutes;
         if (_locationInterval % 5 != 0) {
@@ -63,6 +67,17 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     });
   }
 
+  _switchForegroundLocationTrackingState(bool state) async {
+    if (state) {
+      await platform.invokeMethod('startLocationService');
+    } else {
+      await platform.invokeMethod('stopLocationService');
+    }
+    setState(() {
+      _wait = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -84,7 +99,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
               Container(height: Sizes.rowPadding,),
               Row(
                 children: <Widget>[
-                  Text("Enable device location tracking"),
+                  Text("Enable location tracking"),
                   Switch(
                     value: _locationTrackingEnabled,
                     onChanged: _wait ? null : (value) {
@@ -97,7 +112,23 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
                   ),
                 ],
               ),
-              Container(height: Sizes.rowPadding,),
+              Container(height: Sizes.rowPadding),
+              Row(
+                children: <Widget>[
+                  Text("Foreground tracking"),
+                  Switch(
+                    value: _foregroundLocationTrackingEnabled,
+                    onChanged: _wait ? null : (value) {
+                      setState(() {
+                        _foregroundLocationTrackingEnabled = value;
+                        _wait = true;
+                      });
+                      _switchForegroundLocationTrackingState(value);
+                    },
+                  ),
+                ],
+              ),
+              Container(height: Sizes.rowPadding),
               Text("Location update interval in minutes:"),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
