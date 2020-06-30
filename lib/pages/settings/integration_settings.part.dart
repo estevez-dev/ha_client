@@ -17,6 +17,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   bool _locationTrackingEnabled = false;
   bool _foregroundLocationTrackingEnabled = false;
   bool _wait = false;
+  bool _changedHere = false;
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     if (_locationInterval < 720) {
       setState(() {
         _locationInterval = _locationInterval + 5;
+        _changedHere = true;
       });
     }
   }
@@ -53,6 +55,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     if (_locationInterval > 5) {
       setState(() {
         _locationInterval = _locationInterval - 5;
+        _changedHere = true;
       });
     }
   }
@@ -80,6 +83,11 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_wait && !_changedHere) {
+      _loadSettings();
+    } else if (_changedHere) {
+      _changedHere = false;
+    }
     return ListView(
       scrollDirection: Axis.vertical,
       padding: const EdgeInsets.all(20.0),
