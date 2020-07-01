@@ -10,20 +10,16 @@ import java.util.Date;
 class Utils {
 
     static final String KEY_REQUESTING_LOCATION_UPDATES = "flutter.foreground-location-service";
+    static final String KEY_LOCATION_UPDATE_INTERVAL = "flutter.active-location-interval";
 
-    /**
-     * Returns true if requesting location updates, otherwise returns false.
-     *
-     * @param context The {@link Context}.
-     */
     static boolean requestingLocationUpdates(Context context) {
         return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false);
     }
 
-    /**
-     * Stores the location updates state in SharedPreferences.
-     * @param requestingLocationUpdates The location updates state.
-     */
+    static long getLocationUpdateIntervals(Context context) {
+        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getLong(KEY_LOCATION_UPDATE_INTERVAL, 90) * 1000;
+    }
+
     static void setRequestingLocationUpdates(Context context, boolean requestingLocationUpdates) {
         context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
                 .edit()
@@ -31,16 +27,12 @@ class Utils {
                 .apply();
     }
 
-    /**
-     * Returns the {@code location} object as a human readable string.
-     * @param location  The {@link Location}.
-     */
     static String getLocationText(Location location) {
-        return location == null ? "Unknown location" :
-                "(" + location.getLatitude() + ", " + location.getLongitude() + ")";
+        return location == null ? "Accuracy: unknown" :
+                "Accuracy: " + location.getAccuracy();
     }
 
-    static String getLocationTitle(Context context) {
-        return "Location updated: " + DateFormat.getDateTimeInstance().format(new Date());
+    static String getLocationTitle(Location location) {
+        return "Location updated at " + DateFormat.getDateTimeInstance().format(new Date(location.getTime()));
     }
 }
