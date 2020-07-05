@@ -18,6 +18,13 @@ import android.os.IBinder;
 import android.os.Looper;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import android.util.Log;
 
@@ -26,6 +33,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * A bound and started service that is promoted to a foreground service when location updates have
@@ -74,6 +83,8 @@ public class LocationUpdatesService extends Service {
 
     private LocationRequest mLocationRequest;
 
+    private long requestInterval = 90000;
+
     /**
      * Provides access to the Fused Location Provider API.
      */
@@ -116,10 +127,10 @@ public class LocationUpdatesService extends Service {
 
         // Android O requires a Notification Channel.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Location service";
+            CharSequence name = "Location updates";
             // Create the channel for the notification
             NotificationChannel mChannel =
-                    new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
+                    new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
 
             // Set the Notification Channel for the Notification Manager.
             mNotificationManager.createNotificationChannel(mChannel);
@@ -138,7 +149,7 @@ public class LocationUpdatesService extends Service {
             stopSelf();
         }
         // Tells the system to not try to recreate the service after it has been killed.
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
@@ -188,7 +199,8 @@ public class LocationUpdatesService extends Service {
     }
 
     public void requestLocationUpdates() {
-        Log.i(TAG, "Requesting location updates");
+        requestInterval = Utils.getLocationUpdateIntervals(getApplicationContext());
+        Log.i(TAG, "Requesting location updates. Interval is " + requestInterval);
         Utils.setRequestingLocationUpdates(this, true);
         startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
         try {
@@ -237,6 +249,7 @@ public class LocationUpdatesService extends Service {
                 .addAction(R.drawable.blank_icon, "Stop",
                         servicePendingIntent)
                 .setContentText(text)
+                .setPriority(-1)
                 .setContentTitle(Utils.getLocationTitle(mLocation))
                 .setOngoing(true)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -274,16 +287,41 @@ public class LocationUpdatesService extends Service {
         if (serviceIsRunningInForeground(this)) {
             mNotificationManager.notify(NOTIFICATION_ID, getNotification());
         }
+
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        // Create the Data object:
+        Data locationData = new Data.Builder()
+                .putDouble("Lat", mLocation.getLatitude())
+                .putDouble("Long", mLocation.getLongitude())
+                .putFloat("Acc", mLocation.getAccuracy())
+                .build();
+
+
+        OneTimeWorkRequest uploadWorkRequest =
+                new OneTimeWorkRequest.Builder(SendLocationWorker.class)
+                        .setBackoffCriteria(
+                                BackoffPolicy.EXPONENTIAL,
+                                10,
+                                TimeUnit.SECONDS)
+                        .setConstraints(constraints)
+                        .setInputData(locationData)
+                        .build();
+
+        WorkManager
+                .getInstance(getApplicationContext())
+                .enqueueUniqueWork("SendLocationUpdate", ExistingWorkPolicy.REPLACE, uploadWorkRequest);
     }
 
     /**
      * Sets the location request parameters.
      */
     private void createLocationRequest() {
-        long interval = Utils.getLocationUpdateIntervals(getApplicationContext());
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(interval);
-        mLocationRequest.setFastestInterval(interval);
+        mLocationRequest.setInterval(requestInterval);
+        mLocationRequest.setFastestInterval(requestInterval);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
