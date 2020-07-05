@@ -50,4 +50,4 @@ flutter:
   fonts:
     - family: "Material Design Icons"
       fonts:
-        - asset: fonts/materialdesignicons-webfont-4.5.95.ttf
+        - asset: fonts/materialdesignicons-webfont-5.3.45.ttf
