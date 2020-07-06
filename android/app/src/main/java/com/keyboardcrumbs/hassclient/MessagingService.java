@@ -120,7 +120,7 @@ public class MessagingService extends FirebaseMessagingService {
                 }
                 broadcastIntent.putExtra("actionData", data.get("action" + i + "_data"));
                 PendingIntent actionIntent = PendingIntent.getBroadcast(this, i, broadcastIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-                notificationBuilder.addAction(R.drawable.mini_icon, data.get("action" + i), actionIntent);
+                notificationBuilder.addAction(R.drawable.blank_icon, data.get("action" + i), actionIntent);
             }   
         }
         NotificationManager notificationManager =

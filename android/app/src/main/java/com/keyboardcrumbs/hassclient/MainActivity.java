@@ -20,7 +20,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import io.flutter.plugin.common.MethodChannel;
 
@@ -33,8 +32,6 @@ public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.keyboardcrumbs.hassclient/native";
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-
-    private MyReceiver myReceiver;
 
     private LocationUpdatesService mService = null;
 
@@ -87,8 +84,8 @@ public class MainActivity extends FlutterActivity {
                             }
                             break;
                         case "startLocationService":
-                            if (checkPermissions()) {
-                                requestPermissions();
+                            if (isNoLocationPermissions()) {
+                                requestLocationPermissions();
                             } else {
                                 mService.requestLocationUpdates();
                             }
@@ -110,12 +107,11 @@ public class MainActivity extends FlutterActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        myReceiver = new MyReceiver();
-        if (Utils.requestingLocationUpdates(this)) {
-            if (checkPermissions()) {
-                requestPermissions();
+        /*if (Utils.requestingLocationUpdates(this)) {
+            if (isNoLocationPermissions()) {
+                requestLocationPermissions();
             }
-        }
+        }*/
     }
 
     @Override
@@ -128,13 +124,10 @@ public class MainActivity extends FlutterActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
-                new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
     }
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
         super.onPause();
     }
 
@@ -147,12 +140,12 @@ public class MainActivity extends FlutterActivity {
         super.onStop();
     }
 
-    private boolean checkPermissions() {
+    private boolean isNoLocationPermissions() {
         return PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
-    private void requestPermissions() {
+    private void requestLocationPermissions() {
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_PERMISSIONS_REQUEST_CODE);
@@ -164,16 +157,6 @@ public class MainActivity extends FlutterActivity {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 mService.requestLocationUpdates();
-            }
-        }
-    }
-
-    private class MyReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Location location = intent.getParcelableExtra(LocationUpdatesService.EXTRA_LOCATION);
-            if (location != null) {
-                //TODO looks like we need to remove this
             }
         }
     }
