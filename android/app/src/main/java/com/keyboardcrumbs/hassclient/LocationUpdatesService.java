@@ -46,7 +46,7 @@ public class LocationUpdatesService extends Service {
     private static final String EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME +
             ".started_from_notification";
 
-    private final IBinder mBinder = new LocalBinder();
+    //private final IBinder mBinder = new LocalBinder();
 
     private static final int NOTIFICATION_ID = 954311;
 
@@ -104,61 +104,43 @@ public class LocationUpdatesService extends Service {
 
         // We got here because the user decided to remove location updates from the notification.
         if (startedFromNotification) {
-            removeLocationUpdates();
             stopSelf();
+        } else {
+            requestLocationUpdates();
         }
 
         return START_STICKY;
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    @Override
-    public void onRebind(Intent intent) {
-        super.onRebind(intent);
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        return true;
-    }
-
     @Override
     public void onDestroy() {
-        mServiceHandler.removeCallbacksAndMessages(null);
-    }
-
-    public void requestLocationUpdates() {
-        long requestInterval = Utils.getLocationUpdateIntervals(getApplicationContext());
-        Log.i(TAG, "Requesting location updates. Interval is " + requestInterval);
-        mLocationRequest.setInterval(requestInterval);
-        mLocationRequest.setFastestInterval(requestInterval);
-        Utils.setRequestingLocationUpdates(this, true);
-        startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
-        startForeground(NOTIFICATION_ID, getNotification());
-        try {
-            mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                    mLocationCallback, Looper.myLooper());
-        } catch (SecurityException unlikely) {
-            //When we lost permission
-            removeLocationUpdates();
-        }
-    }
-
-    public void removeLocationUpdates() {
-        Log.i(TAG, "Removing location updates");
         try {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
         } catch (SecurityException unlikely) {
             //When we lost permission
             Log.i(TAG, "No location permission");
         }
-        Utils.setRequestingLocationUpdates(this, false);
-        stopSelf();
+        mServiceHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    private void requestLocationUpdates() {
+        long requestInterval = Utils.getLocationUpdateIntervals(getApplicationContext());
+        Log.i(TAG, "Requesting location updates. Interval is " + requestInterval);
+        mLocationRequest.setInterval(requestInterval);
+        mLocationRequest.setFastestInterval(requestInterval);
+        startForeground(NOTIFICATION_ID, getNotification());
+        try {
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                    mLocationCallback, Looper.myLooper());
+        } catch (SecurityException unlikely) {
+            stopSelf();
+        }
     }
 
     private Notification getNotification() {
@@ -235,11 +217,5 @@ public class LocationUpdatesService extends Service {
         WorkManager
                 .getInstance(getApplicationContext())
                 .enqueueUniqueWork("SendLocationUpdate", ExistingWorkPolicy.REPLACE, uploadWorkRequest);
-    }
-
-    public class LocalBinder extends Binder {
-        LocationUpdatesService getService() {
-            return LocationUpdatesService.this;
-        }
     }
 }

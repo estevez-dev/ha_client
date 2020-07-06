@@ -33,6 +33,6 @@ class Utils {
     }
 
     static String getLocationTitle(Location location) {
-        return "Location updated at " + DateFormat.getDateTimeInstance().format(new Date(location.getTime()));
+        return location == null ? "Requesting location..." : "Location updated at " + DateFormat.getDateTimeInstance().format(new Date(location.getTime()));
     }
 }

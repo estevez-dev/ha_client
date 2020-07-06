@@ -33,26 +33,6 @@ public class MainActivity extends FlutterActivity {
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
-    private LocationUpdatesService mService = null;
-
-    private boolean mBound = false;
-
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mService = null;
-            mBound = false;
-        }
-    };
-
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine);
@@ -84,15 +64,17 @@ public class MainActivity extends FlutterActivity {
                             }
                             break;
                         case "startLocationService":
+                            Utils.setRequestingLocationUpdates(this, true);
                             if (isNoLocationPermissions()) {
                                 requestLocationPermissions();
                             } else {
-                                mService.requestLocationUpdates();
+                                startLocationService();
                             }
                             result.success("");
                             break;
                         case "stopLocationService":
-                            mService.removeLocationUpdates();
+                            Utils.setRequestingLocationUpdates(this, false);
+                            stopLocationService();
                             result.success("");
                             break;
                     }
@@ -102,6 +84,16 @@ public class MainActivity extends FlutterActivity {
 
     private boolean checkPlayServices() {
         return (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS);
+    }
+
+    private void startLocationService() {
+        Intent myService = new Intent(MainActivity.this, LocationUpdatesService.class);
+        startService(myService);
+    }
+
+    private void stopLocationService() {
+        Intent myService = new Intent(MainActivity.this, LocationUpdatesService.class);
+        stopService(myService);
     }
 
     @Override
@@ -117,8 +109,6 @@ public class MainActivity extends FlutterActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
-                Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -133,10 +123,6 @@ public class MainActivity extends FlutterActivity {
 
     @Override
     protected void onStop() {
-        if (mBound) {
-            unbindService(mServiceConnection);
-            mBound = false;
-        }
         super.onStop();
     }
 
@@ -156,7 +142,7 @@ public class MainActivity extends FlutterActivity {
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mService.requestLocationUpdates();
+                startLocationService();
             }
         }
     }
