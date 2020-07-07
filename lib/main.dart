@@ -22,9 +22,6 @@ import 'package:device_info/device_info.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
 import 'plugins/spoiler_card.dart';
-import 'package:workmanager/workmanager.dart' as workManager;
-import 'package:geolocator/geolocator.dart';
-import 'package:battery/battery.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standaloneWebview;
 import 'package:webview_flutter/webview_flutter.dart';
@@ -117,7 +114,6 @@ part 'pages/entity.page.dart';
 part 'utils/mdi.class.dart';
 part 'entity_collection.class.dart';
 part 'managers/auth_manager.class.dart';
-part 'managers/location_manager.class.dart';
 part 'managers/mobile_app_integration_manager.class.dart';
 part 'managers/connection_manager.class.dart';
 part 'managers/device_info_manager.class.dart';
@@ -230,10 +226,6 @@ class _HAClientAppState extends State<HAClientApp> {
         _currentTheme = event.theme;
       });
     });
-    workManager.Workmanager.initialize(
-      updateDeviceLocationIsolate,
-      isInDebugMode: false
-    );
     super.initState();
   }
 

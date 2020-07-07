@@ -56,7 +56,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
         SharedPreferences.getInstance().then((prefs) {
           HomeAssistant().currentDashboardPath = prefs.getString('lovelace_dashboard_url') ?? HomeAssistant.DEFAULT_DASHBOARD;
           _fetchData(useCache: true);
-          LocationManager();
           StartupUserMessagesManager().checkMessagesToShow();
           MobileAppIntegrationManager.checkAppRegistration();
         });

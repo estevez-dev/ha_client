@@ -1,7 +1,11 @@
 package com.keyboardcrumbs.hassclient;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.location.Location;
+import android.os.Build;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
@@ -24,6 +28,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class LocationUpdatesWorker extends ListenableWorker {
 
@@ -78,6 +84,22 @@ public class LocationUpdatesWorker extends ListenableWorker {
                     WorkManager
                             .getInstance(getApplicationContext())
                             .enqueueUniqueWork("SendLocationUpdate", ExistingWorkPolicy.REPLACE, uploadWorkRequest);
+                    if (LocationUtils.showNotification(currentContext)) {
+                        NotificationManager notificationManager;
+                        if (android.os.Build.VERSION.SDK_INT >= 23) {
+                            notificationManager = currentContext.getSystemService(NotificationManager.class);
+                        } else {
+                            notificationManager = (NotificationManager)currentContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            CharSequence name = "Location updates";
+                            NotificationChannel mChannel =
+                                    new NotificationChannel(LocationUtils.WORKER_NOTIFICATION_CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
+
+                            notificationManager.createNotificationChannel(mChannel);
+                        }
+                        notificationManager.notify(LocationUtils.WORKER_NOTIFICATION_ID, LocationUtils.getNotification(currentContext, location, LocationUtils.WORKER_NOTIFICATION_CHANNEL_ID));
+                    }
                     finish();
                     completer.set(Result.success());
                 }

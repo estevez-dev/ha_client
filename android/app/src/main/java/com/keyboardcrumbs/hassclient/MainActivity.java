@@ -9,10 +9,10 @@ import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Context;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -82,6 +82,10 @@ public class MainActivity extends FlutterActivity {
                             stopLocationUpdates();
                             result.success("");
                             break;
+                        case "cancelOldLocationWorker":
+                            WorkManager.getInstance(this).cancelAllWorkByTag("haclocation");
+                            result.success("");
+                            break;
                     }
                 }
         );
@@ -107,6 +111,13 @@ public class MainActivity extends FlutterActivity {
         Intent myService = new Intent(MainActivity.this, LocationUpdatesService.class);
         stopService(myService);
         WorkManager.getInstance(this).cancelUniqueWork(LocationUtils.LOCATION_WORK_NAME);
+        NotificationManager notificationManager;
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+            notificationManager = getSystemService(NotificationManager.class);
+        } else {
+            notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        notificationManager.cancel(LocationUtils.WORKER_NOTIFICATION_ID);
         LocationUtils.setLocationUpdatesState(this, LocationUtils.LOCATION_UPDATES_DISABLED);
     }
 

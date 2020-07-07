@@ -8,6 +8,8 @@ class AppSettings {
 
   static const AUTH_TOKEN_KEY = 'llt';
 
+  static const platform = const MethodChannel('com.keyboardcrumbs.hassclient/native');
+
   static final AppSettings _instance = AppSettings._internal();
 
   factory AppSettings() {
@@ -31,10 +33,7 @@ class AppSettings {
   bool nextAlarmSensorCreated = false;
   DisplayMode displayMode;
   AppTheme appTheme;
-  final int defaultLocationUpdateIntervalMinutes = 20;
-  final int defaultActiveLocationUpdateIntervalSeconds = 900;
-  Duration locationUpdateInterval;
-  bool locationTrackingEnabled = false;
+  final int defaultLocationUpdateIntervalSeconds = 900;
 
   bool get isAuthenticated => longLivedToken != null;
   bool get isTempAuthenticated => tempToken != null;
@@ -50,6 +49,7 @@ class AppSettings {
       await Hive.openBox(DEFAULT_HIVE_BOX);
       Logger.d('Loading settings...');
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      await migrate(prefs);
       _domain = prefs.getString('hassio-domain');
       _port = prefs.getString('hassio-port');
       webhookId = prefs.getString('app-webhook-id');
@@ -60,16 +60,43 @@ class AppSettings {
         "${prefs.getString('hassio-protocol')}://$_domain:$_port/api/websocket";
       httpWebHost =
         "${prefs.getString('hassio-res-protocol')}://$_domain:$_port";
-      locationUpdateInterval = Duration(minutes: prefs.getInt("location-interval") ??
-        defaultLocationUpdateIntervalMinutes);
-      locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
-      nextAlarmSensorCreated = prefs.getBool("next-alarm-sensor-created") ?? false;
       longLivedToken = Hive.box(DEFAULT_HIVE_BOX).get(AUTH_TOKEN_KEY);
       oauthUrl = "$httpWebHost/auth/authorize?client_id=${Uri.encodeComponent(
           'https://ha-client.app')}&redirect_uri=${Uri
           .encodeComponent(
           'https://ha-client.app/service/auth_callback.html')}";
     }
+  }
+
+  Future migrate(SharedPreferences prefs) async {
+    //Migrating to new location tracking. TODO: Remove when no version 1.2.0 (and older) in the wild
+    if (prefs.getBool("location-tracking-migrated") == null) {
+      Logger.d("[MIGRATION] Migrating to new location tracking...");
+      bool oldLocationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
+      if (oldLocationTrackingEnabled) {
+        await platform.invokeMethod('cancelOldLocationWorker');
+        await prefs.setInt("location-updates-state", 2); //Setting new location tracking mode to worker
+        await prefs.setInt("location-updates-priority", 100); //Setting location accuracy to high
+        int oldLocationTrackingInterval = prefs.getInt("location-interval") ?? 0;
+        if (oldLocationTrackingInterval < 15) {
+          oldLocationTrackingInterval = 15;
+        }
+        await prefs.setInt("location-updates-interval", oldLocationTrackingInterval * 60); //moving old interval in minutes to new interval in seconds
+        try {
+          await platform.invokeMethod('startLocationService');
+        } catch (e) {
+          await prefs.setInt("location-updates-state", 0); //Disabling location tracking  if can't start
+        }
+      } else {
+        Logger.d("[MIGRATION] Old location tracking was disabled");
+        await prefs.setInt("location-updates-state", 0); //Setting new location tracking mode to disabled
+      }
+      await prefs.setBool("location-tracking-migrated", true);
+    }
+    //Migrating from integration without next alarm sensor. TODO: remove when no version 1.1.2 (and older) in the wild
+    nextAlarmSensorCreated = prefs.getBool("next-alarm-sensor-created") ?? false;
+    //Done
+    Logger.d("[MIGRATION] Done.");
   }
 
   Future<dynamic> loadSingle(String key) async {

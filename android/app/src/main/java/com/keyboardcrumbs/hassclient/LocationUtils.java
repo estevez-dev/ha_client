@@ -1,10 +1,13 @@
 package com.keyboardcrumbs.hassclient;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 
+import androidx.core.app.NotificationCompat;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -18,6 +21,12 @@ class LocationUtils {
     static final String KEY_REQUESTING_LOCATION_UPDATES = "flutter.location-updates-state";
     static final String KEY_LOCATION_UPDATE_INTERVAL = "flutter.location-updates-interval";
     static final String KEY_LOCATION_UPDATE_PRIORITY = "flutter.location-updates-priority";
+    static final String KEY_LOCATION_SHOW_NOTIFICATION = "flutter.location-updates-show-notification";
+
+    static final String WORKER_NOTIFICATION_CHANNEL_ID = "location_worker";
+    static final int WORKER_NOTIFICATION_ID = 954322;
+    static final String SERVICE_NOTIFICATION_CHANNEL_ID = "location_service";
+    static final int SERVICE_NOTIFICATION_ID = 954311;
 
     static final String LOCATION_WORK_NAME = "HALocationWorker";
 
@@ -38,6 +47,10 @@ class LocationUtils {
 
     static int getLocationUpdatesPriority(Context context) {
         return (int) context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getLong(KEY_LOCATION_UPDATE_PRIORITY, 102);
+    }
+
+    static boolean showNotification(Context context) {
+        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getBoolean(KEY_LOCATION_SHOW_NOTIFICATION, true);
     }
 
     static void setLocationUpdatesState(Context context, int locationUpdatesState) {
@@ -68,6 +81,25 @@ class LocationUtils {
         } else {
             context.startService(serviceIntent);
         }
+    }
+
+    static Notification getNotification(Context context, Location location, String channelId) {
+        CharSequence text = LocationUtils.getLocationText(location);
+
+        PendingIntent activityPendingIntent = PendingIntent.getActivity(context, 0,
+                new Intent(context, MainActivity.class), 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                .addAction(R.drawable.blank_icon, "Open HA Client",
+                        activityPendingIntent)
+                .setContentText(text)
+                .setPriority(-1)
+                .setContentTitle(LocationUtils.getLocationTitle(location))
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.mini_icon)
+                .setWhen(System.currentTimeMillis());
+
+        return builder.build();
     }
 
     static void startWorker(Context context, long interval) {
