@@ -72,9 +72,10 @@
                 <action android:name="android.app.action.NEXT_ALARM_CLOCK_CHANGED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".LocationUpdatesAfterReboot">
+        <receiver android:name=".RestartLocationUpdate">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
         <service
