@@ -2,24 +2,19 @@ package com.keyboardcrumbs.hassclient;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.WorkManager;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 
 import io.flutter.plugin.common.MethodChannel;
 
@@ -32,6 +27,9 @@ public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.keyboardcrumbs.hassclient/native";
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+
+    private int locationUpdatesType = LocationUtils.LOCATION_UPDATES_DISABLED;
+    private long locationUpdatesInterval = LocationUtils.DEFAULT_LOCATION_UPDATE_INTERVAL_S * 1000;
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -46,8 +44,7 @@ public class MainActivity extends FlutterActivity {
                                         .addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
                                                 String token = task.getResult().getToken();
-                                                UpdateTokenTask updateTokenTask = new UpdateTokenTask(context);
-                                                updateTokenTask.execute(token);
+                                                context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).edit().putString("flutter.npush-token", token).apply();
                                                 result.success(token);
                                             } else {
                                                 Exception ex = task.getException();
@@ -64,17 +61,25 @@ public class MainActivity extends FlutterActivity {
                             }
                             break;
                         case "startLocationService":
-                            Utils.setRequestingLocationUpdates(this, true);
-                            if (isNoLocationPermissions()) {
-                                requestLocationPermissions();
-                            } else {
-                                startLocationService();
+                            try {
+                                locationUpdatesInterval = LocationUtils.getLocationUpdateIntervals(this);
+                                if (locationUpdatesInterval >= LocationUtils.MIN_WORKER_LOCATION_UPDATE_INTERVAL_MS) {
+                                    locationUpdatesType = LocationUtils.LOCATION_UPDATES_WORKER;
+                                } else {
+                                    locationUpdatesType = LocationUtils.LOCATION_UPDATES_SERVICE;
+                                }
+                                if (isNoLocationPermissions()) {
+                                    requestLocationPermissions();
+                                } else {
+                                    startLocationUpdates();
+                                }
+                                result.success("");
+                            } catch (Exception e) {
+                                result.error("location_error", e.getMessage(), null);
                             }
-                            result.success("");
                             break;
                         case "stopLocationService":
-                            Utils.setRequestingLocationUpdates(this, false);
-                            stopLocationService();
+                            stopLocationUpdates();
                             result.success("");
                             break;
                     }
@@ -86,24 +91,28 @@ public class MainActivity extends FlutterActivity {
         return (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS);
     }
 
-    private void startLocationService() {
-        Intent myService = new Intent(MainActivity.this, LocationUpdatesService.class);
-        startService(myService);
+    private void startLocationUpdates() {
+        if (locationUpdatesType == LocationUtils.LOCATION_UPDATES_SERVICE) {
+            LocationUtils.startService(this);
+            LocationUtils.setLocationUpdatesState(this, locationUpdatesType);
+        } else if (locationUpdatesType == LocationUtils.LOCATION_UPDATES_WORKER) {
+            LocationUtils.startWorker(this, locationUpdatesInterval);
+            LocationUtils.setLocationUpdatesState(this, locationUpdatesType);
+        } else {
+            stopLocationUpdates();
+        }
     }
 
-    private void stopLocationService() {
+    private void stopLocationUpdates() {
         Intent myService = new Intent(MainActivity.this, LocationUpdatesService.class);
         stopService(myService);
+        WorkManager.getInstance(this).cancelUniqueWork(LocationUtils.LOCATION_WORK_NAME);
+        LocationUtils.setLocationUpdatesState(this, LocationUtils.LOCATION_UPDATES_DISABLED);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if (Utils.requestingLocationUpdates(this)) {
-            if (isNoLocationPermissions()) {
-                requestLocationPermissions();
-            }
-        }*/
     }
 
     @Override
@@ -142,7 +151,9 @@ public class MainActivity extends FlutterActivity {
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startLocationService();
+                startLocationUpdates();
+            } else {
+                stopLocationUpdates();
             }
         }
     }

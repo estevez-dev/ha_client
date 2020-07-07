@@ -12,6 +12,12 @@ class IntegrationSettingsPage extends StatefulWidget {
 class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
   static const platform = const MethodChannel('com.keyboardcrumbs.hassclient/native');
+  static final locationAccuracy = {
+    100: "Highest",
+    102: "Balanced (about 100 meters)",
+    104: "Low (up to 10 kilometers)",
+    105: "Passive (last known location)",
+  };
 
   int _locationInterval = AppSettings().defaultLocationUpdateIntervalMinutes;
   int _activeLocationInterval = AppSettings().defaultActiveLocationUpdateIntervalSeconds;
@@ -19,6 +25,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   bool _foregroundLocationTrackingEnabled = false;
   bool _wait = false;
   bool _changedHere = false;
+  int _accuracy = 102;
 
   @override
   void initState() {
@@ -33,10 +40,11 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         _locationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
-        _foregroundLocationTrackingEnabled = prefs.getBool("foreground-location-service") ?? false;
+        _accuracy = prefs.getInt("location-updates-priority") ?? 102;
+        _foregroundLocationTrackingEnabled = (prefs.getInt("location-updates-state") ?? 0) > 0;
         _locationInterval = prefs.getInt("location-interval") ??
           AppSettings().defaultLocationUpdateIntervalMinutes;
-        _activeLocationInterval = prefs.getInt("active-location-interval") ??
+        _activeLocationInterval = prefs.getInt("location-updates-interval") ??
             AppSettings().defaultActiveLocationUpdateIntervalSeconds;
         if (_locationInterval < 15) {
           _locationInterval = 15;
@@ -94,9 +102,13 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   }
 
   _switchForegroundLocationTrackingState(bool state) async {
-    await AppSettings().save({'active-location-interval': _activeLocationInterval});
+    await AppSettings().save({'location-updates-interval': _activeLocationInterval, 'location-updates-priority': _accuracy});
     if (state) {
-      await platform.invokeMethod('startLocationService');
+      try {
+        await platform.invokeMethod('startLocationService');
+      } catch (e) {
+        _foregroundLocationTrackingEnabled = false;
+      }
     } else {
       await platform.invokeMethod('stopLocationService');
     }
@@ -154,11 +166,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
         ),
         Container(height: Sizes.rowPadding),
         Text("Active location tracking", style: Theme.of(context).textTheme.title),
-        Text("Works in foreground noticeably affecting phone battery. Sends most accurate location getting it from phone if possible. Can be very frequent.",
-          style: Theme.of(context).textTheme.caption,
-          softWrap: true,
-        ),
-        Container(height: Sizes.rowPadding,),
+        Container(height: Sizes.rowPadding),
         Row(
           children: <Widget>[
             Text("Enable"),
@@ -175,7 +183,26 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
           ],
         ),
         Container(height: Sizes.rowPadding),
-        Text("Update device location every"),
+        Text("Accuracy:", style: Theme.of(context).textTheme.body2),
+        Container(height: Sizes.rowPadding),
+        DropdownButton<int>(
+          value: _accuracy,
+          iconSize: 30.0,
+          isExpanded: true,
+          items: locationAccuracy.keys.map((value) {
+            return new DropdownMenuItem<int>(
+              value: value,
+              child: Text('${locationAccuracy[value]}'),
+            );
+          }).toList(),
+          onChanged: _foregroundLocationTrackingEnabled ? null : (val) {
+            setState(() {
+              _accuracy = val;
+            });
+          },
+        ),
+        Container(height: Sizes.rowPadding),
+        Text("Update intervals"),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,

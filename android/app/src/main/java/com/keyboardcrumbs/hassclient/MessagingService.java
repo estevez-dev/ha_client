@@ -3,7 +3,6 @@ package com.keyboardcrumbs.hassclient;
 import java.util.Map;
 import java.net.URL;
 import java.net.URLConnection;
-import java.io.IOException;
 import java.io.InputStream;
 
 import android.app.NotificationChannel;
@@ -14,6 +13,8 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -26,7 +27,7 @@ import android.webkit.URLUtil;
 
 public class MessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "MessagingService";
+    public static final String NOTIFICATION_ACTION_BROADCAST = "com.keyboardcrumbs.hassclient.haNotificationAction";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -39,19 +40,19 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     @Override
-    public void onNewToken(String token) {
-        UpdateTokenTask updateTokenTask = new UpdateTokenTask(this);
-        updateTokenTask.execute(token);
+    public void onNewToken(@NonNull String token) {
+        getApplicationContext().getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).edit().putString("flutter.npush-token", token).apply();
     }
 
     private void sendNotification(Map<String, String> data) {
         String channelId, messageBody, messageTitle, imageUrl, nTag, channelDescription;
         boolean autoCancel;
-        if (!data.containsKey("channelId")) {
+        String customChannelId = data.get("channelId");
+        if (customChannelId == null) {
             channelId = "ha_notify";
             channelDescription = "Default notification channel";
         } else {
-            channelId = data.get("channelId");
+            channelId = customChannelId;
             channelDescription = channelId;
         }
         if (!data.containsKey("body")) {
@@ -114,7 +115,7 @@ public class MessagingService extends FirebaseMessagingService {
         }
         for (int i = 1; i <= 3; i++) {
             if (data.containsKey("action" + i)) {
-                Intent broadcastIntent = new Intent(this, NotificationActionReceiver.class);
+                Intent broadcastIntent = new Intent(this, NotificationActionReceiver.class).setAction(NOTIFICATION_ACTION_BROADCAST);
                 if (autoCancel) {
                     broadcastIntent.putExtra("tag", nTag);
                 }

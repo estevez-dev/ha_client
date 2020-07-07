@@ -7,18 +7,16 @@ import android.content.Intent;
 
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
 
 import java.util.concurrent.TimeUnit;
 
 
 public class NextAlarmBroadcastReceiver extends BroadcastReceiver {
-
-    private static final String TAG = "NextAlarmReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -35,12 +33,17 @@ public class NextAlarmBroadcastReceiver extends BroadcastReceiver {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
+        Data workerData = new Data.Builder()
+                .putInt(SendDataHomeWorker.DATA_TYPE_KEY, SendDataHomeWorker.DATA_TYPE_NEXT_ALARM)
+                .build();
+
         OneTimeWorkRequest uploadWorkRequest =
-                new OneTimeWorkRequest.Builder(UpdateNextAlarmWorker.class)
+                new OneTimeWorkRequest.Builder(SendDataHomeWorker.class)
                         .setBackoffCriteria(
                                 BackoffPolicy.EXPONENTIAL,
                                 10,
                                 TimeUnit.SECONDS)
+                        .setInputData(workerData)
                         .setConstraints(constraints)
                         .build();
 

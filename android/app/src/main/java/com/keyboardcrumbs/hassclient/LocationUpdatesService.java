@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -78,9 +77,6 @@ public class LocationUpdatesService extends Service {
         };
 
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-        getLastLocation();
 
         HandlerThread handlerThread = new HandlerThread(TAG);
         handlerThread.start();
@@ -130,8 +126,10 @@ public class LocationUpdatesService extends Service {
     }
 
     private void requestLocationUpdates() {
-        long requestInterval = Utils.getLocationUpdateIntervals(getApplicationContext());
-        Log.i(TAG, "Requesting location updates. Interval is " + requestInterval);
+        long requestInterval = LocationUtils.getLocationUpdateIntervals(getApplicationContext());
+        int priority = LocationUtils.getLocationUpdatesPriority(getApplicationContext());
+        Log.i(TAG, "Requesting location updates. Every " + requestInterval + "ms with priority of " + priority);
+        mLocationRequest.setPriority(priority);
         mLocationRequest.setInterval(requestInterval);
         mLocationRequest.setFastestInterval(requestInterval);
         startForeground(NOTIFICATION_ID, getNotification());
@@ -146,7 +144,7 @@ public class LocationUpdatesService extends Service {
     private Notification getNotification() {
         Intent intent = new Intent(this, LocationUpdatesService.class);
 
-        CharSequence text = Utils.getLocationText(mLocation);
+        CharSequence text = LocationUtils.getLocationText(mLocation);
 
         intent.putExtra(EXTRA_STARTED_FROM_NOTIFICATION, true);
 
@@ -157,33 +155,18 @@ public class LocationUpdatesService extends Service {
                 new Intent(this, MainActivity.class), 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .addAction(R.drawable.blank_icon, "Open HA Client",
+                .addAction(R.drawable.blank_icon, "Open app",
                         activityPendingIntent)
-                .addAction(R.drawable.blank_icon, "Stop",
+                .addAction(R.drawable.blank_icon, "Stop tracking",
                         servicePendingIntent)
                 .setContentText(text)
                 .setPriority(-1)
-                .setContentTitle(Utils.getLocationTitle(mLocation))
+                .setContentTitle(LocationUtils.getLocationTitle(mLocation))
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.mini_icon)
                 .setWhen(System.currentTimeMillis());
 
         return builder.build();
-    }
-
-    private void getLastLocation() {
-        try {
-            mFusedLocationClient.getLastLocation()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            mLocation = task.getResult();
-                        } else {
-                            Log.w(TAG, "Failed to get location.");
-                        }
-                    });
-        } catch (SecurityException unlikely) {
-            Log.e(TAG, "Lost location permission." + unlikely);
-        }
     }
 
     private void onNewLocation(Location location) {
@@ -198,6 +181,7 @@ public class LocationUpdatesService extends Service {
                 .build();
 
         Data locationData = new Data.Builder()
+                .putInt(SendDataHomeWorker.DATA_TYPE_KEY, SendDataHomeWorker.DATA_TYPE_LOCATION)
                 .putDouble("Lat", mLocation.getLatitude())
                 .putDouble("Long", mLocation.getLongitude())
                 .putFloat("Acc", mLocation.getAccuracy())
@@ -205,7 +189,7 @@ public class LocationUpdatesService extends Service {
 
 
         OneTimeWorkRequest uploadWorkRequest =
-                new OneTimeWorkRequest.Builder(SendLocationWorker.class)
+                new OneTimeWorkRequest.Builder(SendDataHomeWorker.class)
                         .setBackoffCriteria(
                                 BackoffPolicy.EXPONENTIAL,
                                 10,

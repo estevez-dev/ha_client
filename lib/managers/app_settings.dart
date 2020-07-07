@@ -32,7 +32,7 @@ class AppSettings {
   DisplayMode displayMode;
   AppTheme appTheme;
   final int defaultLocationUpdateIntervalMinutes = 20;
-  final int defaultActiveLocationUpdateIntervalSeconds = 90;
+  final int defaultActiveLocationUpdateIntervalSeconds = 900;
   Duration locationUpdateInterval;
   bool locationTrackingEnabled = false;
 
