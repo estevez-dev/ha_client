@@ -58,6 +58,7 @@ part 'entities/entity_model.widget.dart';
 part 'entities/default_entity_container.widget.dart';
 part 'entities/missed_entity.widget.dart';
 part 'cards/entity_button_card.dart';
+part 'cards/map_card.dart';
 part 'pages/widgets/entity_attributes_list.dart';
 part 'entities/entity_icon.widget.dart';
 part 'entities/entity_name.widget.dart';

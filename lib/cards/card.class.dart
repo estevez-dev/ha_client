@@ -644,6 +644,35 @@ class MarkdownCardData extends CardData {
 
 }
 
+class MapCardData extends CardData {
+
+  String title;
+
+  @override
+  Widget buildCardWidget() {
+    return MapCard(card: this);
+  }
+
+  MapCardData(rawData) : super(rawData) {
+    //Parsing card data
+    title = rawData['title'];
+    List<String> geoLocationSources = rawData['geo_location_sources'] ?? [];
+    if (geoLocationSources.isNotEmpty) {
+      //TODO add entities by source
+    }
+    var rawEntities = rawData["entities"] ?? [];
+    rawEntities.forEach((rawEntity) {
+      if (rawEntity is String) {
+        if (HomeAssistant().entities.isExist(rawEntity)) {
+          entities.add(
+              EntityWrapper(entity: HomeAssistant().entities.get(rawEntity)));
+        }
+      }
+    });
+  }
+
+}
+
 class MediaControlCardData extends CardData {
 
   @override

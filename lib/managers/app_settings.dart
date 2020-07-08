@@ -33,7 +33,6 @@ class AppSettings {
   bool nextAlarmSensorCreated = false;
   DisplayMode displayMode;
   AppTheme appTheme;
-  final int defaultLocationUpdateIntervalSeconds = 900;
 
   bool get isAuthenticated => longLivedToken != null;
   bool get isTempAuthenticated => tempToken != null;

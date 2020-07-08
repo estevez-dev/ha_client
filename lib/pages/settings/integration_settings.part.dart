@@ -12,10 +12,10 @@ class IntegrationSettingsPage extends StatefulWidget {
 class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
   static const platform = const MethodChannel('com.keyboardcrumbs.hassclient/native');
-  static final locationAccuracy = {
+  /*static final locationAccuracy = {
     100: "High",
     102: "Balanced"
-  };
+  };*/
 
   Duration _locationInterval;
   bool _locationTrackingEnabled = false;
@@ -35,11 +35,11 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     await prefs.reload();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
-        _accuracy = prefs.getInt("location-updates-priority") ?? 100;
+        _accuracy = /*prefs.getInt("location-updates-priority") ??*/ 100;
         _locationTrackingEnabled = (prefs.getInt("location-updates-state") ?? 0) > 0;
         _showNotification = prefs.getBool("location-updates-show-notification") ?? true;
         _locationInterval = Duration(milliseconds: prefs.getInt("location-updates-interval") ??
-            AppSettings().defaultLocationUpdateIntervalSeconds);
+            900000);
       });
     });
   }
@@ -146,9 +146,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     }
     if ((_locationInterval?.inMinutes ?? 15) < 15) {
       notes.add(_getNoteWidget('* Notification is mandatory for location updates with interval less than every 15 minutes', false));
-      if (_accuracy < 102) {
-        notes.add(_getNoteWidget('* Battery consumption will be noticeable', true));
-      }
+      notes.add(_getNoteWidget('* Battery consumption will be noticeable', true));
     }
     if (notes.isEmpty) {
       return Container(width: 0, height: 0);
@@ -184,7 +182,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
           ],
         ),
         Container(height: Sizes.rowPadding),
-        Text("Accuracy:", style: Theme.of(context).textTheme.body2),
+        /*Text("Accuracy:", style: Theme.of(context).textTheme.body2),
         Container(height: Sizes.rowPadding),
         DropdownButton<int>(
           value: _accuracy,
@@ -203,7 +201,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
             });
           },
         ),
-        Container(height: Sizes.rowPadding),
+        Container(height: Sizes.rowPadding),*/
         Text("Update interval"),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
