@@ -21,7 +21,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   bool _locationTrackingEnabled = false;
   bool _wait = false;
   bool _showNotification = true;
-  int _accuracy = 102;
+  int _accuracy = 100;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     await prefs.reload();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
-        _accuracy = prefs.getInt("location-updates-priority") ?? 102;
+        _accuracy = prefs.getInt("location-updates-priority") ?? 100;
         _locationTrackingEnabled = (prefs.getInt("location-updates-state") ?? 0) > 0;
         _showNotification = prefs.getBool("location-updates-show-notification") ?? true;
         _locationInterval = Duration(milliseconds: prefs.getInt("location-updates-interval") ??

@@ -75,21 +75,21 @@ class AppSettings {
       bool oldLocationTrackingEnabled = prefs.getBool("location-enabled") ?? false;
       if (oldLocationTrackingEnabled) {
         await platform.invokeMethod('cancelOldLocationWorker');
-        await prefs.setInt("location-updates-state", 2); //Setting new location tracking mode to worker
-        await prefs.setInt("location-updates-priority", 100); //Setting location accuracy to high
         int oldLocationTrackingInterval = prefs.getInt("location-interval") ?? 0;
         if (oldLocationTrackingInterval < 15) {
           oldLocationTrackingInterval = 15;
         }
-        await prefs.setInt("location-updates-interval", oldLocationTrackingInterval * 60); //moving old interval in minutes to new interval in seconds
         try {
-          await platform.invokeMethod('startLocationService');
-        } catch (e) {
-          await prefs.setInt("location-updates-state", 0); //Disabling location tracking  if can't start
+          await platform.invokeMethod('startLocationService', <String, dynamic>{
+            'location-updates-interval': oldLocationTrackingInterval * 60 * 1000,
+            'location-updates-priority': 100,
+            'location-updates-show-notification': true
+          });
+        } catch (e, stack) {
+          Logger.e("[MIGRATION] Can't start new location tracking: $e", stacktrace: stack);
         }
       } else {
         Logger.d("[MIGRATION] Old location tracking was disabled");
-        await prefs.setInt("location-updates-state", 0); //Setting new location tracking mode to disabled
       }
       await prefs.setBool("location-tracking-migrated", true);
     }
