@@ -107,9 +107,9 @@ public class LocationUpdatesService extends Service {
         Log.i(TAG, "Requesting location updates. Every " + requestInterval + "ms with priority of " + priority);
         mLocationRequest.setPriority(priority);
         mLocationRequest.setInterval(requestInterval);
-        if (priority == 102 && requestInterval > 60000) {
+        /*if (priority == 102 && requestInterval > 60000) {
             mLocationRequest.setFastestInterval(30000);
-        }
+        }*/
         startForeground(LocationUtils.SERVICE_NOTIFICATION_ID, LocationUtils.getNotification(this, null, LocationUtils.SERVICE_NOTIFICATION_CHANNEL_ID));
         try {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,

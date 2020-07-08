@@ -102,9 +102,9 @@ public class LocationUpdatesWorker extends ListenableWorker {
             int accuracy = LocationUtils.getLocationUpdatesPriority(getApplicationContext());
             locationRequest.setPriority(accuracy);
             locationRequest.setInterval(5000);
-            if (accuracy == 102) {
+            /*if (accuracy == 102) {
                 locationRequest.setFastestInterval(1000);
-            }
+            }*/
             try {
                 fusedLocationClient.requestLocationUpdates(locationRequest,
                         callback, Looper.myLooper());
