@@ -46,7 +46,7 @@ class LocationUtils {
     }
 
     static int getLocationUpdatesPriority(Context context) {
-        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getInt(KEY_LOCATION_UPDATE_PRIORITY, 102);
+        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getInt(KEY_LOCATION_UPDATE_PRIORITY, 100);
     }
 
     static boolean showNotification(Context context) {
@@ -69,15 +69,6 @@ class LocationUtils {
                 .apply();
     }
 
-    static String getLocationText(Location location) {
-        return location == null ? "Accuracy: unknown" :
-                "Accuracy: " + location.getAccuracy();
-    }
-
-    static String getLocationTitle(Location location) {
-        return location == null ? "Requesting location..." : "Location updated at " + DateFormat.getDateTimeInstance().format(new Date(location.getTime()));
-    }
-
     static void startService(Context context) {
         Intent myService = new Intent(context, LocationUpdatesService.class);
         context.startService(myService);
@@ -93,19 +84,24 @@ class LocationUtils {
     }
 
     static Notification getNotification(Context context, Location location, String channelId) {
-        CharSequence text = LocationUtils.getLocationText(location);
+        CharSequence title = "Location tracking";
+        CharSequence text = location == null ? "Accuracy: unknown" : "Accuracy: " + location.getAccuracy() + " m";
+                CharSequence bigText = location == null ? "Waiting for location..." : "Location updated at " + DateFormat.getDateTimeInstance().format(new Date(location.getTime())) +
+                System.getProperty("line.separator") + "Accuracy: " + location.getAccuracy() + " m" +
+                System.getProperty("line.separator") + "Location: " + location.getLatitude() + ", " + location.getLongitude();
 
-        PendingIntent activityPendingIntent = PendingIntent.getActivity(context, 0,
+                PendingIntent activityPendingIntent = PendingIntent.getActivity(context, 0,
                 new Intent(context, MainActivity.class), 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .addAction(R.drawable.blank_icon, "Open HA Client",
-                        activityPendingIntent)
+                .setContentIntent(activityPendingIntent)
+                .setContentTitle(title)
                 .setContentText(text)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(bigText))
                 .setPriority(-1)
-                .setContentTitle(LocationUtils.getLocationTitle(location))
                 .setOngoing(true)
-                .setSmallIcon(R.drawable.mini_icon)
+                .setSmallIcon(R.drawable.mini_icon_location)
                 .setWhen(System.currentTimeMillis());
 
         return builder.build();

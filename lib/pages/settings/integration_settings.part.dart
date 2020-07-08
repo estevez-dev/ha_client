@@ -13,10 +13,8 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
   static const platform = const MethodChannel('com.keyboardcrumbs.hassclient/native');
   static final locationAccuracy = {
-    100: "Highest",
-    102: "Balanced (about 100 meters)",
-    104: "Low (up to 10 kilometers)",
-    105: "Passive (last known location)",
+    100: "High",
+    102: "Balanced"
   };
 
   Duration _locationInterval;
