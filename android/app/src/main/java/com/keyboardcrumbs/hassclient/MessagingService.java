@@ -106,12 +106,13 @@ public class MessagingService extends FirebaseMessagingService {
                         .setAutoCancel(autoCancel)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
+        Bitmap image;
         if (URLUtil.isValidUrl(imageUrl)) {
-            Bitmap image = getBitmapFromURL(imageUrl);
-            if (image != null) {
-                notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image).bigLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.blank_icon)));
-                notificationBuilder.setLargeIcon(image);
-            }
+            image = getBitmapFromURL(imageUrl);
+        }
+        if (image != null) {
+            notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image).bigLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.blank_icon)));
+            notificationBuilder.setLargeIcon(image);
         } else {
             notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
                     .bigText(messageBody));
