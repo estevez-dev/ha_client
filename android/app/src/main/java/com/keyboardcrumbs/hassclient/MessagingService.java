@@ -103,8 +103,6 @@ public class MessagingService extends FirebaseMessagingService {
                         .setSmallIcon(R.drawable.mini_icon)
                         .setContentTitle(messageTitle)
                         .setContentText(messageBody)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(messageBody))
                         .setAutoCancel(autoCancel)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
@@ -114,6 +112,9 @@ public class MessagingService extends FirebaseMessagingService {
                 notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image).bigLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.blank_icon)));
                 notificationBuilder.setLargeIcon(image);
             }
+        } else {
+            notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                    .bigText(messageBody));
         }
         for (int i = 1; i <= 3; i++) {
             if (data.containsKey("action" + i)) {
