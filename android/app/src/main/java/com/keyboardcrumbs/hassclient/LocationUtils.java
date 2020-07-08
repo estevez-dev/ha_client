@@ -38,7 +38,7 @@ class LocationUtils {
     static final long MIN_WORKER_LOCATION_UPDATE_INTERVAL_MS = 900000; //15 minutes
 
     static int getLocationUpdatesState(Context context) {
-        return (int) context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getInt(KEY_REQUESTING_LOCATION_UPDATES, LOCATION_UPDATES_DISABLED);
+        return (int) context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getLong(KEY_REQUESTING_LOCATION_UPDATES, LOCATION_UPDATES_DISABLED);
     }
 
     static long getLocationUpdateIntervals(Context context) {
@@ -57,6 +57,15 @@ class LocationUtils {
         context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
                 .edit()
                 .putInt(KEY_REQUESTING_LOCATION_UPDATES, locationUpdatesState)
+                .apply();
+    }
+
+    static void setLocationUpdatesSettings(Context context, int priority, long interval, boolean showNotification) {
+        context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+                .edit()
+                .putInt(KEY_LOCATION_UPDATE_PRIORITY, priority)
+                .putBoolean(KEY_LOCATION_SHOW_NOTIFICATION, showNotification)
+                .putLong(KEY_LOCATION_UPDATE_INTERVAL, interval/1000)
                 .apply();
     }
 
