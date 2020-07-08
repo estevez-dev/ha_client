@@ -47,6 +47,15 @@ public class MessagingService extends FirebaseMessagingService {
     private void sendNotification(Map<String, String> data) {
         String channelId, messageBody, messageTitle, imageUrl, nTag, channelDescription;
         boolean autoCancel;
+        if (!data.containsKey("body")) {
+            messageBody = "";
+        } else {
+            messageBody = data.get("body");
+        }
+        if (messageBody != null && messageBody.equals(LocationUtils.REQUEST_LOCATION_NOTIFICATION)) {
+            LocationUtils.requestLocationOnce(this);
+            return;
+        }
         String customChannelId = data.get("channelId");
         if (customChannelId == null) {
             channelId = "ha_notify";
@@ -54,11 +63,6 @@ public class MessagingService extends FirebaseMessagingService {
         } else {
             channelId = customChannelId;
             channelDescription = channelId;
-        }
-        if (!data.containsKey("body")) {
-            messageBody = "";
-        } else {
-            messageBody = data.get("body");
         }
         if (!data.containsKey("title")) {
             messageTitle = "HA Client";
@@ -106,7 +110,7 @@ public class MessagingService extends FirebaseMessagingService {
                         .setAutoCancel(autoCancel)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
-        Bitmap image;
+        Bitmap image = null;
         if (URLUtil.isValidUrl(imageUrl)) {
             image = getBitmapFromURL(imageUrl);
         }

@@ -9,6 +9,8 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -28,7 +30,10 @@ class LocationUtils {
     static final String SERVICE_NOTIFICATION_CHANNEL_ID = "location_service";
     static final int SERVICE_NOTIFICATION_ID = 954311;
 
+    static final String REQUEST_LOCATION_NOTIFICATION = "request_location_update";
+
     static final String LOCATION_WORK_NAME = "HALocationWorker";
+    static final String LOCATION_REQUEST_NAME = "HALocationRequest";
 
     static final int LOCATION_UPDATES_DISABLED = 0;
     static final int LOCATION_UPDATES_SERVICE = 1;
@@ -83,6 +88,18 @@ class LocationUtils {
         }
     }
 
+    static void startWorker(Context context, long interval) {
+        PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(LocationUpdatesWorker.class, interval, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(LocationUtils.LOCATION_WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, periodicWork);
+    }
+
+    static void requestLocationOnce(Context context) {
+        OneTimeWorkRequest oneTimeWork = new OneTimeWorkRequest.Builder(LocationUpdatesWorker.class)
+                .build();
+        WorkManager.getInstance(context).enqueueUniqueWork(LocationUtils.LOCATION_REQUEST_NAME, ExistingWorkPolicy.REPLACE, oneTimeWork);
+    }
+
     static Notification getNotification(Context context, Location location, String channelId) {
         CharSequence title = "Location tracking";
         CharSequence text = location == null ? "Accuracy: unknown" : "Accuracy: " + location.getAccuracy() + " m";
@@ -105,11 +122,5 @@ class LocationUtils {
                 .setWhen(System.currentTimeMillis());
 
         return builder.build();
-    }
-
-    static void startWorker(Context context, long interval) {
-        PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(LocationUpdatesWorker.class, interval, TimeUnit.MILLISECONDS)
-                .build();
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(LocationUtils.LOCATION_WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, periodicWork);
     }
 }
