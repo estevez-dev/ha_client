@@ -97,10 +97,13 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   }
 
   _switchLocationTrackingState(bool state) async {
-    await AppSettings().save({'location-updates-interval': _locationInterval.inSeconds, 'location-updates-priority': _accuracy, 'location-updates-show-notification': _showNotification});
     if (state) {
       try {
-        await platform.invokeMethod('startLocationService');
+        await platform.invokeMethod('startLocationService', <String, dynamic>{
+          'location-updates-interval': _locationInterval.inSeconds,
+          'location-updates-priority': _accuracy,
+          'location-updates-show-notification': _showNotification
+        });
       } catch (e) {
         _locationTrackingEnabled = false;
       }
