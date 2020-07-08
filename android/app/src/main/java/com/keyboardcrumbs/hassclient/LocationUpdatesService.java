@@ -136,10 +136,6 @@ public class LocationUpdatesService extends Service {
 
         OneTimeWorkRequest uploadWorkRequest =
                 new OneTimeWorkRequest.Builder(SendDataHomeWorker.class)
-                        .setBackoffCriteria(
-                                BackoffPolicy.EXPONENTIAL,
-                                10,
-                                TimeUnit.SECONDS)
                         .setConstraints(constraints)
                         .setInputData(locationData)
                         .build();

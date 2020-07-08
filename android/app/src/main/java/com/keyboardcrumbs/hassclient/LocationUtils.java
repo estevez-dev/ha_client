@@ -34,19 +34,19 @@ class LocationUtils {
     static final int LOCATION_UPDATES_SERVICE = 1;
     static final int LOCATION_UPDATES_WORKER = 2;
 
-    static final int DEFAULT_LOCATION_UPDATE_INTERVAL_S = 900; //15 minutes
+    static final int DEFAULT_LOCATION_UPDATE_INTERVAL_MS = 900000; //15 minutes
     static final long MIN_WORKER_LOCATION_UPDATE_INTERVAL_MS = 900000; //15 minutes
 
     static int getLocationUpdatesState(Context context) {
-        return (int) context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getLong(KEY_REQUESTING_LOCATION_UPDATES, LOCATION_UPDATES_DISABLED);
+        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getInt(KEY_REQUESTING_LOCATION_UPDATES, LOCATION_UPDATES_DISABLED);
     }
 
     static long getLocationUpdateIntervals(Context context) {
-        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getLong(KEY_LOCATION_UPDATE_INTERVAL, DEFAULT_LOCATION_UPDATE_INTERVAL_S) * 1000;
+        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getLong(KEY_LOCATION_UPDATE_INTERVAL, DEFAULT_LOCATION_UPDATE_INTERVAL_MS);
     }
 
     static int getLocationUpdatesPriority(Context context) {
-        return (int) context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getLong(KEY_LOCATION_UPDATE_PRIORITY, 102);
+        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getInt(KEY_LOCATION_UPDATE_PRIORITY, 102);
     }
 
     static boolean showNotification(Context context) {
@@ -65,7 +65,7 @@ class LocationUtils {
                 .edit()
                 .putInt(KEY_LOCATION_UPDATE_PRIORITY, priority)
                 .putBoolean(KEY_LOCATION_SHOW_NOTIFICATION, showNotification)
-                .putLong(KEY_LOCATION_UPDATE_INTERVAL, interval/1000)
+                .putLong(KEY_LOCATION_UPDATE_INTERVAL, interval)
                 .apply();
     }
 

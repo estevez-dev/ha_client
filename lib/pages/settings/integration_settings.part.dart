@@ -40,7 +40,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
         _accuracy = prefs.getInt("location-updates-priority") ?? 102;
         _locationTrackingEnabled = (prefs.getInt("location-updates-state") ?? 0) > 0;
         _showNotification = prefs.getBool("location-updates-show-notification") ?? true;
-        _locationInterval = Duration(seconds: prefs.getInt("location-updates-interval") ??
+        _locationInterval = Duration(milliseconds: prefs.getInt("location-updates-interval") ??
             AppSettings().defaultLocationUpdateIntervalSeconds);
       });
     });
@@ -100,7 +100,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     if (state) {
       try {
         await platform.invokeMethod('startLocationService', <String, dynamic>{
-          'location-updates-interval': _locationInterval.inSeconds,
+          'location-updates-interval': _locationInterval.inMilliseconds,
           'location-updates-priority': _accuracy,
           'location-updates-show-notification': _showNotification
         });

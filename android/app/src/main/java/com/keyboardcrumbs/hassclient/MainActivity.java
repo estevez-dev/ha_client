@@ -29,7 +29,7 @@ public class MainActivity extends FlutterActivity {
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     private int locationUpdatesType = LocationUtils.LOCATION_UPDATES_DISABLED;
-    private long locationUpdatesInterval = LocationUtils.DEFAULT_LOCATION_UPDATE_INTERVAL_S * 1000;
+    private long locationUpdatesInterval = LocationUtils.DEFAULT_LOCATION_UPDATE_INTERVAL_MS;
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -66,7 +66,7 @@ public class MainActivity extends FlutterActivity {
                             break;
                         case "startLocationService":
                             try {
-                                locationUpdatesInterval = (long) call.argument("location-updates-interval") * 1000;
+                                locationUpdatesInterval = ((Number)call.argument("location-updates-interval")).longValue();
                                 if (locationUpdatesInterval >= LocationUtils.MIN_WORKER_LOCATION_UPDATE_INTERVAL_MS) {
                                     locationUpdatesType = LocationUtils.LOCATION_UPDATES_WORKER;
                                 } else {

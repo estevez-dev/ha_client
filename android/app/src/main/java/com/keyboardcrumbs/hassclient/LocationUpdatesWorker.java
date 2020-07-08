@@ -1,6 +1,5 @@
 package com.keyboardcrumbs.hassclient;
 
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -28,8 +27,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.TimeUnit;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class LocationUpdatesWorker extends ListenableWorker {
 
@@ -73,10 +70,6 @@ public class LocationUpdatesWorker extends ListenableWorker {
 
                     OneTimeWorkRequest uploadWorkRequest =
                             new OneTimeWorkRequest.Builder(SendDataHomeWorker.class)
-                                    .setBackoffCriteria(
-                                            BackoffPolicy.EXPONENTIAL,
-                                            10,
-                                            TimeUnit.SECONDS)
                                     .setConstraints(constraints)
                                     .setInputData(locationData)
                                     .build();
