@@ -28,6 +28,8 @@ class LocationUtils {
     static final int WORKER_NOTIFICATION_ID = 954322;
     static final String SERVICE_NOTIFICATION_CHANNEL_ID = "location_service";
     static final int SERVICE_NOTIFICATION_ID = 954311;
+    static final String ONETIME_NOTIFICATION_CHANNEL_ID = "location_request";
+    static final int ONETIME_NOTIFICATION_ID = 954333;
 
     static final String REQUEST_LOCATION_NOTIFICATION = "request_location_update";
 
@@ -89,15 +91,17 @@ class LocationUtils {
     }
 
     static void requestLocationOnce(Context context) {
-        OneTimeWorkRequest oneTimeWork = new OneTimeWorkRequest.Builder(LocationUpdatesWorker.class)
-                .build();
-        WorkManager.getInstance(context).enqueueUniqueWork(LocationUtils.LOCATION_REQUEST_NAME, ExistingWorkPolicy.REPLACE, oneTimeWork);
+        Intent myService = new Intent(context, LocationRequestService.class);
+        context.startService(myService);
+        //OneTimeWorkRequest oneTimeWork = new OneTimeWorkRequest.Builder(LocationUpdatesWorker.class)
+        //        .build();
+        //WorkManager.getInstance(context).enqueueUniqueWork(LocationUtils.LOCATION_REQUEST_NAME, ExistingWorkPolicy.REPLACE, oneTimeWork);
     }
 
     static Notification getNotification(Context context, Location location, String channelId) {
         CharSequence title = "Location tracking";
         CharSequence text = location == null ? "Accuracy: unknown" : "Accuracy: " + location.getAccuracy() + " m";
-                CharSequence bigText = location == null ? "Waiting for location..." : "Location updated at " + DateFormat.getDateTimeInstance().format(new Date(location.getTime())) +
+        CharSequence bigText = location == null ? "Waiting for location..." : "Time: " + DateFormat.getDateTimeInstance().format(new Date(location.getTime())) +
                 System.getProperty("line.separator") + "Accuracy: " + location.getAccuracy() + " m" +
                 System.getProperty("line.separator") + "Location: " + location.getLatitude() + ", " + location.getLongitude();
 
@@ -110,6 +114,25 @@ class LocationUtils {
                 .setContentText(text)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(bigText))
+                .setPriority(-1)
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.mini_icon_location)
+                .setWhen(System.currentTimeMillis());
+
+        return builder.build();
+    }
+
+    static Notification getRequestNotification(Context context, Location location, String channelId) {
+        CharSequence title = "Updating location...";
+        CharSequence text = location == null ? "Waiting for location..." : "Accuracy: " + location.getAccuracy() + " m";
+
+        PendingIntent activityPendingIntent = PendingIntent.getActivity(context, 0,
+                new Intent(context, MainActivity.class), 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                .setContentIntent(activityPendingIntent)
+                .setContentTitle(title)
+                .setContentText(text)
                 .setPriority(-1)
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.mini_icon_location)

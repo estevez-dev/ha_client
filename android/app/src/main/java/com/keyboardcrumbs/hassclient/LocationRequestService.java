@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.work.Constraints;
@@ -19,17 +20,15 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import android.util.Log;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-public class LocationUpdatesService extends Service {
+public class LocationRequestService extends Service {
 
-    private static final String TAG = LocationUpdatesService.class.getSimpleName();
+    private static final String TAG = LocationRequestService.class.getSimpleName();
 
     private NotificationManager mNotificationManager;
 
@@ -41,7 +40,7 @@ public class LocationUpdatesService extends Service {
 
     private Handler mServiceHandler;
 
-    public LocationUpdatesService() {
+    public LocationRequestService() {
     }
 
     @Override
@@ -64,9 +63,9 @@ public class LocationUpdatesService extends Service {
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Location updates";
+            CharSequence name = "Location requests";
             NotificationChannel mChannel =
-                    new NotificationChannel(LocationUtils.SERVICE_NOTIFICATION_CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
+                    new NotificationChannel(LocationUtils.ONETIME_NOTIFICATION_CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
 
             mNotificationManager.createNotificationChannel(mChannel);
         }
@@ -99,19 +98,11 @@ public class LocationUpdatesService extends Service {
     }
 
     private void requestLocationUpdates() {
-        long requestInterval = LocationUtils.getLocationUpdateIntervals(getApplicationContext());
-        int priority;
-        if (requestInterval >= 600000) {
-            mLocationRequest.setFastestInterval(60000);
-            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
-        } else {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY;
-        }
-        Log.i(TAG, "Requesting location updates. Every " + requestInterval + "ms with priority of " + priority);
-        mLocationRequest.setPriority(priority);
-        mLocationRequest.setInterval(requestInterval);
+        Log.i(TAG, "Requesting location update in 5 seconds.");
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(5000);
 
-        startForeground(LocationUtils.SERVICE_NOTIFICATION_ID, LocationUtils.getNotification(this, null, LocationUtils.SERVICE_NOTIFICATION_CHANNEL_ID));
+        startForeground(LocationUtils.ONETIME_NOTIFICATION_ID, LocationUtils.getRequestNotification(this, null, LocationUtils.ONETIME_NOTIFICATION_CHANNEL_ID));
         try {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                     mLocationCallback, Looper.myLooper());
@@ -123,10 +114,10 @@ public class LocationUpdatesService extends Service {
     private void onNewLocation(Location location) {
         Log.i(TAG, "New location: " + location);
 
-        mNotificationManager.notify(LocationUtils.SERVICE_NOTIFICATION_ID, LocationUtils.getNotification(
+        mNotificationManager.notify(LocationUtils.ONETIME_NOTIFICATION_ID, LocationUtils.getRequestNotification(
                 this,
                 location,
-                LocationUtils.SERVICE_NOTIFICATION_CHANNEL_ID
+                LocationUtils.ONETIME_NOTIFICATION_CHANNEL_ID
         ));
 
         Constraints constraints = new Constraints.Builder()
@@ -150,5 +141,6 @@ public class LocationUpdatesService extends Service {
         WorkManager
                 .getInstance(getApplicationContext())
                 .enqueueUniqueWork("SendLocationUpdate", ExistingWorkPolicy.REPLACE, uploadWorkRequest);
+        stopSelf();
     }
 }
