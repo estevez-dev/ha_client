@@ -92,7 +92,11 @@ class LocationUtils {
 
     static void requestLocationOnce(Context context) {
         Intent myService = new Intent(context, LocationRequestService.class);
-        context.startService(myService);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(myService);
+        } else {
+            context.startService(myService);
+        }
         //OneTimeWorkRequest oneTimeWork = new OneTimeWorkRequest.Builder(LocationUpdatesWorker.class)
         //        .build();
         //WorkManager.getInstance(context).enqueueUniqueWork(LocationUtils.LOCATION_REQUEST_NAME, ExistingWorkPolicy.REPLACE, oneTimeWork);

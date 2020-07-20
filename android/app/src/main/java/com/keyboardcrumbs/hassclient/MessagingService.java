@@ -22,10 +22,13 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.webkit.URLUtil;
 
 
 public class MessagingService extends FirebaseMessagingService {
+
+    private static final String TAG = MessagingService.class.getSimpleName();
 
     public static final String NOTIFICATION_ACTION_BROADCAST = "com.keyboardcrumbs.hassclient.haNotificationAction";
 
@@ -53,6 +56,7 @@ public class MessagingService extends FirebaseMessagingService {
             messageBody = data.get("body");
         }
         if (messageBody != null && messageBody.equals(LocationUtils.REQUEST_LOCATION_NOTIFICATION)) {
+            Log.d(TAG, "Location update request received");
             LocationUtils.requestLocationOnce(this);
             return;
         }
