@@ -21,7 +21,6 @@ class CardData {
       switch (rawData['type']) {
           case CardType.ENTITIES:
           case CardType.HISTORY_GRAPH:
-          case CardType.MAP:
           case CardType.PICTURE_GLANCE:
           case CardType.SENSOR:
           case CardType.ENTITY:
@@ -46,6 +45,9 @@ class CardData {
             } else {
               return CardData(null);
             }
+            break;
+          case CardType.MAP:
+            return MapCardData(rawData);
             break;
           case CardType.ENTITY_BUTTON:
           case CardType.BUTTON:
@@ -656,7 +658,7 @@ class MapCardData extends CardData {
   MapCardData(rawData) : super(rawData) {
     //Parsing card data
     title = rawData['title'];
-    List<String> geoLocationSources = rawData['geo_location_sources'] ?? [];
+    List<dynamic> geoLocationSources = rawData['geo_location_sources'] ?? [];
     if (geoLocationSources.isNotEmpty) {
       //TODO add entities by source
     }
@@ -664,8 +666,25 @@ class MapCardData extends CardData {
     rawEntities.forEach((rawEntity) {
       if (rawEntity is String) {
         if (HomeAssistant().entities.isExist(rawEntity)) {
+          entities.add(EntityWrapper(entity: HomeAssistant().entities.get(rawEntity)));
+        } else {
+          entities.add(EntityWrapper(entity: Entity.missed(rawEntity)));
+        }
+      } else {
+        if (HomeAssistant().entities.isExist(rawEntity["entity"])) {
+          Entity e = HomeAssistant().entities.get(rawEntity["entity"]);
           entities.add(
-              EntityWrapper(entity: HomeAssistant().entities.get(rawEntity)));
+              EntityWrapper(
+                  entity: e,
+                  stateColor: stateColor,
+                  overrideName: rawEntity["name"]?.toString(),
+                  overrideIcon: rawEntity["icon"],
+                  stateFilter: rawEntity['state_filter'] ?? [],
+                  uiAction: EntityUIAction(rawEntityData: rawEntity)
+              )
+          );
+        } else {
+          entities.add(EntityWrapper(entity: Entity.missed(rawEntity["entity"])));
         }
       }
     });

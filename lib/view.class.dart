@@ -74,7 +74,7 @@ class HAView {
 
   Widget build(BuildContext context) {
     return ViewWidget(
-      view: this,
+      view: this
     );
   }
 }

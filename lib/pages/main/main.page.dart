@@ -408,7 +408,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
 
     int currentViewCount = HomeAssistant().ui?.views?.length ?? 0;
     if (_previousViewCount != currentViewCount) {
-      Logger.d("Views count changed ($_previousViewCount->$currentViewCount). Creating new tabs controller.");
+      //Logger.d("Views count changed ($_previousViewCount->$currentViewCount). Creating new tabs controller.");
       _viewsTabController = TabController(vsync: this, length: currentViewCount);
       _previousViewCount = currentViewCount;
     }

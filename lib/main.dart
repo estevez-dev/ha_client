@@ -27,12 +27,15 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standalon
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:syncfusion_flutter_core/core.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
 
 import 'utils/logger.dart';
 import '.secrets.dart';
 
 part 'const.dart';
 part 'utils/launcher.dart';
+part 'utils/RandomColorGenerator.dart';
 part 'entities/entity.class.dart';
 part 'entities/entity_wrapper.class.dart';
 part 'entities/timer/timer_entity.class.dart';
