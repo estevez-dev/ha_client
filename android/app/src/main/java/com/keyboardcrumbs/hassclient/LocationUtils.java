@@ -22,7 +22,6 @@ class LocationUtils {
 
     static final String KEY_REQUESTING_LOCATION_UPDATES = "flutter.location-updates-state";
     static final String KEY_LOCATION_UPDATE_INTERVAL = "flutter.location-updates-interval";
-    static final String KEY_LOCATION_UPDATE_PRIORITY = "flutter.location-updates-priority";
     static final String KEY_LOCATION_SHOW_NOTIFICATION = "flutter.location-updates-show-notification";
 
     static final String WORKER_NOTIFICATION_CHANNEL_ID = "location_worker";
@@ -50,10 +49,6 @@ class LocationUtils {
         return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getLong(KEY_LOCATION_UPDATE_INTERVAL, DEFAULT_LOCATION_UPDATE_INTERVAL_MS);
     }
 
-    static int getLocationUpdatesPriority(Context context) {
-        return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getInt(KEY_LOCATION_UPDATE_PRIORITY, 100);
-    }
-
     static boolean showNotification(Context context) {
         return context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).getBoolean(KEY_LOCATION_SHOW_NOTIFICATION, true);
     }
@@ -65,10 +60,9 @@ class LocationUtils {
                 .apply();
     }
 
-    static void setLocationUpdatesSettings(Context context, int priority, long interval, boolean showNotification) {
+    static void setLocationUpdatesSettings(Context context, long interval, boolean showNotification) {
         context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
                 .edit()
-                .putInt(KEY_LOCATION_UPDATE_PRIORITY, priority)
                 .putBoolean(KEY_LOCATION_SHOW_NOTIFICATION, showNotification)
                 .putLong(KEY_LOCATION_UPDATE_INTERVAL, interval)
                 .apply();

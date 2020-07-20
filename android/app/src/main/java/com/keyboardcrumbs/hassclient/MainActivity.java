@@ -14,6 +14,7 @@ import android.content.Context;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 
 import io.flutter.plugin.common.MethodChannel;
@@ -67,12 +68,14 @@ public class MainActivity extends FlutterActivity {
                         case "startLocationService":
                             try {
                                 locationUpdatesInterval = ((Number)call.argument("location-updates-interval")).longValue();
-                                if (locationUpdatesInterval >= LocationUtils.MIN_WORKER_LOCATION_UPDATE_INTERVAL_MS) {
-                                    locationUpdatesType = LocationUtils.LOCATION_UPDATES_WORKER;
-                                } else {
+                                boolean useForegroundService = (boolean)call.argument("foreground-location-tracking");
+
+                                if (useForegroundService) {
                                     locationUpdatesType = LocationUtils.LOCATION_UPDATES_SERVICE;
+                                } else {
+                                    locationUpdatesType = LocationUtils.LOCATION_UPDATES_WORKER;
                                 }
-                                LocationUtils.setLocationUpdatesSettings(this, (int)call.argument("location-updates-priority"), locationUpdatesInterval, (boolean)call.argument("location-updates-show-notification"));
+                                LocationUtils.setLocationUpdatesSettings(this, locationUpdatesInterval, (boolean)call.argument("location-updates-show-notification"));
                                 if (isNoLocationPermissions()) {
                                     requestLocationPermissions();
                                 } else {

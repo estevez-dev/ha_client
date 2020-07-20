@@ -81,8 +81,9 @@ class AppSettings {
         try {
           await platform.invokeMethod('startLocationService', <String, dynamic>{
             'location-updates-interval': oldLocationTrackingInterval * 60 * 1000,
-            'location-updates-priority': 100,
-            'location-updates-show-notification': true
+            //'location-updates-priority': 100,
+            'location-updates-show-notification': true,
+            'foreground-location-tracking': false
           });
         } catch (e, stack) {
           Logger.e("[MIGRATION] Can't start new location tracking: $e", stacktrace: stack);

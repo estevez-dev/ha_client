@@ -103,13 +103,16 @@ public class LocationUpdatesService extends Service {
 
     private void requestLocationUpdates() {
         long requestInterval = LocationUtils.getLocationUpdateIntervals(getApplicationContext());
-        int priority = LocationUtils.getLocationUpdatesPriority(getApplicationContext());
-        Log.i(TAG, "Requesting location updates. Every " + requestInterval + "ms with priority of " + priority);
+        int priority;
+        if (requestInterval >= 600000) {
+            mLocationRequest.setFastestInterval(60000);
+            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
+        } else {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY;
+        }
         mLocationRequest.setPriority(priority);
         mLocationRequest.setInterval(requestInterval);
-        /*if (priority == 102 && requestInterval > 60000) {
-            mLocationRequest.setFastestInterval(30000);
-        }*/
+        Log.i(TAG, "Requesting location updates. Every " + requestInterval + "ms with priority of " + priority);
         startForeground(LocationUtils.SERVICE_NOTIFICATION_ID, LocationUtils.getNotification(this, null, LocationUtils.SERVICE_NOTIFICATION_CHANNEL_ID));
         try {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,

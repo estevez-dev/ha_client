@@ -278,6 +278,7 @@ class HomeAssistant {
     _rawPanels = data;
     List<Panel> dashboards = [];
     data.forEach((k,v) {
+      Logger.d('[HA] Panel $k: title=${v['title']}; component=${v['component_name']}');
         String title = v['title'] == null ? "${k[0].toUpperCase()}${k.substring(1)}" : "${v['title'][0].toUpperCase()}${v['title'].substring(1)}";
         if (v['component_name'] != null && v['component_name'] == 'lovelace') {
           dashboards.add(
