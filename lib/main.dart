@@ -29,6 +29,7 @@ import 'package:syncfusion_flutter_core/core.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
+import 'package:flutter/gestures.dart';
 
 import 'utils/logger.dart';
 import '.secrets.dart';
@@ -48,6 +49,7 @@ part 'entities/date_time/date_time_entity.class.dart';
 part 'entities/light/light_entity.class.dart';
 part 'entities/select/select_entity.class.dart';
 part 'entities/sun/sun_entity.class.dart';
+part 'cards/widgets/entities_map.dart';
 part 'entities/sensor/sensor_entity.class.dart';
 part 'entities/slider/slider_entity.dart';
 part 'entities/media_player/media_player_entity.class.dart';
