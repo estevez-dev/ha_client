@@ -6,8 +6,10 @@ class EntitiesMap extends StatelessWidget {
   final List<EntityWrapper> entities;
   final bool interactive;
   final double aspectRatio;
+  final LatLng center;
+  final double zoom;
 
-  const EntitiesMap({Key key, this.entities: const [], this.aspectRatio, this.interactive: false}) : super(key: key);
+  const EntitiesMap({Key key, this.entities: const [], this.aspectRatio, this.interactive: true, this.center, this.zoom}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +36,22 @@ class EntitiesMap extends StatelessWidget {
         );
       }
     });
-    Widget map = FlutterMap(
-      options: new MapOptions(
-        interactive: false,
+    MapOptions mapOptions;
+    if (center != null) {
+      mapOptions = MapOptions(
+        interactive: interactive,
+        center: center,
+        zoom: zoom ?? 10,
+      );
+    } else {
+      mapOptions = MapOptions(
+        interactive: interactive,
         bounds: LatLngBounds.fromPoints(points),
         boundsOptions: FitBoundsOptions(padding: EdgeInsets.all(40)),
-      ),
+      );
+    }
+    Widget map = FlutterMap(
+      options: mapOptions,
       layers: [
         new TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -58,5 +70,4 @@ class EntitiesMap extends StatelessWidget {
     }
     return map;
   }
-
 }
