@@ -20,6 +20,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class SendDataHomeWorker extends Worker {
@@ -195,9 +196,10 @@ public class SendDataHomeWorker extends Worker {
                 triggerTimestamp = alarmClockInfo.getTriggerTime();
                 final Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(triggerTimestamp);
-                sensorData.put("state", DATE_TIME_FORMAT.format(calendar.getTime()));
-                sensorAttrs.put("date", DATE_FORMAT.format(calendar.getTime()));
-                sensorAttrs.put("time", TIME_FORMAT.format(calendar.getTime()));
+                Date date = calendar.getTime();
+                sensorData.put("state", DATE_TIME_FORMAT.format(date));
+                sensorAttrs.put("date", DATE_FORMAT.format(date));
+                sensorAttrs.put("time", TIME_FORMAT.format(date));
                 sensorAttrs.put("timestamp", triggerTimestamp);
             } else {
                 sensorData.put("state", "");
