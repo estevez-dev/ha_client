@@ -101,7 +101,7 @@ class EntityIcon extends StatelessWidget {
       iconWidget = Stack(
         children: <Widget>[
           Icon(
-            IconData(iconCodeConst, fontFamily: 'Material Design Icons'),
+            IconData(iconCode, fontFamily: 'Material Design Icons'),
             size: size,
             color: iconColor,
           ),
