@@ -83,7 +83,7 @@ class AppSettings {
             'location-updates-interval': oldLocationTrackingInterval * 60 * 1000,
             //'location-updates-priority': 100,
             'location-updates-show-notification': true,
-            'foreground-location-tracking': false
+            'foreground-location-tracking': true
           });
         } catch (e, stack) {
           Logger.e("[MIGRATION] Can't start new location tracking: $e", stacktrace: stack);
