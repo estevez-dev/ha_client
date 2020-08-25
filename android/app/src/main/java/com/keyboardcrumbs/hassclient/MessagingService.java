@@ -22,10 +22,13 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.webkit.URLUtil;
 
 
 public class MessagingService extends FirebaseMessagingService {
+
+    private static final String TAG = MessagingService.class.getSimpleName();
 
     public static final String NOTIFICATION_ACTION_BROADCAST = "com.keyboardcrumbs.hassclient.haNotificationAction";
 
@@ -47,6 +50,16 @@ public class MessagingService extends FirebaseMessagingService {
     private void sendNotification(Map<String, String> data) {
         String channelId, messageBody, messageTitle, imageUrl, nTag, channelDescription;
         boolean autoCancel;
+        if (!data.containsKey("body")) {
+            messageBody = "";
+        } else {
+            messageBody = data.get("body");
+        }
+        if (messageBody != null && messageBody.equals(LocationUtils.REQUEST_LOCATION_NOTIFICATION)) {
+            Log.d(TAG, "Location update request received");
+            LocationUtils.requestLocationOnce(this);
+            return;
+        }
         String customChannelId = data.get("channelId");
         if (customChannelId == null) {
             channelId = "ha_notify";
@@ -54,11 +67,6 @@ public class MessagingService extends FirebaseMessagingService {
         } else {
             channelId = customChannelId;
             channelDescription = channelId;
-        }
-        if (!data.containsKey("body")) {
-            messageBody = "";
-        } else {
-            messageBody = data.get("body");
         }
         if (!data.containsKey("title")) {
             messageTitle = "HA Client";
@@ -106,12 +114,16 @@ public class MessagingService extends FirebaseMessagingService {
                         .setAutoCancel(autoCancel)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
+        Bitmap image = null;
         if (URLUtil.isValidUrl(imageUrl)) {
-            Bitmap image = getBitmapFromURL(imageUrl);
-            if (image != null) {
-                notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image).bigLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.blank_icon)));
-                notificationBuilder.setLargeIcon(image);
-            }
+            image = getBitmapFromURL(imageUrl);
+        }
+        if (image != null) {
+            notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image).bigLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.blank_icon)));
+            notificationBuilder.setLargeIcon(image);
+        } else {
+            notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                    .bigText(messageBody));
         }
         for (int i = 1; i <= 3; i++) {
             if (data.containsKey("action" + i)) {

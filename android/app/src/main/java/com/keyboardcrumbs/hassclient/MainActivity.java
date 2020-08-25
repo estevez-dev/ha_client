@@ -14,6 +14,7 @@ import android.content.Context;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 
 import io.flutter.plugin.common.MethodChannel;
@@ -29,7 +30,7 @@ public class MainActivity extends FlutterActivity {
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     private int locationUpdatesType = LocationUtils.LOCATION_UPDATES_DISABLED;
-    private long locationUpdatesInterval = LocationUtils.DEFAULT_LOCATION_UPDATE_INTERVAL_S * 1000;
+    private long locationUpdatesInterval = LocationUtils.DEFAULT_LOCATION_UPDATE_INTERVAL_MS;
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -39,35 +40,42 @@ public class MainActivity extends FlutterActivity {
                     Context context = getActivity();
                     switch (call.method) {
                         case "getFCMToken":
-                            if (checkPlayServices()) {
-                                FirebaseInstanceId.getInstance().getInstanceId()
-                                        .addOnCompleteListener(task -> {
-                                            if (task.isSuccessful()) {
-                                                String token = task.getResult().getToken();
-                                                context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).edit().putString("flutter.npush-token", token).apply();
-                                                result.success(token);
-                                            } else {
-                                                Exception ex = task.getException();
-                                                if (ex != null) {
-                                                    result.error("fcm_error", ex.getMessage(), null);
+                            try {
+                                if (checkPlayServices()) {
+                                    FirebaseInstanceId.getInstance().getInstanceId()
+                                            .addOnCompleteListener(task -> {
+                                                if (task.isSuccessful()) {
+                                                    String token = task.getResult().getToken();
+                                                    context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE).edit().putString("flutter.npush-token", token).apply();
+                                                    result.success(token);
                                                 } else {
-                                                    result.error("fcm_error", "Unknown", null);
-                                                }
+                                                    Exception ex = task.getException();
+                                                    if (ex != null) {
+                                                        result.error("fcm_error", ex.getMessage(), null);
+                                                    } else {
+                                                        result.error("fcm_error", "Unknown", null);
+                                                    }
 
-                                            }
-                                        });
-                            } else {
-                                result.error("google_play_service_error", "Google Play Services unavailable", null);
+                                                }
+                                            });
+                                } else {
+                                    result.error("google_play_service_error", "Google Play Services unavailable", null);
+                                }
+                            } catch (Exception e) {
+                                result.error("get_token_exception", e.getMessage(), e);
                             }
                             break;
                         case "startLocationService":
                             try {
-                                locationUpdatesInterval = LocationUtils.getLocationUpdateIntervals(this);
-                                if (locationUpdatesInterval >= LocationUtils.MIN_WORKER_LOCATION_UPDATE_INTERVAL_MS) {
-                                    locationUpdatesType = LocationUtils.LOCATION_UPDATES_WORKER;
-                                } else {
+                                locationUpdatesInterval = ((Number)call.argument("location-updates-interval")).longValue();
+                                boolean useForegroundService = (boolean)call.argument("foreground-location-tracking");
+
+                                if (useForegroundService) {
                                     locationUpdatesType = LocationUtils.LOCATION_UPDATES_SERVICE;
+                                } else {
+                                    locationUpdatesType = LocationUtils.LOCATION_UPDATES_WORKER;
                                 }
+                                LocationUtils.setLocationUpdatesSettings(this, locationUpdatesInterval, (boolean)call.argument("location-updates-show-notification"));
                                 if (isNoLocationPermissions()) {
                                     requestLocationPermissions();
                                 } else {
@@ -75,12 +83,16 @@ public class MainActivity extends FlutterActivity {
                                 }
                                 result.success("");
                             } catch (Exception e) {
-                                result.error("location_error", e.getMessage(), null);
+                                result.error("location_error", e.getMessage(), e);
                             }
                             break;
                         case "stopLocationService":
-                            stopLocationUpdates();
-                            result.success("");
+                            try {
+                                stopLocationUpdates();
+                                result.success("");
+                            } catch (Exception e) {
+                                result.error("location_error", e.getMessage(), e);
+                            }
                             break;
                         case "cancelOldLocationWorker":
                             WorkManager.getInstance(this).cancelAllWorkByTag("haclocation");

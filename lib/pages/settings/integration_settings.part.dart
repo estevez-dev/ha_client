@@ -12,18 +12,17 @@ class IntegrationSettingsPage extends StatefulWidget {
 class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
 
   static const platform = const MethodChannel('com.keyboardcrumbs.hassclient/native');
-  static final locationAccuracy = {
-    100: "Highest",
-    102: "Balanced (about 100 meters)",
-    104: "Low (up to 10 kilometers)",
-    105: "Passive (last known location)",
-  };
+  /*static final locationAccuracy = {
+    100: "High",
+    102: "Balanced"
+  };*/
 
   Duration _locationInterval;
   bool _locationTrackingEnabled = false;
   bool _wait = false;
   bool _showNotification = true;
-  int _accuracy = 102;
+  //int _accuracy = 100;
+  bool _useForegroundService = false;
 
   @override
   void initState() {
@@ -37,11 +36,12 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     await prefs.reload();
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
-        _accuracy = prefs.getInt("location-updates-priority") ?? 102;
+        //_accuracy = prefs.getInt("location-updates-priority") ?? 100;
         _locationTrackingEnabled = (prefs.getInt("location-updates-state") ?? 0) > 0;
         _showNotification = prefs.getBool("location-updates-show-notification") ?? true;
-        _locationInterval = Duration(seconds: prefs.getInt("location-updates-interval") ??
-            AppSettings().defaultLocationUpdateIntervalSeconds);
+        _useForegroundService = prefs.getBool("foreground-location-tracking") ?? false;
+        _locationInterval = Duration(milliseconds: prefs.getInt("location-updates-interval") ??
+            900000);
       });
     });
   }
@@ -71,36 +71,32 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
   }
 
   void _decLocationInterval() {
-    if (_locationInterval.inSeconds > 5) {
-      if (_locationInterval.inSeconds <= 60) {
-        setState(() {
+    if ((_useForegroundService && _locationInterval.inSeconds > 5) || (!_useForegroundService && _locationInterval.inMinutes > 15)) {
+      setState(() {
+        if (_locationInterval.inSeconds <= 60) {
           _locationInterval = _locationInterval - Duration(seconds: 5);
-        });
-      } else if (_locationInterval.inMinutes <= 15) {
-        setState(() {
+        } else if (_locationInterval.inMinutes <= 15) {
           _locationInterval = _locationInterval - Duration(minutes: 1);
-        });
-      } else if (_locationInterval.inMinutes <= 60) {
-        setState(() {
+        } else if (_locationInterval.inMinutes <= 60) {
           _locationInterval = _locationInterval - Duration(minutes: 5);
-        });
-      } else if (_locationInterval.inHours <= 4) {
-        setState(() {
+        } else if (_locationInterval.inHours <= 4) {
           _locationInterval = _locationInterval - Duration(minutes: 10);
-        });
-      } else if (_locationInterval.inHours > 4) {
-        setState(() {
+        } else if (_locationInterval.inHours > 4) {
           _locationInterval = _locationInterval - Duration(hours: 1);
-        });
-      }
+        }
+      });
     }
   }
 
   _switchLocationTrackingState(bool state) async {
-    await AppSettings().save({'location-updates-interval': _locationInterval.inSeconds, 'location-updates-priority': _accuracy, 'location-updates-show-notification': _showNotification});
     if (state) {
       try {
-        await platform.invokeMethod('startLocationService');
+        await platform.invokeMethod('startLocationService', <String, dynamic>{
+          'location-updates-interval': _locationInterval.inMilliseconds,
+          //'location-updates-priority': _accuracy,
+          'foreground-location-tracking': _useForegroundService,
+          'location-updates-show-notification': _showNotification
+        });
       } catch (e) {
         _locationTrackingEnabled = false;
       }
@@ -143,11 +139,13 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     if (_locationTrackingEnabled) {
       notes.add(_getNoteWidget('* Stop location tracking to change settings', false));
     }
-    if ((_locationInterval?.inMinutes ?? 15) < 15) {
-      notes.add(_getNoteWidget('* Notification is mandatory for location updates with interval less than every 15 minutes', false));
-      if (_accuracy < 102) {
-        notes.add(_getNoteWidget('* Battery consumption will be noticeable', true));
-      }
+    if (_useForegroundService) {
+      notes.add(_getNoteWidget('* Notification is mandatory for foreground service', false));
+    } else {
+      notes.add(_getNoteWidget('* Use foreground service for intervals less then 15 minutes', false));
+    }
+    if (_useForegroundService && _locationInterval.inMinutes < 10) {
+      notes.add(_getNoteWidget('* Battery consumption will be noticeable', true));
     }
     if (notes.isEmpty) {
       return Container(width: 0, height: 0);
@@ -183,7 +181,26 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
           ],
         ),
         Container(height: Sizes.rowPadding),
-        Text("Accuracy:", style: Theme.of(context).textTheme.body2),
+        Row(
+          children: <Widget>[
+            Text("Use foreground service"),
+            Switch(
+              value: _useForegroundService,
+              onChanged: _locationTrackingEnabled ? null : (value) {
+                setState(() {
+                  _useForegroundService = value;
+                  if (!_useForegroundService && _locationInterval.inMinutes < 15) {
+                    _locationInterval = Duration(minutes: 15);
+                  } else if (_useForegroundService) {
+                    _showNotification = true;
+                  }
+                });
+              },
+            ),
+          ],
+        ),
+        Container(height: Sizes.rowPadding),
+        /*Text("Accuracy:", style: Theme.of(context).textTheme.body2),
         Container(height: Sizes.rowPadding),
         DropdownButton<int>(
           value: _accuracy,
@@ -202,7 +219,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
             });
           },
         ),
-        Container(height: Sizes.rowPadding),
+        Container(height: Sizes.rowPadding),*/
         Text("Update interval"),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -232,7 +249,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
             Text("Show notification"),
             Switch(
               value: _showNotification,
-              onChanged: (_locationTrackingEnabled || (_locationInterval?.inMinutes ?? 0) < 15) ? null : (value) {
+              onChanged: (_locationTrackingEnabled || _useForegroundService) ? null : (value) {
                 setState(() {
                   _showNotification = value;
                 });

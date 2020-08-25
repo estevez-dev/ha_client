@@ -27,12 +27,16 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart' as standalon
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:syncfusion_flutter_core/core.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
+import 'package:flutter/gestures.dart';
 
 import 'utils/logger.dart';
 import '.secrets.dart';
 
 part 'const.dart';
 part 'utils/launcher.dart';
+part 'utils/RandomColorGenerator.dart';
 part 'entities/entity.class.dart';
 part 'entities/entity_wrapper.class.dart';
 part 'entities/timer/timer_entity.class.dart';
@@ -45,6 +49,7 @@ part 'entities/date_time/date_time_entity.class.dart';
 part 'entities/light/light_entity.class.dart';
 part 'entities/select/select_entity.class.dart';
 part 'entities/sun/sun_entity.class.dart';
+part 'cards/widgets/entities_map.dart';
 part 'entities/sensor/sensor_entity.class.dart';
 part 'entities/slider/slider_entity.dart';
 part 'entities/media_player/media_player_entity.class.dart';
@@ -58,6 +63,7 @@ part 'entities/entity_model.widget.dart';
 part 'entities/default_entity_container.widget.dart';
 part 'entities/missed_entity.widget.dart';
 part 'cards/entity_button_card.dart';
+part 'cards/map_card.dart';
 part 'pages/widgets/entity_attributes_list.dart';
 part 'entities/entity_icon.widget.dart';
 part 'entities/entity_name.widget.dart';
@@ -154,7 +160,7 @@ part 'managers/app_settings.dart';
 EventBus eventBus = new EventBus();
 const String appName = 'HA Client';
 const String appVersion = String.fromEnvironment('versionName', defaultValue: '0.0.0');
-const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.2.0.md';
+const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.3.0.md';
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.

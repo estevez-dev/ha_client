@@ -1,6 +1,5 @@
 package com.keyboardcrumbs.hassclient;
 
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -10,7 +9,6 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
-import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
@@ -28,8 +26,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.TimeUnit;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class LocationUpdatesWorker extends ListenableWorker {
 
@@ -73,10 +69,6 @@ public class LocationUpdatesWorker extends ListenableWorker {
 
                     OneTimeWorkRequest uploadWorkRequest =
                             new OneTimeWorkRequest.Builder(SendDataHomeWorker.class)
-                                    .setBackoffCriteria(
-                                            BackoffPolicy.EXPONENTIAL,
-                                            10,
-                                            TimeUnit.SECONDS)
                                     .setConstraints(constraints)
                                     .setInputData(locationData)
                                     .build();
@@ -106,10 +98,8 @@ public class LocationUpdatesWorker extends ListenableWorker {
             };
 
             LocationRequest locationRequest = new LocationRequest();
-            int accuracy = LocationUtils.getLocationUpdatesPriority(getApplicationContext());
-            locationRequest.setPriority(accuracy);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             locationRequest.setInterval(5000);
-            locationRequest.setFastestInterval(1000);
             try {
                 fusedLocationClient.requestLocationUpdates(locationRequest,
                         callback, Looper.myLooper());
