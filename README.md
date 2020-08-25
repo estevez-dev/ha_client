@@ -1,4 +1,9 @@
 # HA Client
+|  # IMPORTANT!  |
+|:-:|
+|  As you may know official Home Assistant android app continue to grow and improve. Today is the day when it has so much more and better functionality that I see no any reason not to move from HA Client to official Home Assistant app. You need to make the same as it has more device sensors, better location tracking, widgets etc.
+|  **I'm stopping an active HA Client development as now the only advantage it has over the official app is native UI that is very far from completeness.**  |
+|  I need to say a HUGE THANK YOU all for a grate support you all made for HA Client. I really appreciate each and every issue reported to GitHub, each and every message from each of you and each donation made to support development. Now it is time to cancel subscription if any and migrate your HA setup to an official Home Assistant app. You can find it in [Google Play](https://play.google.com/store/apps/details?id=io.homeassistant.companion.android).  |
 ## Native Android client for Home Assistant
 ### With actionable notifications, location tracking and Lovelace UI support
 
