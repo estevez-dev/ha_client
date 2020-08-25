@@ -98,10 +98,11 @@ class EntityIcon extends StatelessWidget {
       (entityWrapper.entity as LightEntity).color.toColor() != Colors.white
       ) {
       Color lightColor = (entityWrapper.entity as LightEntity).color.toColor();  
+      const iconCodeConst = const iconCode;
       iconWidget = Stack(
         children: <Widget>[
           Icon(
-            IconData(iconCode, fontFamily: 'Material Design Icons'),
+            const IconData(iconCodeConst, fontFamily: 'Material Design Icons'),
             size: size,
             color: iconColor,
           ),
