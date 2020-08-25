@@ -142,7 +142,7 @@ class _IntegrationSettingsPageState extends State<IntegrationSettingsPage> {
     if (_useForegroundService) {
       notes.add(_getNoteWidget('* Notification is mandatory for foreground service', false));
     } else {
-      notes.add(_getNoteWidget('* Use foreground service for intervals less then 15 minutes', false));
+      notes.add(_getNoteWidget('* Use foreground service for more accurate and stable tracking', false));
     }
     if (_useForegroundService && _locationInterval.inMinutes < 10) {
       notes.add(_getNoteWidget('* Battery consumption will be noticeable', true));
