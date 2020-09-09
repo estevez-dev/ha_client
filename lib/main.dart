@@ -157,7 +157,7 @@ part 'managers/app_settings.dart';
 EventBus eventBus = new EventBus();
 const String appName = 'HA Client';
 const String appVersion = String.fromEnvironment('versionName', defaultValue: '0.0.0');
-const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.3.0.md';
+const whatsNewUrl = 'http://ha-client.app/service/whats_new_1.3.1.md';
 
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
     // Print the exception to the console.
