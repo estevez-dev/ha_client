@@ -19,7 +19,6 @@ import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:device_info/device_info.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'plugins/dynamic_multi_column_layout.dart';
 import 'plugins/spoiler_card.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -103,8 +102,6 @@ part 'entities/vacuum/widgets/vacuum_controls.dart';
 part 'entities/vacuum/widgets/vacuum_state_button.dart';
 part 'entities/error_entity_widget.dart';
 part 'pages/settings/connection_settings.part.dart';
-part 'pages/purchase.page.dart';
-part 'pages/widgets/product_purchase.widget.dart';
 part 'pages/widgets/page_loading_indicator.dart';
 part 'pages/widgets/bottom_info_bar.dart';
 part 'pages/widgets/page_loading_error.dart';
@@ -214,18 +211,11 @@ class HAClientApp extends StatefulWidget {
 }
 
 class _HAClientAppState extends State<HAClientApp> {
-  StreamSubscription<List<PurchaseDetails>> _purchaseUpdateSubscription;
   StreamSubscription _themeChangeSubscription;
   AppTheme _currentTheme = AppTheme.defaultTheme;
   
   @override
   void initState() {
-    InAppPurchaseConnection.enablePendingPurchases();
-    final Stream purchaseUpdates =
-        InAppPurchaseConnection.instance.purchaseUpdatedStream;
-    _purchaseUpdateSubscription = purchaseUpdates.listen((purchases) {
-      _handlePurchaseUpdates(purchases);
-    });
     _currentTheme = widget.theme;
     _themeChangeSubscription = eventBus.on<ChangeThemeEvent>().listen((event){
       setState(() {
@@ -233,25 +223,6 @@ class _HAClientAppState extends State<HAClientApp> {
       });
     });
     super.initState();
-  }
-
-  void _handlePurchaseUpdates(purchase) {
-    if (purchase is List<PurchaseDetails>) {
-      if (purchase[0].status == PurchaseStatus.purchased) {
-        eventBus.fire(ShowPopupEvent(
-          popup: Popup(
-            title: "Thanks a lot!",
-            body: "Thank you for supporting HA Client development!",
-            positiveText: "Ok"
-          )
-        ));
-        InAppPurchaseConnection.instance.completePurchase(purchase[0]);
-      } else {
-        Logger.d("Purchase change handler: ${purchase[0].status}");
-      }
-    } else {
-      Logger.e("Something wrong with purchase handling. Got: $purchase");
-    }
   }
 
   @override
@@ -267,7 +238,6 @@ class _HAClientAppState extends State<HAClientApp> {
         "/app-settings": (context) => AppSettingsPage(),
         "/connection-settings": (context) => AppSettingsPage(showSection: AppSettingsSection.connectionSettings),
         "/integration-settings": (context) => AppSettingsPage(showSection: AppSettingsSection.integrationSettings),
-        "/putchase": (context) => PurchasePage(title: "Support app development"),
         "/play-media": (context) => PlayMediaPage(
           mediaUrl: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['url'] : ''}",
           mediaType: "${ModalRoute.of(context).settings.arguments != null ? (ModalRoute.of(context).settings.arguments as Map)['type'] ?? '' : ''}",
@@ -314,7 +284,6 @@ class _HAClientAppState extends State<HAClientApp> {
 
   @override
   void dispose() {
-    _purchaseUpdateSubscription.cancel();
     _themeChangeSubscription.cancel();
     super.dispose();
   }

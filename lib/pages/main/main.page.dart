@@ -305,15 +305,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver, Ticker
       ),
       Divider(),
       new ListTile(
-        leading: Icon(MaterialDesignIcons.getIconDataFromIconName("mdi:food")),
-        title: Text("Support app development"),
-        onTap: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pushNamed('/putchase');
-        },
-      ),
-      Divider(),
-      new ListTile(
         leading: Icon(Icons.help),
         title: Text("Help"),
         onTap: () {
